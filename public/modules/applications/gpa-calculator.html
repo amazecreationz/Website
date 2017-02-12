@@ -1,0 +1,89 @@
+<div ng-Controller="GPACalcController" class="section-container" layout="column" layout-fill layout-align="start center">
+	<md-content flex="auto" class="md-whiteframe-4dp col-xs-12 col-sm-10 col-md-10 col-lg-8 pad20" layout="column" layout-align="start start">
+		<div class="section-header text-size-c">Description</div>
+		<md-content class="section-body" flex>
+			Useful for: <a href="//www.nitc.ac.in" target="_blank">National Institute of Technology Calicut</a> students.
+			<br>
+			<br>
+			It calculates the Grade Point Averages of students from the Gradecard PDF obtained from Institute's website (<a href="//dss.nitc.ac.in" target="_blank">DSS</a>).
+			The application has the capability to give semester wise as well as overall results. 
+			Credits accumulated in each semeter and total credits are calculated too.
+			<br>
+			<br>
+			Browse to your gradecard and hit calculate!
+			More features coming soon. Meanwhile check out the Android application in Play Store.
+			<br>
+			Give us feedback at <a href="mailto:feedback@amazecreationz.in">feedback@amazecreationz.in</a>.
+		</md-content>
+		<div class="section-footer">
+			<google-play ng-if="appInfo.links.playstore" link="{{appInfo.links.playstore}}" height="40px"></google-play>
+		</div>	
+	</md-content>
+	<md-content flex="auto" class="md-whiteframe-4dp col-xs-12 col-sm-10 col-md-10 col-lg-8 pad20 mrgtop20" layout="column" layout-align="start start">
+		<div class="section-header text-size-c">Calculate your GPA!</div>
+		<md-content ng-show="!uploadLoader" class="section-body mrgl-5" flex>
+			<div class="col-xs-12 pad0" layout="row" layout-xs="column" layout-align="start center">
+				<md-button class="md-raised text-uppercase" id="selectgc" ngf-select="selectGC($file)" ngf-max-size="200KB" ngf-pattern="'application/pdf'">Select your Grade Card</md-button>
+				<span class=" txt14 padlr10">{{gradecard.name}}</span>
+				<span ng-if="gradecard == undefined" class="txt12 text-red padlr10">{{errorMessage}}</span>
+			</div>
+			<div class="col-xs-12 pad0" layout="row" layout-xs="column" layout-align="start center">
+				<md-button class="md-raised md-primary text-uppercase" id="uploadgc" aria-label="upload" ng-click="gradecard != undefined && uploadGC() || gradecard == undefined && showError(0)">Calculate</md-button>
+			</div>
+		</md-content>
+		<div ng-if="uploadLoader" class="col-xs-12 pad20" layout="row" layout-sm="column" layout-align="center center">
+		      <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		</div>
+	</md-content>
+	<div id="dummy-results"></div>
+	<md-content ng-show="(gradecardData != undefined && gradecard == undefined) || resultsLoader" id="results" flex="auto" class="md-whiteframe-4dp col-xs-12 col-sm-10 col-md-10 col-lg-8 pad20 mrgtop20" layout="column" layout-align="start start">
+		<div class="section-header text-size-c">Results</div>
+		<div ng-show="resultsLoader" class="col-xs-12 pad20" layout="row" layout-sm="column" layout-align="center center">
+		      <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		</div>
+		<md-content ng-show="!resultsLoader" class="section-body col-xs-12">
+			<table class="gpa-results-table mrg5">
+				<tr>
+					<td>Name</td>
+					<td>-</td>
+					<td>{{gradecardData.name}}</td>
+				</tr>
+				<tr>
+					<td>Roll No</td>
+					<td>-</td>
+					<td>{{gradecardData.roll_no}}</td>
+				</tr>
+				<tr>
+					<td>Branch</td>
+					<td>-</td>
+					<td>{{gradecardData.branch}}</td>
+				</tr>
+				<tr>
+					<td>Pass Credits</td>
+					<td>-</td>
+					<td> {{gradecardData.pass_credits}}</td>
+				</tr>
+				<tr>
+					<td>Failed Credits</td>
+					<td>-</td>
+					<td>{{gradecardData.failed_credits}}</td>
+				</tr>
+				<tr>
+					<td>CGPA</td>
+					<td>-</td>
+					<td>{{gradecardData.cgpa  | number : 2}}</td>
+				</tr>
+			</table>
+		</md-content>
+		<div ng-show="!resultsLoader" class="section-footer">
+			<md-button class="md-raised md-primary text-uppercase" id="downloadresults" ng-click="downloadResults()">Download</md-button>
+			<md-button class="md-raised text-uppercase" id="viewresults" ng-click="showResults()">Show More</md-button>
+		</div>	
+	</md-content>
+	<md-content ng-show="(gradecardData != undefined && gradecard == undefined)" id="showmore" flex="auto" class="md-whiteframe-4dp col-xs-12 col-sm-10 col-md-10 col-lg-8 pad20 mrgtop20 hide" layout="column" layout-align="start start">
+		<div class="section-header text-size-c">Semester-Wise Results</div>
+		<md-content class="section-body col-xs-12">
+			<chart chart-data="sgpaChartData"></chart>
+		</md-content>
+	</md-content>
+</div>

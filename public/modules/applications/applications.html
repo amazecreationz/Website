@@ -1,0 +1,18 @@
+<div class="section-img-container">
+	<div layout="column" layout-fill layout-align="center center">
+		<div class="text-size-b text-white title-border text-uppercase">{{pageTitle}}</div>
+	</div>
+</div>
+<div class="section-container padlr0" layout="column" layout-align="start center">
+	<div ng-if="!type" layout="row" class="col-sm-10 col-md-10 col-lg-8 pad0" layout-xs="column" layout-align="start start" layout-wrap>
+		<app-card class="pad10" ng-repeat="app in appItems | orderBy : 'priority' : true" app="app" layout="column" flex-lg="33" flex-md="33" flex-sm="50" flex-xs="100" layout-align="start center" layout-fill style="height:450px;"></app-card>
+		<div class="md-whiteframe-4dp bg-white pad15 mrg10" flex layout="column" layout-align="start center" style="height:430px;">
+			<div class="app-circle mrgtop30 no-pointer" layout="row" layout-align="center center"><md-icon>lightbulb_outline</md-icon></div>
+			<span class="text-size-c mrgtb10">Have an Idea?</span>
+			<span class="border-bottom full-width"></span>
+			<div flex class="text-center mrgtop20 pad10">Write to us at <a href="mailto:feedback@amazecreationz.in">feedback@amazecreationz.in</a>.<br>We will make it happen. :)</div>
+			<span class="border-bottom full-width"></span>
+		</div>
+	</div>
+	<div ng-if="type" ng-include="appInfo.template"></div>
+</div>

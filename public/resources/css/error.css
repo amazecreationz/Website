@@ -1,0 +1,70 @@
+.pad10 {
+	padding: 10px;
+}
+
+html, body {
+	width: 100vw;
+	overflow-x: hidden;
+	position: relative;
+}
+
+.error-container {
+	background-color: #f2f5f8;
+	padding: 10vh 10px;
+}
+
+.error-content {
+	min-height: 80vh;
+	padding: 0px;
+	background: #fff;
+	box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
+}
+
+.error-header {
+	font-size: 56px;
+	text-align: center;
+	color: #fff;
+	padding: 10vh 0 20px;
+	background-color: #d9534f;
+	min-height: 40vh;
+	max-height: 40vh;
+}
+
+.error-body {
+	font-size: 48px;
+	text-align: center;
+	margin: 10vh 0px;
+}
+
+.error-body .material-icons {
+	font-size: 32px;
+	margin-top: 10px;
+}
+
+.error-header div {
+	margin: 0px;
+	font-size: 24px;
+	color: #fff;
+}
+
+@media(min-width: 768px){
+	.error-header {
+		font-size: 96px;
+	}
+
+	.error-header div {
+		font-size: 40px;
+	}
+}
+
+@media(min-width: 1200px){
+	.error-header {
+		padding: 5vh 0 10px;
+	}
+}
+
+.md-raised {
+	color: rgba(255,255,255,0.87);
+	background-color: rgb(63,81,181);
+	padding: 5px;
+}

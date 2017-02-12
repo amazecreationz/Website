@@ -1,0 +1,9 @@
+<div class="md-whiteframe-4dp bg-white pad15" flex layout="column" layout-align="start center">
+    <div class="app-circle mrgtop30" ng-class="!app.page ? 'no-pointer' : 'pointer'" layout="row" layout-align="center center" ng-click="app.page && gotoPage(app.id)"><md-icon>{{app.icon}}</md-icon></div>
+    <span class="text-size-c text-uppercase mrgtb10">{{app.name}}</span>
+    <span class="border-bottom full-width"></span>
+    <div flex class="text-center mrgtop20 pad10">{{app.description}}</div>
+    <google-play ng-if="app.links.playstore" class="pad10" link="{{app.links.playstore}}" height="36px"></google-play>
+    <tags ng-if="app.tags" class="pad15" tagdata="app.tags"></tags>
+    <span class="border-bottom full-width"></span>
+</div>

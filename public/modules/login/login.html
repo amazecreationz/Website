@@ -1,0 +1,9 @@
+<div class="full-container bg-body-color">
+    <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 pad0" layout="column" layout-fill layout-align="center center">
+      	<div class="pad5 text-size-c text-grey border-bottom border-grey">Login Into Reach Albert</div>
+      	<md-button ng-if="!showLoader" class="mrgtop30 md-raised md-primary pad510 text-uppercase padlr10 txt16" ng-click="signIn()">Sign In with Google</md-button>
+      	<div ng-if="showLoader" class="mrg20" layout="row" layout-sm="column" layout-align="space-around">
+		      <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		</div>
+    </div>
+</div>

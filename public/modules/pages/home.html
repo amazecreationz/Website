@@ -1,0 +1,19 @@
+<div class="full-container bg-transparent">
+	<div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 pad0" layout="column" layout-fill layout-align="center center">
+		<div class="text-size-a text-white  title-border text-uppercase">AMAZE CREATIONZ</div>
+		<div class="text-size-c text-white mrgtop10">sleek solutions everywhere</div>
+	</div>
+</div>
+<div class="section-container bg-body-color">
+	<div class="mrgbot20" layout="column" layout-fill layout-align="center center">
+		<span flex="10" class="text-uppercase text-size-c mrgtop20 mrgbot30">Popular Applications</span>
+		<div class="col-sm-10 col-md-10 col-lg-8" layout="row" layout-xs="column" layout-align="center start" layout-wrap>
+			<div ng-if="app.priority" class="col-xs-12 col-sm-6 col-md-4 mrgtb10" ng-repeat="app in appItems | orderBy: 'priority' : true  | limitTo : 3" class="mrg15" layout="column" layout-align="start center">
+				<div flex class="app-circle pointer" layout="row" layout-align="center center" ui-sref="apps({type: app.id})"><md-icon>{{app.icon}}</md-icon></div>
+				<span flex class="txt16 text-bold">{{app.name}}</span>
+				<div flex class="text-center">{{app.description}}</div>
+			</div>
+		</div>
+		<md-button class="mrgtop30 md-raised md-primary text-uppercase" ui-sref="apps" aria-label="View all Applications">View all</md-button>
+	</div>
+</div>
