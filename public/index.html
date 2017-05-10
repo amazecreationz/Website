@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    	<meta charset="utf-8">
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<base href="/"> 
-		<title>Amaze Creationz | Home</title>
-		<meta name="description" content="Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, Smart TV, Message Scheduler and so on.">
-		<meta name="keywords" content="Amaze Creationz, Sleek Solutions Everywhere">
-		<meta name="author" content="Anand Mohan">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-		<meta name=”og:title” content=”Amaze Creationz”>
-		<meta name=”og:image” content=”/resources/images/logos/logo-large.jpg”>
-		<meta name=”og:description content=”Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, Smart TV, Message Scheduler and so on.”>
-		<meta name="twitter:card" content="Amaze Creationz">
-		<meta name="twitter:site" content="@amazecreationz">
-		<meta name="twitter:creator" content="@anandmoghan">
-		<meta name="twitter:title" content="Amaze Creationz">
-		<meta name="twitter:description" content="Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, Smart TV, Message Scheduler and so on.">
-		<meta name="twitter:image" content="/resources/images/logos/logo-large.jpg">
-		<link rel="SHORTCUT ICON" href="resources/images/favicon.ico">		
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<base href="/">
+    	<title>Amaze Creationz | Sleek Solutions Everywhere</title>
+    	<link rel="SHORTCUT ICON" href="resources/images/favicon.ico">
+
+    	<!--CSS INCLUDES START-->
+    		<link rel="stylesheet" type="text/css" href="resources/css/font-awesome.min.css">
+			<link rel="stylesheet" type="text/css" href="resources/css/angular-material.min.css">
+			<link rel="stylesheet" type="text/css" href="resources/css/material-icons.css">
+			<link rel="stylesheet" type="text/css" href="resources/css/amazecreationz-design.css">
+			<link rel="stylesheet" type="text/css" href="resources/css/style.css">
+			<link rel="stylesheet" type="text/css" href="resources/css/pt-sans.css">
+		<!--CSS INCLUDES END--> 		
 		<script type="application/ld+json">
 			{
 		  		"@context" : "http://schema.org",
@@ -49,161 +47,66 @@
 			  ga('send', 'pageview');
 			</script>
 		<!--GA INCLUDES END-->
-		<!--CSS INCLUDES START-->
-			<link rel="stylesheet" type="text/css" href="resources/css/angular-material.min.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/font-awesome.min.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/materialize.min.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/material-icons.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/pt-sans.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/style.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/amazecreationz-design.css">
-		<!--CSS INCLUDES END-->
-			
-		<!--JS INCLUDES START-->
-			<script type="text/javascript" src="resources/js/angular.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-aria.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-animate.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-messages.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-material.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-sanitize.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-cookies.min.js"></script>
-			<script type="text/javascript" src="resources/js/jquery.min.js"></script>
-			<script type="text/javascript" src="resources/js/angular-ui-router.min.js"></script>
-			<script type="text/javascript" src="resources/js/bootstrap.min.js"></script>
-			<script type="text/javascript" src="resources/js/restangular.min.js"></script>
-			<script type="text/javascript" src="resources/js/materialize.min.js"></script>
-			<script type="text/javascript" src="resources/js/underscore-min.js"></script>
-			<script type="text/javascript" src="resources/js/ng-file-upload.min.js"></script>
-			<script type="text/javascript" src="resources/js/event-listeners.js"></script>
-			<script type="text/javascript" src="resources/js/Chart.min.js"></script>
-			<script type="text/javascript" src="resources/js/Chart.bundle.min.js"></script>
-			<script type="text/javascript" src="modules/app.js"></script>
-			<script type="text/javascript" src="modules/app-router.js"></script>
-			<script type="text/javascript" src="modules/app-controller.js"></script>
-			<script type="text/javascript" src="modules/app-constants.js"></script>
-			<script type="text/javascript" src="modules/chart-constants.js"></script>
-			<script type="text/javascript" src="modules/applications/applications-controller.js"></script>
-			<script type="text/javascript" src="modules/common/common-controller.js"></script>
-			<script type="text/javascript" src="modules/common/common-directives.js"></script>
-			<script type="text/javascript" src="modules/login/login-controller.js"></script>
-			<script type="text/javascript" src="modules/widgets/widget-directives.js"></script>
-			<script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>
-			<script>
+  	</head>
+  	<body ng-app="amazecreationz" ng-controller="AppController">
+  		<div class="loader-shadow layout-row layout-align-center-center">
+  			<img src="/resources/images/gif/wave.gif">
+  		</div>
+  		<div class="body-container" layout="row">
+			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-lg')" md-swipe-left="closeSideMenu()" layout="column" flex>
+	            <div class="side-menu-user-container" ng-class="'bg-theme-{{globals.theme}}'" layout="column" layout-align="end start">
+	                <div class="padbot10">
+	                    <img ng-if="globals.permissions.USER >= appData.user.permission" class="img-circle"  width="60px" height="auto" ng-src="{{appData.user.image}}">
+	                    <md-icon ng-if="globals.permissions.USER < appData.user.permission" class="material-icons text-48">account_circle</md-icon>
+	                </div>
+	                <div ng-if="globals.permissions.USER < appData.user.permission" class="text-16">Hello Guest!</div>
+	                <div class="text-16 text-bold">{{appData.user.name}}</div>
+	                <div class="text-14">{{appData.user.email}}</div>
+	                <span ng-show="globals.permissions.USER >= appData.user.permission" class="pointer text-12 text-bold-hover" ng-click="signOut();">Sign Out</span>
+	            </div>
+	            <div class="side-menu-tabs-container" flex="auto">
+	                <div class="side-menu-tab" ng-if="tab.permission >= appData.user.permission" ng-repeat="tab in appData.tabs" ng-class="{'active' : appData.current_tab == tab.id}" ng-click="openTab(tab)">
+	                    <md-icon class="material-icons text-20">{{tab.icon}}</md-icon>
+	                    <span class="padlr10 text-16">{{tab.name}}</span>
+	                </div>
+	            </div>
+	            <div class="side-menu-footer">
+	                <md-button ng-if="globals.permissions.USER < appData.user.permission" id="my-login" class="md-raised side-menu-button" ng-click="login();"  layout="row" layout-align="center center"><img class="mrgrt20" height="24px" width="auto" src="/resources/images/icons/google.png"/>Sign in with Google</md-button>
+	            </div>
+	        </md-sidenav>
+		    <div class="app-container" layout="column">
+		        <nav class="nav-bar">
+		            <div class="nav-wrapper" ng-class="'bg-theme-{{globals.theme}}'" layout="row" layout-align="end center">
+		                <div class="nav-menu-button" ng-click="openSideMenu()"><md-icon class="material-icons text-size-d">menu</md-icon></div>
+		                <div flex="auto" class="nav-brand-name text-size-d">
+		                    <span class="pointer text-uppercase" ui-sref="home">{{globals.title}}</span>
+		                </div>
+		            </div>
+		        </nav>
+		        <div class="main-container" ui-view></div>
+	        </div>
+        </div>
+  		<script type="text/javascript" src="resources/js/jquery.min.js"></script>
+  		<script type="text/javascript" src="resources/js/angular.min.js"></script>
+  		<script type="text/javascript" src="resources/js/angular-animate.min.js"></script>
+  		<script type="text/javascript" src="resources/js/angular-aria.min.js"></script>
+  		<script type="text/javascript" src="resources/js/angular-material.min.js"></script>
+  		<script type="text/javascript" src="resources/js/angular-ui-router.min.js"></script>
+  		<script type="text/javascript" src="resources/js/angular-sanitize.min.js"></script>
+  		<script type="text/javascript" src="resources/js/underscore-min.js"></script>
+  		<script type="text/javascript" src="resources/js/async.min.js"></script>
+  		<script type="text/javascript" src="resources/js/amazecreationz.min.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+		<script>
 			var config = {
-				apiKey: "AIzaSyAjkKabkbIMQXThviPUCarGEJ5YGnyGemM",
-				authDomain: "amaze-creationz-f8d44.firebaseapp.com",
-				databaseURL: "https://amaze-creationz-f8d44.firebaseio.com",
-				storageBucket: "amaze--creationz.appspot.com",
-				messagingSenderId: "1078423361394"
+				apiKey: "AIzaSyBOutg7AYZilNdMaQr-p-15QGk-JaszRDA",
+				authDomain: "amazecreationz-web.firebaseapp.com",
+				databaseURL: "https://amazecreationz-web.firebaseio.com",
+				projectId: "amazecreationz-web",
+				storageBucket: "amazecreationz-web.appspot.com",
+				messagingSenderId: "407161045317"
 			};
 			firebase.initializeApp(config);
-			</script>
-		<!--JS INCLUDES END-->
-	</head>
-
-	<body ng-controller="MainController" ng-app="amazecreationz">
-		<div class="navbar-fixed">
-            <nav class="box-shadow no-shadow" ng-class="'bg-{{globals.theme}}'">
-                <div class="nav-wrapper" layout="row" layout-align="end center">
-                    <div class="pointer button-collapse" data-activates="slide-out"><i class="material-icons text-size-d">menu</i></div>
-                    <div flex="auto" id="brand-name" class="text-size-d text-uppercase">
-                        <span class="pointer" ui-sref="home">Amaze Creationz</span>
-                    </div>
-                    <div class="padlr20">
-                        <md-icon ng-if="!user_data.is_user_signed" class="material-icons pointer txt32" ng-click="login()">account_circle</md-icon>
-                        <span ng-show="user_data.is_user_signed" class="dropdown-button pointer" data-beloworigin="true" data-constrainwidth="false" data-activates="login-dd">
-							<img class="circle" width="32px" height="auto" ng-src="{{user_data.image}}">
-						</span>
-                        <div id='login-dd' class='dropdown-content pad10 z-depth-3 mrgtop25'>
-                            <div layout="row" layout-align="start center" ng-class="user_data.is_user_signed ? 'account-container' : ''">
-                                <div class="pad15 vertical-divider" layout="row" layout-align="center center">
-                                    <img class="circle" width="80px" height="auto" ng-src="{{user_data.image}}">
-                                </div>
-                                <div class="account-details" layout="column" layout-align="start start">
-                                    <div class="mrg0">{{user_data.name}}</div>
-                                    <div class="txt14 mrg0 text-grey">{{user_data.email}}</div>
-                                    <div class="mrgl-10" layout="row" layout-align="start start">
-                                        <md-button ng-show="user_data.is_user_signed" id="my-signout2" class="mrglr10 md-warn md-raised pointer md-hue-2" ng-click="signOut();">SIGN OUT</md-button>                            
-                                    </div>
-                                </div>
-                            </div>
-                        </div>      
-                    </div>
-                </div>
-            </nav>
-        </div>
-        <ul id="slide-out" class="side-nav">
-            <li>
-                <div class="side-nav-user-container" ng-class="'bg-{{globals.theme}}'" layout="column" layout-align="end start">
-                    <div class="padbot10">
-                        <img ng-if="user_data.is_user_signed" class="circle"  width="60px" height="auto" ng-src="{{user_data.image}}">
-                        <md-icon ng-if="!user_data.is_user_signed" class="material-icons txt48">account_circle</md-icon>
-                    </div>
-                    <div ng-if="!user_data.is_user_signed" class="txt16">Hello Guest!</div>
-                    <div class="txt16 text-bold">{{user_data.name}}</div>
-                    <div class="txt12">{{user_data.email}}</div>
-                </div>
-            </li>
-            <li ng-if="tab.permission >= user_data.permission" ng-repeat="tab in tabs" ng-class="{'active' : current_tab == tab.id}">
-                <a class="padlr20 pointer" ui-sref="{{tab.state}}" ui-sref-opts="{{tab.state_opts}}">
-                    <md-icon class="material-icons txt20">{{tab.icon}}</md-icon>
-                    <span class="padlr10 txt16">{{tab.name}}</span>
-                </a>
-            </li>
-        </ul>
-        <div class="body-container bg-fixed bg-tinted" bg-load image="bck_image">
-            <div ui-view class="main-container"></div>
-			<footer flex="none" id="footer" class="footer">
-				<div class="container">
-					<div class="col-sm-7 col-xs-12 col-sm-offset-0 col-xs-offset-2 pad0">
-						<div class="col-sm-7 col-xs-12 mrgtop30">
-							<div class="logo hide-xs" bg-load image="'logo-grey-small.png'" url="{{globals.image.logo_url}}"></div>
-						</div>
-						<div class="col-sm-5 col-xs-12 mrgtop30">
-							<div class="list-title">AMAZE CREATIONZ</div>
-							<div class="footer-list">
-								<div><a ui-sref="home.welcome">Home</a></div>
-								<div><a ui-sref="about">About</a></div>
-								<div><a href="//blog.amazecreationz.in" target="_blank">Blog</a></div>
-								<div><a ui-sref="crew">Crew</a></div>
-								<div><a href="//traveldiaries.amazecreationz.in" target="_blank">Travel Diaries</a></div>
-								<div><a ui-sref="sitemap">Sitemap</a></div>
-							</div>
-						</div>
-						
-					</div>
-					<div class="col-sm-5 col-xs-12 col-sm-offset-0 col-xs-offset-2 pad0">
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mrgtop30">
-							<div class="list-title pointer" ui-sref="apps">Applications</div>
-							<div class="footer-list">
-								<div ng-if="app.priority" ng-repeat="app in appItems | orderBy: 'priority' : true  | limitTo : 5 "><a ui-sref="apps({type: app.id})">{{app.name}}</a></div>
-							</div>
-						</div>
-						<div class="col-sm-6 col-xs-12 mrgtop30">
-							<div class="list-title">Contact Us</div>
-							<div class="footer-list">
-								<div><a ui-sref="feedback">Feedback</a></div>
-								<div><a ui-sref="contact">Get in Touch</a></div>
-								<div><a href="mailto:support@amazecreationz.in" target="_blank">Mail Us</a></div>	
-							</div>
-						</div>
-					</div>
-					<div class="social-icons col-xs-12" layout="row" layout-align="center center" layout-wrap>
-						<div><a href="https://www.github.com/amazecreationz" target="_blank"><i class="fa fa-github"></i></a></div>
-						<div><a href="https://www.facebook.com/amazecreationz" target="_blank"><i class="fa fa-facebook"></i></a></div>
-						<div><a href="https://www.twitter.com/amazecreationz" target="_blank"><i class="fa fa-twitter"></i></a></div>
-						<div><a href="https://plus.google.com/+amazecreationz" target="_blank"><i class="fa fa-google-plus"></i></a></div>
-						<div><a href="https://www.linkedin.com/company/amazecreationz" target="_blank"><i class="fa fa-linkedin"></i></a></div>
-						<div><a href="https://www.instagram.com/amazecreationz" target="_blank"><i class="fa fa-instagram"></i></a></div>
-						<div><a href="https://in.pinterest.com/amazecreationz/" target="_blank"><i class="fa fa-pinterest"></i></a></div>
-						<div><a href="https://www.youtube.com/c/amazecreationz" target="_blank"><i class="fa fa-youtube"></i></a></div>
-					</div>
-					<div class="copyright col-xs-12" layout="row" layout-align="center center">
-						<div class="txt14">Made with <i class="glyphicon glyphicon-heart"></i> in India</div>
-					</div>
-				</div>
-			</footer>         	
-        </div> 
-	</body>
+		</script>
+  	</body>
 </html>

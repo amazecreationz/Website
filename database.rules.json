@@ -1,6 +1,12 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
+    "users": {
+      ".indexOn": ["permission", "crewType", "crewURL"],
+      ".write": "data.child(auth.uid).child('permission').val() === 0",
+      ".read": "true",
+      "$userId": {
+        ".read": "auth.uid === $userId || data.child('crewType').val() != null"
+      }
+    }
   }
 }
