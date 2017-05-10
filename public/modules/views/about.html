@@ -1,0 +1,25 @@
+<div class="content-container">
+	<page-header theme="globals.theme" header="About"></page-header>
+	<div class="card">
+		<div class="card-body pad0 text-justify">
+			<div class="padbot10">
+				We have started out to solve commoners' everyday problems with intelligent, well designed software. We believe a clear, simple and beautiful interface makes the best kind of software and thus, we rebuild our products regulary to adapt with the evolving technologies.
+			</div>
+			<div class="padbot10">
+				We use Google's state of the art cloud services for all our serving purposes. All our websites uses <a href="https://firebase.google.com" target="_blank">Firebase</a> to deploy the web content to a global content-delivery network (CDN), giving the best performance even with busy traffic. Most of our server operations are run on <a href="https://cloud.google.com/functions/" target="_blank">Cloud Functions</a> which again guarantee the best of performance.
+			</div>
+		</div>
+	</div>
+	<div ng-hide="crewList.fullTime | isEmpty" class="card">
+		<div class="card-header text-size-d">Crew</div>
+		<div class="card-body" layout="row">
+			<crew is-small="true" crew-info="crew" on-click="onCrewSelect" ng-repeat="crew in crewList.fullTime | orderBy : 'level'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></crew>
+		</div>
+	</div>
+	<div ng-hide="crewList.collaborators | isEmpty" class="card">
+		<div class="card-header text-size-d">Collaborators</div>
+		<div class="card-body" layout="row">
+			<contributor crew-info="crew" on-click="onCrewSelect" ng-repeat="crew in crewList.collaborators | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></contributor>
+		</div>
+	</div>
+</div>

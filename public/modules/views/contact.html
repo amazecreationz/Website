@@ -1,0 +1,33 @@
+<div class="content-container">
+	<page-header theme="globals.theme" header="Get In Touch"></page-header>
+	<div class="contact-cards" layout-gt-xs="row" layout-fill>
+		<div class="card" flex-gt-xs="50">
+			<div class="card-header text-size-d">Contact Us</div>
+			<div class="card-body" layout="column" layout-align="center start">
+				<div class="contact-phone" layout="row" layout-align="start center">
+					<md-icon class="material-icon">phone</md-icon>
+					<a href="tel:{{contacts.phone}}" target="_blank" class="text-size-e">{{contacts.phone}}</a>
+					<span flex></span>
+				</div>
+				<div class="contact-email" layout="row" layout-align="start center">
+					<md-icon class="material-icon">email</md-icon>
+					<a href="mailto:{{contacts.email}}" target="_blank" class="text-size-e">{{contacts.email}}</a>
+					<span flex></span>
+				</div>
+			</div>
+		</div>
+		<div class="card" flex>
+			<div class="card-header text-size-d">Address</div>
+			<div class="card-body">
+				<a class="contact-location text-size-e" ng-bind-html="contacts.location" href="{{contacts.maps}}" target="_blank"></a>
+			</div>
+			
+		</div>
+	</div>
+	<div ng-show="false" class="card">
+		<div class="card-header text-size-d">Feedback</div>
+		<div class="card-body" permission-check="appData.user.permission" min-permission="globals.permissions.USER">
+			Feedback Column goes here.
+		</div>
+	</div>
+</div>

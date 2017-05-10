@@ -1,0 +1,21 @@
+<div class="card">
+	<div class="card-header" layout="row" layout="start center">
+		<div class="text-size-d" flex>Add Data</div>
+		<div>
+			<md-switch class="mrg0 text-uppercase md-primary" ng-model="console.firebase.operation" aria-label="Switch" ng-true-value="'set'" ng-false-value="'push'">{{console.firebase.operation}}</md-switch>
+		</div>
+  	</div>
+	<div class="card-body" permission-check="appData.user.permission" min-permission="globals.permissions.ADMIN" layout="row" layout-wrap>
+		<form name="firebaseForm" class="full-width" ng-submit="onFirebaseSave()">
+			<md-input-container class="full-width mrgbot0" flex-gt-xs>
+                <label>Data Point</label>
+                <input ng-model="console.firebase.dataPoint" autocomplete="off" ng-required>
+            </md-input-container>
+            <md-input-container class="full-width" flex-gt-xs>
+                <label>Data JSON</label>
+                <textarea ng-model="console.firebase.dataJSON" md-maxlength="250" autocomplete="off" ng-required></textarea>
+            </md-input-container>
+            <md-button class="md-raised md-primary" ng-click="onFirebaseSave()">Save</md-button>
+		</form>
+	</div>
+</div>

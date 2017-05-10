@@ -1,0 +1,83 @@
+<md-dialog class="modal-container full-screen" aria-label="Add Crew">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{dialog.title}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="dialog.cancel()">
+                    <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content class="modal-content-container">
+            <div class="content-container" layout="column" layout-align="center center">
+                <div ng-hide="dialog.crewId" class="full-width">
+                    <div class="card">
+                        <div class="card-header text-size-d">Select User: </div>
+                        <div class="card-body" permission-check="appData.user.permission" min-permission="globals.permissions.ADMIN" layout="row" layout-wrap>
+                            <list-loader list="dialog.users" list-param="Users"></list-loader>
+                            <user user-info="user" on-click="dialog.onUserSelect" ng-repeat="user in dialog.users | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="dialog.crewId" class="full-width">
+                    <div class="card">
+                        <div class="card-body" layout="row" layout-xs="column" layout-align-xs="center center" layout-wrap>
+                            <div class="crew-image" image-load image="dialog.crewInfo.image"></div>
+                            <table class="crew-data table">
+                                <tbody class="txt14">
+                                    <tr class="padtb10">
+                                        <td class="text-bold">Name</td>
+                                        <td class="padlr5">:</td>
+                                        <td>{{dialog.crewInfo.name}}</td>
+                                    </tr>
+                                    <tr class="padtb10">
+                                        <td class="text-bold">Email</td>
+                                        <td class="padlr5">:</td>
+                                        <td>{{dialog.crewInfo.email}}</td>
+                                    </tr>
+                                    <tr class="padtb10">
+                                        <td class="text-bold">UserID</td>
+                                        <td class="padlr5">:</td>
+                                        <td class="word-wrap">{{dialog.crewInfo.uid}}</td>
+                                    </tr>
+                                    <tr class="padtb10">
+                                        <td class="text-bold">Crew Type</td>
+                                        <td class="padlr5">:</td>
+                                        <td class="word-wrap">
+                                            <md-select ng-model="dialog.crewInfo.crewType" aria-label="crew-type-select">
+                                                <md-option ng-repeat="type in dialog.crewTypes" ng-value="type.id">{{type.name}}</md-option>
+                                            </md-select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <form name="crew-form">
+                                <div class="mrgtop10" layout-gt-xs="row" layout-fill>
+                                    <md-input-container ng-if="dialog.crewInfo.crewType == 'fullTime'" class="full-width" flex-gt-xs>
+                                        <md-select ng-model="dialog.crewInfo.level" aria-label="level-select">
+                                            <md-option ng-repeat="level in dialog.levels" ng-value="level.value">{{level.name}}</md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container class="full-width mrgbot0" flex-gt-xs>
+                                        <label>Designation</label>
+                                        <input ng-model="dialog.crewInfo.designation" autocomplete="off" ng-required>
+                                    </md-input-container>
+                                    <md-input-container class="full-width" flex-gt-xs>
+                                        <label>Crew URL</label>
+                                        <input ng-model="dialog.crewInfo.crewURL" autocomplete="off" ng-required>
+                                    </md-input-container>
+                                </div>
+                            </form>
+                            <div class="text-center full-width">
+                                <md-button ng-hide="dialog.newCrew" class="md-raised md-primary" ng-click="dialog.deleteCrew()">Delete</md-button>
+                                <md-button class="md-raised" ng-click="dialog.saveCrew()">Save</md-button>
+                            </div>     
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </md-dialog-content>
+    </form>
+</md-dialog>

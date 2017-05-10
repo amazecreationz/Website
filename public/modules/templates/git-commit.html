@@ -1,0 +1,24 @@
+<style type="text/css">
+	.git-commit-container {
+		padding: 10px;
+		cursor: pointer;
+	}
+	.git-commit-container:hover {
+		background-color: #fafafa; 
+	}
+	.git-commit-message {
+		font-size: 18px;
+	}
+	.git-commit-commiter {
+		font-size: 14px;
+	}
+	.git-commit-date {
+		font-size: 12px;
+		color: #777;
+	} 
+</style>
+<div class="git-commit-container" ng-click="viewCommit()">
+	<div class="git-commit-message">{{commitInfo.message}}</div>
+	<div class="git-commit-commiter">{{commitInfo.committer}}</div>
+	<div class="git-commit-date">{{commitInfo.date | date:dateFormat}}</div>
+</div>

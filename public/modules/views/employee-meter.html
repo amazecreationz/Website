@@ -1,0 +1,32 @@
+<div ng-Controller="EmployeeMeterController" class="content-container min-full-height" layout="column" layout-align="start center">
+	<page-header theme="globals.theme" header="{{appInfo.name}}"></page-header>
+	<div class="card">
+		<div class="card-header text-size-d">Description</div>
+		<div class="card-body text-justify">
+			<div class="padbot10">Only for Personal use.</div>
+			Keep track of your personal employees with our new application Employee Meter.
+			You can mark the absence and payments and get a detailed analysis on our dashboard.
+			<div class="padtop10">
+				Android application is developing under the hood. Make the maximum use of web application until then.
+			</div>
+			<div class="padtb10">
+				Give us feedback at: <a href="mailto:{{globals.feedback.email}}">{{globals.feedback.email}}</a>.
+			</div>
+		</div>
+	</div>
+
+	<div ng-hide="appInfo.contributorsList | isEmpty" class="card">
+		<div class="card-header text-size-d">Contributors</div>
+		<div class="card-body" layout="row" layout-wrap>
+			<loader flex="100" loader="!appInfo.contributorsList"></loader>
+			<contributor flex="33" flex-sm="50" flex-xs="100" ng-repeat="crewInfo in appInfo.contributorsList" crew-info="crewInfo" on-click="onCrewSelect"></contributor>
+		</div>
+	</div>
+	<div ng-hide="appInfo.gitCommits | isEmpty" class="card">
+		<div class="card-header text-size-d">Git Commits</div>
+		<div class="card-body" layout="row" layout-wrap>
+			<loader flex="100" loader="!appInfo.gitCommits"></loader>
+			<git-commit flex="50" flex-sm="50" flex-xs="100" commit-info="commitInfo" ng-repeat="commitInfo in appInfo.gitCommits"></git-commit>
+		</div>
+	</div>
+</div>

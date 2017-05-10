@@ -1,0 +1,11 @@
+<div ng-Controller="CrewController" class="content-container min-full-height">
+	<div class="card" layout="column">
+		<div ng-show="crewInfo | isEmpty" class="card-header text-size-d">Profile</div>
+		<div class="card-body pad0">
+			<loader flex="100" loader="crewInfo | isEmpty"></loader>
+			<div ng-hide="crewInfo | isEmpty" layout="row" layout-xs="column">
+				<crew crew-info="crewInfo"></crew>
+			</div>
+		</div>
+	</div>
+</div>

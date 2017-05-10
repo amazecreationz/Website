@@ -1,0 +1,10 @@
+<div class="page-header" ng-class="'bg-theme-{{theme}}'"">
+	<div class="title" layout="row" layout-align="start center">
+		<div class="text-size-d" flex>{{header}}</div>
+		<md-button ng-show="buttonLabel" class="md-raised mrg0" ng-click="buttonClick()">{{buttonLabel}}</md-button>
+		<div class="menu-container"></div>
+	</div>
+	<div ng-if="tabs |isEmpty : true" class="tabs">
+		<div class="tab-item" ng-repeat="tab in tabs" ng-class="{'active': currentTab == tab.id}" ng-click="changeTab(tab)">{{tab.name}}</div>
+	</div>
+</div>

@@ -1,0 +1,15 @@
+<div class="background-container bg-fixed bg-tinted full-height" image-load image="'brush.jpg'" location="globals.images.root" layout="column" layout-align="center-center">
+	<div class="home-title text-size-a text-uppercase">{{globals.title}}</div>
+	<div class="text-size-c">{{globals.subtitle}}</div>
+</div>
+<div class="content-container min-full-height" layout="column" layout-align="center center">
+	<div class="page-subtitle text-size-c">Popular Applications</div>
+	<div class="mrgtop10" layout="row" layout-xs="column" layout-align="center start" layout-wrap>
+		<div ng-if="appInfo.priority > 0" class="width-3 mrgtb10 padlr10" ng-repeat="appInfo in appsInfo | orderBy: 'priority' : true  | limitTo : 3" class="mrg15" layout="column" layout-align="start center">
+			<div flex class="app-card-circle pointer" layout="row" layout-align="center center" ng-click="goToApplicationPage(appInfo.id)"><md-icon>{{appInfo.icon}}</md-icon></div>
+			<span flex class="txt16 text-bold">{{appInfo.name}}</span>
+			<div flex class="text-center" ng-bind-html="appInfo.description"></div>
+		</div>
+	</div>
+	<md-button class="mrgtop40 md-raised md-primary text-uppercase" ui-sref="apps" aria-label="View all Applications">View all</md-button>
+</div>

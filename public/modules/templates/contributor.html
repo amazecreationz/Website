@@ -1,0 +1,33 @@
+<style type="text/css">
+	.contributor-container {
+		padding: 10px;
+		cursor: pointer;
+	}
+	.contributor-container:hover {
+		background-color: #fafafa; 
+	}
+	.contributor-image {
+		width: 50px;
+		height: 50px;
+		background-size: 50px;
+		border-radius: 50%;
+		margin-right: 10px;
+	}
+	.contributor-data {
+		padding: 0 10px;
+	}
+	.contributor-name {
+		font-size: 20px;
+	}
+	.contributor-email {
+		margin-top: -2px;
+		font-size: 14px;
+	}
+</style>
+<div class="contributor-container" ng-click="onClick(crewInfo)" layout="row" layout-align="start center">
+	<div class="contributor-image" image-load image="crewInfo.image"></div>
+	<div class="contributor-data">
+		<div class="contributor-name">{{crewInfo.name}}</div>
+		<div class="contributor-email">{{crewInfo.email}}</div>
+	</div>
+</div>
