@@ -1,11 +1,41 @@
 {
   "rules": {
-    "users": {
-      ".indexOn": ["permission", "crewType", "crewURL"],
-      ".write": "data.child(auth.uid).child('permission').val() === 0",
+    "crew": {
+      ".indexOn": [
+        "crewType",
+        "crewURL"
+      ],
       ".read": "true",
+      ".write": "root.child('users').child(auth.uid).child('permission').val() <= 0"
+    },
+    "query": {
+      "amazecreationz": {
+        ".read": "root.child('users').child(auth.uid).child('permission').val() <= 1",
+        ".write": "root.child('users').child(auth.uid).child('permission').val() <= 1",
+        "users": {
+          ".indexOn": "priority",
+          "$userId": {
+            ".read": "auth.uid === $userId",
+            ".write": "auth.uid === $userId"
+          }
+        },
+        "visitors": {
+          ".indexOn": "priority",
+          "$queryId": {
+            ".write": "newData.child('email').val() != null"
+          }
+        }
+      }
+    },
+    "users": {
+      ".indexOn": [
+        "permission",
+        "crew"
+      ],
+      ".write": "data.child(auth.uid).child('permission').val() === 0",
+      ".read": "data.child(auth.uid).child('permission').val() <= 1",
       "$userId": {
-        ".read": "auth.uid === $userId || data.child('crewType').val() != null"
+        ".read": "auth.uid === $userId"
       }
     }
   }

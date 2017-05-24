@@ -2,3 +2,4 @@
 .fuse*
 function
 .project
+firebase-debug.log

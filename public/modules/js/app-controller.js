@@ -26,6 +26,10 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 		$state.go(tab.state, tab.stateParams , {reload: true});
 	}
 
+	$scope.showLogin = function(){
+        AppService.showLogin();
+    }
+
 	$scope.login = function() {
 		AppService.login();
     }
@@ -41,12 +45,12 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 	firebase.auth().onAuthStateChanged(function(user) {
     	if(user){
     		FirebaseService.fetchCurrentUserInfo(function(userInfo) {
-				$('.loader-shadow').addClass('hide');
+				AppService.backgroundLoader(false);
 				$scope.appData.user = userInfo;
 				AppService.showToast('Signed in as '+$scope.appData.user.name);
 			})
 		} else {
-			$('.loader-shadow').addClass('hide');
+			AppService.backgroundLoader(false);
 		}
     })
 

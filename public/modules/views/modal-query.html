@@ -1,0 +1,28 @@
+<md-dialog class="modal-container full-screen" aria-label="Add Crew">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{query.name}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content class="modal-content-container">
+        <div class="content-container" layout="column" layout-align="center center">
+            <div class="card">
+                <div class="card-header text-size-d">History</div>
+                <div class="card-body">
+                    <div class="bottom-border-1">
+                        <div class="name">{{query.name}}</div>
+                        <div class="email">{{query.email}}</div>
+                    </div>
+                    <div class="query-history" ng-repeat="(key, query) in query.history">
+                        <div class="content">{{query.content}}</div>
+                        <div class="date">{{query.date}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </md-dialog-content>
+</md-dialog>

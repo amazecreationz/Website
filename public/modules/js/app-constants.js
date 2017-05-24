@@ -43,25 +43,35 @@ application.constants = {
 		state: 'contact',
 		permission: application.permissions.VISITOR
 	}],
-	crew:{
-		anandmoghan: {
-			level: 0,
-			image: 'anandmoghan.jpg',
-			name: 'Anand Mohan',
-			email: 'anandmoghan@amazecreationz.in',
-			designation: 'Developer',
-			location: 'Trivandrum, India',
-			skills: ['HTML5', 'CSS3', 'JavaScript', 'Java', 'AngularJS', 'jQuery', 'NodeJS', 'Firebase']
-		},
-		dheerajma007: {
-			level: 1,
-			image: 'dheerajma007.jpg',
-			name: 'Dheeraj M A',
-			email: 'dheerajma007@gmail.com',
-			designation: 'Developer',
-			location: 'Bangalore, India',
-			skills: ['Java', 'Android']
-		}
+	crew: {
+		levels: [{
+			id: 'level0',
+			name: 'Level 0',
+			value: 0
+		},{
+			id: 'level1',
+			name: 'Level 1',
+			value: 1
+		},{
+			id: 'level2',
+			name: 'Level 2',
+			value: 2
+		},{
+			id: 'level3',
+			name: 'Level 3',
+			value: 3
+		},{
+			id: 'level4',
+			name: 'Level 4',
+			value: 4
+		}],
+		crewTypes: [{
+			id: 'fullTime',
+			name: 'Full Time'
+		},{
+			id: 'collaborator',
+			name: 'Collaborator'
+		}]
 	},
 	apps: [{
 		priority: 2,
@@ -103,11 +113,22 @@ application.constants = {
 			}
 		]
 	},{
-		priority: -1,
 		id: 'Ideas',
 		icon: 'lightbulb_outline',
 		name: 'Have an Idea?',
 		description: 'Write to us at <a href="mailto:ideas@amazecreationz.in">ideas@amazecreationz.in</a>.<br>We will make it happen. :)',
 		showPage: false,
-	}]
+	}],
+	query: {
+		types: [{
+			id: 'query',
+			name: 'General Query'
+		}, {
+			id: 'support',
+			name: 'Support'
+		}, {
+			id: 'feedback',
+			name: 'Feedback'
+		}]
+	}
 }

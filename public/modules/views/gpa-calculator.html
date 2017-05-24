@@ -23,6 +23,22 @@
 			<google-play ng-if="appInfo.links.playstore" link="{{appInfo.links.playstore}}" height="36px"></google-play>
 		</div>
 	</div>
+	<div class="card">
+		<div class="card-header text-size-c">Calculate your GPA!</div>
+		<div ng-show="!uploadLoader" class="section-body mrgl-5" flex>
+			<div class="col-xs-12 pad0" layout="row" layout-xs="column" layout-align="start center">
+				<md-button class="md-raised text-uppercase" id="selectgc" ngf-select="selectGC($file)" ngf-max-size="200KB" ngf-pattern="'application/pdf'">Select your Grade Card</md-button>
+				<span class=" txt14 padlr10">{{gradecard.name}}</span>
+				<span ng-if="gradecard == undefined" class="txt12 text-red padlr10">{{errorMessage}}</span>
+			</div>
+			<div class="col-xs-12 pad0" layout="row" layout-xs="column" layout-align="start center">
+				<md-button class="md-raised md-primary text-uppercase" id="uploadgc" aria-label="upload" ng-click="gradecard != undefined && uploadGC() || gradecard == undefined && showError(0)">Calculate</md-button>
+			</div>
+		</div>
+		<div ng-if="uploadLoader" class="col-xs-12 pad20" layout="row" layout-sm="column" layout-align="center center">
+		      <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+		</div>
+	</div>
 
 	<div ng-hide="appInfo.contributorsList | isEmpty" class="card">
 		<div class="card-header text-size-d">Contributors</div>

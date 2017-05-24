@@ -1,6 +1,15 @@
 application.service('AppService', function($state, $stateParams, $location, $mdToast, $mdSidenav, $mdDialog, FirebaseService) {
 	var AppService = this;
 
+	this.backgroundLoader = function(showLoader) {
+		var loader = $('.loader-shadow');
+		if(showLoader) {
+			loader.removeClass('hide');
+		} else {
+			loader.addClass('hide');
+		}
+	}
+
 	this.openSideMenu = function() {
 		$mdSidenav('side-menu').open();
 	}
@@ -35,6 +44,7 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 
 	this.login = function() {
 		AppService.closeSideMenu();
+		AppService.backgroundLoader(true);
 		var provider = new firebase.auth.GoogleAuthProvider();
 		provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
 		firebase.auth().signInWithPopup(provider);
@@ -47,6 +57,10 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 			callback();
 		}, function(error) {
 		});
+	}
+
+	this.reloadState = function() {
+		$state.reload();
 	}
 
 	this.goToState = function(state, stateParams, reload, notify) {
@@ -79,7 +93,7 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 		return permissionType;
 	}
 
-	this.openUserModel = function(userInfo, state, stateParams) {
+	this.openUserModel = function(userInfo, permission, state, stateParams) {
 		$mdDialog.show({
 			controller: 'UserModalController',
 			templateUrl: application.globals.html.views + 'modal-user.html',
@@ -88,7 +102,8 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 			fullscreen: true,
 			locals: {
 				dialogParams: {
-					userInfo: userInfo
+					userInfo: userInfo,
+					permission: permission
 				}
 			}
 		}).then(function(dialogData) {
@@ -98,7 +113,7 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 		});
 	}
 
-	this.openCrewModal = function(title, crewInfo, state, stateParams) {
+	this.openCrewModal = function(title, crewInfo, permission, state, stateParams) {
 		$mdDialog.show({
 			controller: 'CrewModalController',
 			templateUrl: application.globals.html.views + 'modal-crew.html',
@@ -109,11 +124,33 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 			locals: {
 				dialogParams: {
 					title: title,
-					crewInfo: crewInfo
+					crewInfo: crewInfo,
+					permission: permission
 				}
 			}
 		}).then(function(dialogData) {
-			FirebaseService.putCrewInfo(dialogData.uid, dialogData);
+			FirebaseService.putCrewInfo(dialogData.uid, dialogData.crewInfo);
+			AppService.goToState(state, stateParams, false, false);
+		}, function() {
+			AppService.goToState(state, stateParams, false, false);
+		});
+	}
+
+	this.openQueryModal = function(queryInfo, permission, state, stateParams) {
+		$mdDialog.show({
+			controller: 'QueryModalController',
+			templateUrl: application.globals.html.views + 'modal-query.html',
+			parent: angular.element(document.body),
+			clickOutsideToClose:true,
+			fullscreen: true,
+			size: 'lg',
+			locals: {
+				dialogParams: {
+					queryInfo: queryInfo,
+					permission: permission
+				}
+			}
+		}).then(function(dialogData) {
 			AppService.goToState(state, stateParams, false, false);
 		}, function() {
 			AppService.goToState(state, stateParams, false, false);
@@ -159,7 +196,7 @@ application.service('FirebaseService', function(FirebaseAPIService) {
 	}
 
 	this.getUserInfo = function(userId, callback) {
-		db.child('users').child(userId).on('value', function(data){
+		db.child('users').child(userId).once('value', function(data){
 			callback(data.val());	
 		});
 	}
@@ -167,16 +204,31 @@ application.service('FirebaseService', function(FirebaseAPIService) {
 	this.getAllUsers = function(callback) {
 		db.child('users').orderByChild('permission').limitToFirst(20).on('value', function(data){
 			callback(data.val());	
+		}, function(error) {
+			callback(null);
 		});
 	}
 
-	this.putCrewInfo = function(crewId, crewInfo) {
+	this.putCrewInfo = function(userId, crewInfo) {
+		var isCrew = true;
+		var updates = {}
+		if(crewInfo == null) {
+			isCrew = null;
+		}
 		delete crewInfo.$$hashKey;
-		db.child('users').child(crewId).set(crewInfo);
+		updates['crew/'+userId] = crewInfo;
+	 	updates['users/'+userId+'/crew'] = isCrew;
+		db.update(updates);
+	}
+
+	this.getCrewInfo = function(userId, callback) {
+		db.child('crew').child(userId).once('value', function(data){
+			callback(data.val());	
+		});
 	}
 
 	this.getCrewInfoFromURL = function(crewURL, callback) {
-		db.child('users').orderByChild('crewURL').equalTo(crewURL).once('value', function(data){
+		db.child('crew').orderByChild('crewURL').equalTo(crewURL).once('value', function(data){
 			var crewInfo;
 			if(data.val() != null) {
 				crewInfo = _.find(data.val(), function(crewInfo, userId) {
@@ -188,7 +240,7 @@ application.service('FirebaseService', function(FirebaseAPIService) {
 	}
 
 	this.getCrewInfo = function(param, callback) {
-		FirebaseService.getUserInfo(param, function(crewInfo) {
+		FirebaseService.getCrewInfo(param, function(crewInfo) {
 			if(crewInfo != null) {
 				callback(crewInfo);
 			}
@@ -206,13 +258,13 @@ application.service('FirebaseService', function(FirebaseAPIService) {
 	}
 
 	this.getCrewExcludedUsers = function(callback) {
-		db.child('users').orderByChild('crewType').equalTo(null).limitToFirst(20).once('value', function(data){
+		db.child('users').orderByChild('crew').equalTo(null).limitToFirst(20).once('value', function(data){
 			callback(data.val());	
 		});
 	}
 
 	this.getAllCrew = function(callback) {
-		db.child('users').orderByChild('crewType').startAt('').limitToFirst(20).on('value', function(data){
+		db.child('crew').limitToFirst(20).on('value', function(data){
 			callback(data.val());	
 		});
 	}
@@ -226,6 +278,79 @@ application.service('FirebaseService', function(FirebaseAPIService) {
 	this.getContributors = function(contributors, callback) {
 		async.map(contributors, FirebaseService.getContributor, function(errors, contributorsList) {
 			callback(contributorsList);
+		})
+	}
+
+	this.addQuery = function(query, callback) {
+		var querySuccessMessage = 'Query sent successfully.';
+		var queryFailMessage = 'Unable to send query. Try again later.'
+		var db_ref = db.child('query').child('amazecreationz');
+		var key = db_ref.push().key;
+		var userId = query.uid;
+		var promise;
+		query.history[key] = {
+			date: query.date,
+			content: query.content
+		}
+
+		if(angular.isDefined(userId)) {
+			query.id = userId;
+			promise = db_ref.child('users').child(userId).set(query);
+		} else {
+			if(angular.isUndefined(query.id)) {
+				query.id = key;
+			}	
+			promise = db_ref.child('visitors').child(query.id).set(query);
+		}
+
+		promise.then(function() {
+			callback({ status: true, message: querySuccessMessage});
+		}).catch(function(error) {
+			callback({ status: false, message: queryFailMessage});
+		});
+	}
+
+	this.getQuery = function(userId, callback) {
+		db.child('query').child('amazecreationz').child('users').child(userId).once('value', function(data) {
+			callback(data.val());
+		})
+	} 
+
+	this.getQueryByID = function(queryId, callback) {
+		db.child('query').child('amazecreationz').child('users').child(queryId).once('value', function(data) {
+			if(data.val() != null) {
+				callback(data.val());
+			}
+		})
+
+		db.child('query').child('amazecreationz').child('visitors').child(queryId).once('value', function(data) {
+			if(data.val() != null) {
+				callback(data.val());
+			}
+		})
+	} 
+
+	this.getAllUserQuery = function(callback) {
+		db.child('query').child('amazecreationz').child('users').orderByChild('priority').limitToFirst(20).on('value', function(data) {
+			callback(data.val());
+		}, function(error) {
+			callback(null);
+		})
+	}
+
+	this.getAllVisitorQuery = function(callback) {
+		db.child('query').child('amazecreationz').child('visitors').orderByChild('priority').limitToFirst(20).on('value', function(data) {
+			callback(data.val());
+		}, function(error) {
+			callback(null);
+		})
+	}
+
+	this.getAllQuery = function(callback) {
+		db.child('query').child('amazecreationz').limitToFirst(50).on('value', function(data) {
+			callback(data.val());
+		}, function(error) {
+			callback(null);
 		})
 	}
 })

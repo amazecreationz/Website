@@ -1,5 +1,5 @@
 'use strict'
-var application = angular.module('amazecreationz', ['ui.router', 'ngMaterial', 'ngSanitize']);
+var application = angular.module('amazecreationz', ['ui.router', 'ngMaterial', 'ngSanitize', 'ngMessages', 'ngFileUpload']);
 
 application.permissions = {
 	ADMIN: 0,
@@ -7,37 +7,6 @@ application.permissions = {
 	BLOGGER: 2,
 	USER: 3,
 	VISITOR: 4
-}
-
-application.crew = {
-	levels: [{
-		id: 'level0',
-		name: 'Level 0',
-		value: 0
-	},{
-		id: 'level1',
-		name: 'Level 1',
-		value: 1
-	},{
-		id: 'level2',
-		name: 'Level 2',
-		value: 2
-	},{
-		id: 'level3',
-		name: 'Level 3',
-		value: 3
-	},{
-		id: 'level4',
-		name: 'Level 4',
-		value: 4
-	}],
-	crewTypes: [{
-		id: 'fullTime',
-		name: 'Full Time'
-	},{
-		id: 'collaborator',
-		name: 'Collaborator'
-	}]
 }
 
 application.globals = {
@@ -73,6 +42,7 @@ application.globals = {
 }
 
 application.isLive = document.domain != 'localhost'; 
+//application.isLive = true;
 
 application.firebase = {
 	live: {

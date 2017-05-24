@@ -2,9 +2,9 @@
     <form ng-cloak>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>{{dialog.userInfo.name}}</h2>
+                <h2>{{userInfo.name}}</h2>
                 <span flex></span>
-                <md-button class="md-icon-button" ng-click="dialog.cancel()">
+                <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
                 </md-button>
             </div>
@@ -12,35 +12,36 @@
         <md-dialog-content>
             <div class="md-dialog-content">
                 <div class="mrg0" layout="column" layout-align="center center">
-                    <div class="user-image" image-load image="dialog.userInfo.image" online="true"></div>
+                    <div class="user-image" image-load image="userInfo.image" online="true"></div>
                     <table class="mrgtop40">
                         <tbody class="txt14">
                             <tr class="padtb5">
                                 <td class="text-bold">Name</td>
                                 <td class="padlr5">:</td>
-                                <td>{{dialog.userInfo.name}}</td>
+                                <td>{{userInfo.name}}</td>
                             </tr>
                             <tr class="padtb5">
                                 <td class="text-bold">Email</td>
                                 <td class="padlr5">:</td>
-                                <td>{{dialog.userInfo.email}}</td>
+                                <td>{{userInfo.email}}</td>
                             </tr>
                             <tr class="padtb5">
                                 <td class="text-bold">UserID</td>
                                 <td class="padlr5">:</td>
-                                <td class="word-wrap">{{dialog.userInfo.uid}}</td>
+                                <td class="word-wrap">{{userInfo.uid}}</td>
                             </tr>
                             <tr class="padtb5">
                                 <td class="text-bold">Permission</td>
                                 <td class="padlr5">:</td>
-                                <td>
+                                <td ng-if="dialog.permission == dialog.permissions.ADMIN">
                                     <md-input-container ng-hide="dialog.currentUser" class="full-width mrg0">
-                                        <md-select ng-model="dialog.userInfo.permission" ng-change="dialog.setPermission()" aria-label="permission-select">
+                                        <md-select ng-model="userInfo.permission" ng-change="setPermission()" aria-label="permission-select">
                                             <md-option ng-repeat="(key, permission) in dialog.permissions" ng-value="permission">{{key}}</md-option>
                                         </md-select>
                                     </md-input-container>
                                     <span ng-show="dialog.currentUser" class="text-italic">You can't change your permissions.</span>
                                 </td>
+                                <td ng-if="dialog.permission == dialog.permissions.MANAGER">{{getPermissionLabel(userInfo.permission)}}</td>
                             </tr>
                         </tbody>
                     </table>

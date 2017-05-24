@@ -7,75 +7,115 @@ application.controller('CrewController', ['$scope', '$state', '$stateParams', fu
 	}
 }]);
 
-application.controller('UserModalController', ['$scope', '$state', '$stateParams', 'dialogParams', '$mdDialog', 'FirebaseService', function($scope, $state, $stateParams, dialogParams, $mdDialog, FirebaseService){
+application.controller('UserModalController', ['$scope', '$state', '$stateParams', 'dialogParams', '$mdDialog', 'AppService', 'FirebaseService', function($scope, $state, $stateParams, dialogParams, $mdDialog, AppService, FirebaseService){
 	$scope.dialog = {
-		userInfo: dialogParams.userInfo,
 		currentUser: dialogParams.userInfo.uid == FirebaseService.getCurrentUserID(),
+		permission: dialogParams.permission,
 		permissions: angular.copy(application.permissions)
 	};
 
+	$scope.userInfo = dialogParams.userInfo;
+
 	delete $scope.dialog.permissions.VISITOR;
 
-	$scope.dialog.cancel = function() {
+	$scope.cancel = function() {
 		$mdDialog.cancel();
 	};
 
-	$scope.dialog.setPermission = function() {
-		FirebaseService.setUserPermission($scope.dialog.userInfo.uid, $scope.dialog.userInfo.permission);
+	$scope.setPermission = function() {
+		FirebaseService.setUserPermission($scope.userInfo.uid, $scope.userInfo.permission);
+	}
+
+	$scope.getPermissionLabel = function(permission) {
+		return AppService.getPermissionType(permission);
 	}
 }]);
 
 application.controller('CrewModalController', ['$scope', '$state', '$stateParams', '$mdDialog', 'dialogParams', 'FirebaseService', function($scope, $state, $stateParams, $mdDialog, dialogParams, FirebaseService){
 	$scope.dialog = {
-		levels: angular.copy(application.crew.levels),
-		crewTypes: angular.copy(application.crew.crewTypes),
+		levels: angular.copy(application.constants.crew.levels),
+		crewTypes: angular.copy(application.constants.crew.crewTypes),
+		permission: dialogParams.permission,
+		permissions: angular.copy(application.permissions),
 		title: dialogParams.title
-	}
+	}	
 
 	if(angular.isDefined(dialogParams.crewInfo)) {
-		$scope.dialog.crewInfo = dialogParams.crewInfo;
-		$scope.dialog.crewId = dialogParams.crewInfo.uid;
-	}
-
-	var validateCrewInfo = function(crewInfo) {
-		if(angular.isDefined(crewInfo.level) && angular.isDefined(crewInfo.designation) && angular.isDefined(crewInfo.crewURL)){
-			return true;
-		}
-		return false;
+		$scope.crewInfo = dialogParams.crewInfo;
+		$scope.crewId = dialogParams.crewInfo.uid;
 	}
 
 	FirebaseService.getCrewExcludedUsers(function(users) {
-		$scope.dialog.users = _.filter(users, function(user, userId) {
+		$scope.users = _.filter(users, function(user, userId) {
     		return true;
     	});
     	_.defer(function(){$scope.$apply();});
 	})
 
-	$scope.dialog.deleteCrew = function() {
-		delete $scope.dialog.crewInfo.crewType;
-		delete $scope.dialog.crewInfo.level;
-		delete $scope.dialog.crewInfo.designation;
-		delete $scope.dialog.crewInfo.crewURL;
-		$mdDialog.hide($scope.dialog.crewInfo);
-	}
-
-	$scope.dialog.saveCrew = function() {
-		if(validateCrewInfo($scope.dialog.crewInfo)){
-			$mdDialog.hide($scope.dialog.crewInfo);
+	$scope.setDefault = function(crewType) {
+		if(crewType == 'fullTime') {
+			$scope.crewInfo.level = 4;
+			$scope.crewInfo.designation = 'Developer';
+		} else {
+			delete $scope.crewInfo.level;
+			delete $scope.crewInfo.designation;
 		}
+		$scope.crewInfo.crewType = crewType;
 	}
 
-	$scope.dialog.onUserSelect = function(userInfo) {
-		$scope.dialog.newCrew = true;
-		$scope.dialog.crewInfo = userInfo;
-		$scope.dialog.crewInfo.level = 4;
-		$scope.dialog.crewInfo.crewType = angular.copy(application.crew.crewTypes[0].id);
-		$scope.dialog.crewInfo.designation = 'Developer';
-		$scope.dialog.crewId = userInfo.uid;
-		$scope.dialog.crewInfo.crewURL = userInfo.uid;
+	$scope.deleteCrew = function() {
+		var dialogData = {
+			uid: $scope.crewId,
+			crewInfo: null
+		}
+		$mdDialog.hide(dialogData);
 	}
 
-	$scope.dialog.cancel = function() {
+	$scope.saveCrew = function() {
+		var dialogData = {
+			uid: $scope.crewId,
+			crewInfo: $scope.crewInfo
+		}
+		$mdDialog.hide(dialogData);
+	}
+
+	$scope.onUserSelect = function(userInfo) {
+		$scope.newCrew = true;
+		$scope.crewInfo = {
+			name: userInfo.name,
+			email: userInfo.email,
+			uid: userInfo.uid,
+			image: userInfo.image,
+			crewURL: userInfo.uid
+		}
+		$scope.crewId = userInfo.uid;
+		$scope.dialog.title = userInfo.name;
+		$scope.setDefault(angular.copy(application.constants.crew.crewTypes[0].id))
+	}
+
+	$scope.getCrewTypeLabel = function(crewType) {
+		return _.find($scope.dialog.crewTypes, function(crew) {
+			return crew.id == crewType;
+		}).name;
+	}
+
+	$scope.cancel = function() {
+		$mdDialog.cancel();
+	};
+}]);
+
+application.controller('QueryModalController', ['$scope', '$state', '$stateParams', 'dialogParams', '$mdDialog', 'AppService', 'FirebaseService', function($scope, $state, $stateParams, dialogParams, $mdDialog, AppService, FirebaseService){
+	$scope.dialog = {
+		permission: dialogParams.permission,
+		permissions: angular.copy(application.permissions),
+		dateFormat: angular.copy(application.globals.dateFormat)
+	};
+
+	$scope.query = dialogParams.queryInfo;
+
+	delete $scope.dialog.permissions.VISITOR;
+
+	$scope.cancel = function() {
 		$mdDialog.cancel();
 	};
 }]);
@@ -87,6 +127,66 @@ application.controller('GPACalcController', ['$scope', '$state', '$stateParams',
 	var setParams = function(params) {
 		$state.go('view', {params: params})
 	}
+
+	$scope.uploadLoader = false;
+	$scope.resultsLoader = false;
+
+	$scope.showError = function(value) {
+		if(value == 0){
+			$scope.errorMessage = 'Select a valid gradecard pdf.'
+		}
+	}
+
+	$scope.selectGC = function(file) { $scope.gradecard = file; };
+
+	$scope.uploadGC = function() {
+		$scope.errorMessage = '';
+		$scope.uploadLoader = true;
+		$('#showmore').addClass('hide');
+		$('#viewresults').removeClass('hide');
+		var gradecardName = $scope.appData.user.uid+'.pdf';
+		firebase.storage().ref().child('appData').child('gradecards').child(gradecardName).put($scope.gradecard).then(function(snapshot) {
+			$scope.gradecard = undefined;
+			$scope.uploadLoader = false;
+			$scope.resultsLoader = true;
+			_.defer(function(){$scope.$apply();});
+			var resultsTop = angular.element(document.getElementById('dummy-results')).prop('offsetTop')-20;
+			$('.body-container').animate({scrollTop: resultsTop}, 800);
+		}, function(error){
+			$scope.errorMessage = JSON.stringify(error);
+			_.defer(function(){$scope.$apply();});
+		});
+	}
+
+	var setResults = function(uid) {
+		var db_ref = firebase.database().ref();
+		db_ref.child('gradedata').child(uid).on('value', function(data){
+			$scope.gradecardData = JSON.parse(data.val());
+			$scope.resultsLoader = false;
+			_.defer(function(){$scope.$apply();});
+		});
+	}
+
+	$scope.showResults = function() {
+		var db_ref = firebase.database().ref();
+		db_ref.child('sgpacharts').child($scope.appData.user.uid).on('value', function(data){
+			$scope.sgpaChartData = data.val();
+			_.defer(function(){$scope.$apply();});
+			$('#showmore').removeClass('hide');
+			$('#viewresults').addClass('hide');
+		});
+	}
+
+	$scope.downloadResults = function() {
+		alert("Download will be available in the coming version! Wait for it! :)")
+	}
+
+	$scope.$watch('appData.user', function(user) {
+		if(user.uid) {
+			var fileName = 'appData/gradecards/'+user.uid+'.pdf';
+			firebase.database().ref('appData/GPACalculator').child(user.uid).child('gradecard').set(fileName)
+		}
+	})
 }]);
 
 application.controller('EmployeeMeterController', ['$scope', '$state', '$stateParams', 'AppService', 'FirebaseService', 'GitHubService', function($scope, $state, $stateParams, AppService, FirebaseService){

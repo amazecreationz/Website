@@ -31,6 +31,9 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 			id: 'crew',
 			name: 'Crew'
 		},{
+			id: 'query',
+			name: 'Query'
+		},{
 			id: 'firebase',
 			name: 'Firebase'
 		}]
@@ -41,11 +44,6 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 	var params = $state.params.id;
 	$scope.console.currentTab = 'users';
 
-	var setTabPage = function(tabId) {
-		$scope.console.currentTab = tabId;
-		$scope.viewHtml = $scope.globals.html.views + 'console-' + tabId +'.html';
-	}
-
 	var setTabState = function(tabId) {
 		AppService.goToState(tabState, {tab: tabId, id:  null});
 	}
@@ -54,11 +52,10 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 		tabId = $scope.console.currentTab;
 		setTabState(tabId);
 	}
-	setTabPage(tabId);
 
 	$scope.console.onTabSelect = function(tab) {
-		setTabPage(tab.id)
-		setTabState(tab.id);
+		$scope.console.currentTab = tab.id;
+		setTabState(tab.id)
 	}
 
 	$scope.grantAdminPrevilages = function() {
@@ -66,21 +63,28 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 	}
 }]);
 
-application.controller('ConsoleTabController', ['$scope', '$state', 'AppService', 'FirebaseService', 'FirebaseAPIService', function($scope, $state, AppService, FirebaseService, FirebaseAPIService){
+application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state', '$mdDialog', 'AppService', 'FirebaseService', 'FirebaseAPIService', function($scope, $rootScope, $state, $mdDialog, AppService, FirebaseService, FirebaseAPIService){
 	var currentState = $state.current.name;
 	var tabId =  $state.params.tab;
 	var params = $state.params.id;
 
-	var openUserModal = function(userInfo) {
-		AppService.openUserModel(userInfo, currentState, {tab: tabId, id: null});
-	}
+	$scope.console.currentTab = tabId;
+	$scope.$parent.viewHtml = $scope.globals.html.views + 'console-' + tabId +'.html';
 
 	var setParams = function(param) {
 		AppService.goToState(currentState, {id: param}, false, false);
 	}
 
+	var openUserModal = function(userInfo) {
+		AppService.openUserModel(userInfo, $scope.appData.user.permission, currentState, {tab: tabId, id: null});
+	}
+
 	var openCrewModal = function(title, crewInfo) {
-		AppService.openCrewModal(title, crewInfo, currentState, {tab: tabId, id: null});
+		AppService.openCrewModal(title, crewInfo, $scope.appData.user.permission, currentState, {tab: tabId, id: null});
+	}
+
+	var openQueryModal = function(queryInfo) {
+		AppService.openQueryModal(queryInfo, $scope.appData.user.permission, currentState, {tab: tabId, id: null})
 	}
 
 
@@ -149,6 +153,22 @@ application.controller('ConsoleTabController', ['$scope', '$state', 'AppService'
 		});
 	}
 
+	var setQueryTabData = function() {
+		FirebaseService.getAllUserQuery(function(queries) {
+			$scope.console.userQuery = _.filter(queries, function(query) {
+				return true;
+			});
+			_.defer(function(){$scope.$apply();});
+		})
+
+		FirebaseService.getAllVisitorQuery(function(queries) {
+			$scope.console.visitorQuery = _.filter(queries, function(query) {
+				return true;
+			});
+			_.defer(function(){$scope.$apply();});
+		})
+	}
+
 	var setFirebaseTabData = function() {
 		$scope.console.firebase = {
 			operation: 'set'
@@ -165,6 +185,11 @@ application.controller('ConsoleTabController', ['$scope', '$state', 'AppService'
 		setParams(crewInfo.crewURL);
 	};
 
+	$scope.onQuerySelect = function(queryInfo) {
+		openQueryModal(queryInfo);
+		setParams(queryInfo.id);
+	}
+
 	$scope.onFirebaseSave = function() {
 		var error = FirebaseService.addFirebaseData($scope.console.firebase.dataPoint, $scope.console.firebase.dataJSON, $scope.console.firebase.operation);
 		if(error == null) {
@@ -174,6 +199,10 @@ application.controller('ConsoleTabController', ['$scope', '$state', 'AppService'
 		}
 	}
 
+	$rootScope.$on('$stateChangeStart', function() {
+		$mdDialog.cancel();
+	})
+
 	$scope.$watch('appData.user', function(user) {
 		if(angular.isDefined(user.name)) {
 			$scope.console.buttonLabel = null;
@@ -181,6 +210,8 @@ application.controller('ConsoleTabController', ['$scope', '$state', 'AppService'
 				case 'users': setUsersTabData();
 					break;
 				case 'crew': setCrewTabData();
+					break;
+				case 'query': setQueryTabData();
 					break;
 				case 'firebase': setFirebaseTabData();
 					break;
@@ -213,9 +244,46 @@ application.controller('AboutController', ['$scope', 'AppService', 'FirebaseServ
 	}
 }]);
 
-application.controller('ContactController', ['$scope', function($scope){
+application.controller('ContactController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService){
 	$scope.appData.current_tab = 'contact';
 	$scope.contacts = angular.copy(application.globals.contact);
+	$scope.showForm = true;
+
+	$scope.$watch('appData.user', function(user) {
+		$scope.query = {};
+
+		if(angular.isDefined(user.uid)) {
+			$scope.showForm = false;
+			FirebaseService.getQuery(user.uid, function(queryData) {
+				$scope.query = queryData;
+				if(queryData == null) {
+					$scope.query = {
+						name: user.name,
+						email: user.email,
+						uid: user.uid,
+						unattended: 0,
+						history: {}
+					}
+				}
+				delete $scope.query.content;
+				$scope.showForm = true;
+			})
+		}
+
+		$scope.submitQuery = function() {
+			var date = new Date().getTime();
+			$scope.query.date = date;
+			$scope.query.priority = date * -1;
+			$scope.query.unattended += 1;
+			FirebaseService.addQuery($scope.query, function(data) {
+				AppService.showToast(data.message);
+				if(data.status) {
+					delete $scope.query.content;
+					AppService.reloadState();
+				}
+			});		
+		}
+	})
 }]);
 
 application.controller('IncludeController', ['$scope', '$state', '$stateParams', 'AppService', 'FirebaseService', 'GitHubService', function($scope, $state, $stateParams, AppService, FirebaseService, GitHubService){

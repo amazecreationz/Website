@@ -1,0 +1,22 @@
+<div class="card">
+	<div class="card-header text-size-d" layout="row" layout="start center">User Queries</div>
+	<div class="card-body" permission-check="appData.user.permission" min-permission="globals.permissions.MANAGER" layout="row" layout-wrap>
+		<list-loader list="console.userQuery" list-param="Queries"></list-loader>
+		<div ng-show="query.unattended" class="query-list" layout="column" ng-repeat="query in console.userQuery | orderBy : 'date' : true"" flex-gt-xs="50" flex-xs="100" ng-click="onQuerySelect(query)">
+			<div class="content" md-truncate>{{query.content}}</div>
+			<div class="name">{{query.name}} ({{query.unattended}})</div>
+			<div class="date">{{query.date | date : globals.dateFormat}}</div>
+		</div>
+	</div>
+</div>
+<div class="card">
+	<div class="card-header text-size-d" layout="row" layout="start center">Visitor Queries</div>
+	<div class="card-body" permission-check="appData.user.permission" min-permission="globals.permissions.MANAGER" layout="row" layout-wrap>
+		<list-loader list="console.visitorQuery" list-param="Queries"></list-loader>
+		<div ng-show="query.unattended" class="query-list" layout="column" ng-repeat="query in console.visitorQuery | orderBy : 'date' : true"" flex-gt-xs="50" flex-xs="100" ng-click="onQuerySelect(query)">
+			<div class="content" md-truncate>{{query.content}}</div>
+			<div class="name">{{query.name}}</div>
+			<div class="date">{{query.date | date : globals.dateFormat}}</div>
+		</div>
+	</div>
+</div>

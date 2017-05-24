@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+
 var serviceAccount = require("./service-account.json");
 
 admin.initializeApp({
@@ -55,4 +56,14 @@ exports.getUserInfoFromAuthenticatedUser = function(user, callback) {
 		admin.database().ref('users').child(userInfo.uid).set(userInfo);
 		callback(userInfo);
 	})
+}
+
+exports.setGradeCardData = function(userId, data, callback) {
+	admin.database().ref('appData/GPACalculator').child(userId).child('studentData').set(data).then(function(){
+		console.log("data put at "+ new Date())
+		callback(null);
+	}, function(error) {
+		console.log("error data put at "+ new Date())
+		callback(error);
+	});
 }
