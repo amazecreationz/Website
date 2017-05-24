@@ -158,7 +158,7 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 	}
 });
 
-application.service('FirebaseService', function($filter, FirebaseAPIService) {
+application.service('FirebaseService', function($filter, FirebaseAPIService, MailingService) {
 	var db = firebase.database().ref();
 	var FirebaseService = this;
 
@@ -376,7 +376,7 @@ application.service('FirebaseService', function($filter, FirebaseAPIService) {
 					body: "Query: "+query.content+"<br>Response: "+query.reply
 				})
 			}
-			FirebaseAPIService.getWithAuth('/sendReply', token, params).then(function(data) {
+			MailingService.getWithAuth('/sendReply', token, params).then(function(data) {
 				FirebaseService.setQueryReply(query);
 				callback(data.data);
 			})
@@ -416,6 +416,39 @@ application.service('FirebaseAPIService', function($http) {
 	}
 })
 
+application.service('MailingService', function($http) {
+	var APIDomain = angular.copy(application.mailingDomain.current);
+	console.log(APIDomain)
+	var MailingService = this;
+
+	this.getAPIWithParams = function(API, params) {
+		var paramsURL = '?';
+		angular.forEach(params, function(value, key) {
+			paramsURL += key+'='+value+'&';
+		})
+		paramsURL = paramsURL.substring(0, paramsURL.length - 1);
+		return API + paramsURL;
+	}
+
+	this.get = function(API) {
+		var APIUrl = APIDomain + API;
+		return $http({
+			method: 'GET',
+            url: APIUrl,
+            cache: false
+        });
+	}
+
+	this.getWithAuth = function(API, authToken, params) {
+		if(angular.isUndefined(params)) {
+			params = {};
+		}
+		params.authToken = authToken;
+		API = MailingService.getAPIWithParams(API, params);
+		console.log(API)
+		return MailingService.get(API);
+	}
+})
 
 application.service('GitHubService', function($http) {
 	var baseURL = 'https://api.github.com/repos/' +application.globals.developments.github+'/';

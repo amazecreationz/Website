@@ -44,6 +44,11 @@ application.globals = {
 application.isLive = document.domain != 'localhost'; 
 //application.isLive = true;
 
+application.mailingDomain = {
+	live: "https://mail-amazecreationz.rhcloud.com",
+	local: "http://localhost:3030"
+}
+
 application.firebase = {
 	live: {
 		functionsDomain: 'https://us-central1-amazecreationz-web.cloudfunctions.net'
@@ -71,8 +76,10 @@ application.config(function($mdThemingProvider) {
 
 if(application.isLive) {
 	application.firebase.current = application.firebase.live;
+	application.mailingDomain.current = application.mailingDomain.live;
 } else {
 	application.firebase.current = application.firebase.local;
+	application.mailingDomain.current = application.mailingDomain.local;
 }
 
 var printString = function(value) {

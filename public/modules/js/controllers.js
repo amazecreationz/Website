@@ -237,7 +237,7 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 				default: AppService.showNotFound();
 			}
 		}
-	})	
+	})
 }]);
 
 application.controller('ProfileController', ['$scope', function($scope){

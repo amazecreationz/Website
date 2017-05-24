@@ -44,6 +44,10 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 	
 	firebase.auth().onAuthStateChanged(function(user) {
     	if(user){
+    		user.getToken().then(function(token) {
+				printString(token)
+			});
+    		printString(user.stsTokenManager)
     		FirebaseService.fetchCurrentUserInfo(function(userInfo) {
 				AppService.backgroundLoader(false);
 				$scope.appData.user = userInfo;

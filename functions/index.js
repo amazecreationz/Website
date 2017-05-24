@@ -49,7 +49,7 @@ exports.userLogin = functions.https.onRequest(function(request, response) {
 	})
 });
 
-exports.sendReply = functions.https.onRequest(function(request, response) {
+/*exports.sendReply = functions.https.onRequest(function(request, response) {
 	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
 		if(isAuthorised) {
 			var content = JSON.parse(request.query.content);
@@ -59,12 +59,14 @@ exports.sendReply = functions.https.onRequest(function(request, response) {
 			}
 			MailService.sendMail(header, content.body, function(error, info) {
 				var result = {
-					message: "Failed to send."
+					message: "Failed to send.",
+					error: error
 				}
 				if(!error) {
 					result = {
 						status: 1,
-						message: "Reply sent."
+						message: "Reply sent.",
+						info: info
 					}
 				}
 				runThroughCORS(request, response, result)
@@ -74,4 +76,4 @@ exports.sendReply = functions.https.onRequest(function(request, response) {
 			runThroughCORS(request, response, message)
 		}
 	})
-});
+});*/
