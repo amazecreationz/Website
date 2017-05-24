@@ -1,6 +1,7 @@
 .app-cards {
     width: 100%;
     box-sizing: border-box;
+    padding-bottom: 10px;
 }
 .app-card {
     height: 450px;

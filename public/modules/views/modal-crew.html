@@ -39,12 +39,12 @@
                                     <tr class="padtb10">
                                         <td class="text-bold">UserID</td>
                                         <td class="padlr5">:</td>
-                                        <td class="word-wrap">{{crewInfo.uid}}</td>
+                                        <td class="word-break">{{crewInfo.uid}}</td>
                                     </tr>
                                     <tr class="padtb10">
                                         <td class="text-bold">Crew Type</td>
                                         <td class="padlr5">:</td>
-                                        <td ng-if="dialog.permission == dialog.permissions.ADMIN" class="word-wrap">
+                                        <td ng-if="dialog.permission == dialog.permissions.ADMIN" class="word-break">
                                             <md-select ng-model="crewInfo.crewType" aria-label="crew-type-select" ng-change="setDefault(crewInfo.crewType)">
                                                 <md-option ng-repeat="type in dialog.crewTypes" ng-value="type.id">{{type.name}}</md-option>
                                             </md-select>
@@ -54,12 +54,12 @@
                                     <tr ng-if="(dialog.permission == dialog.permissions.MANAGER) && crewInfo.level!=null" class="padtb10">
                                         <td class="text-bold">Level</td>
                                         <td class="padlr5">:</td>
-                                        <td class="word-wrap">{{crewInfo.level}}</td>
+                                        <td class="word-break">{{crewInfo.level}}</td>
                                     </tr>
                                     <tr ng-if="(dialog.permission == dialog.permissions.MANAGER) && crewInfo.designation" class="padtb10">
                                         <td class="text-bold">Job</td>
                                         <td class="padlr5">:</td>
-                                        <td class="word-wrap">{{crewInfo.designation}}</td>
+                                        <td class="word-break">{{crewInfo.designation}}</td>
                                     </tr>
                                 </tbody>
                             </table>

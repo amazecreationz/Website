@@ -154,15 +154,30 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 	}
 
 	var setQueryTabData = function() {
-		FirebaseService.getAllUserQuery(function(queries) {
+		if(params) {
+			try{
+				FirebaseService.getQuery(params, function(queryInfo){
+					if(queryInfo == null) {
+						AppService.showNotFound();
+					}
+					openQueryModal(queryInfo);
+				})
+			} catch(e) {
+				AppService.goToState(currentState, {tab: tabId, id:  null});
+			}
+		}
+		FirebaseService.getUnAttendedQueries(function(queries) {
 			$scope.console.userQuery = _.filter(queries, function(query) {
-				return true;
+				return query.uid;
+			});
+			$scope.console.visitorQuery = _.filter(queries, function(query) {
+				return !query.uid;
 			});
 			_.defer(function(){$scope.$apply();});
 		})
 
-		FirebaseService.getAllVisitorQuery(function(queries) {
-			$scope.console.visitorQuery = _.filter(queries, function(query) {
+		FirebaseService.getAttendedQueries(function(queries) {
+			$scope.console.attendedQuery = _.filter(queries, function(query) {
 				return true;
 			});
 			_.defer(function(){$scope.$apply();});
@@ -188,6 +203,10 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 	$scope.onQuerySelect = function(queryInfo) {
 		openQueryModal(queryInfo);
 		setParams(queryInfo.id);
+	}
+
+	$scope.deleteQuery = function(queryId) {
+		FirebaseService.deleteQuery(queryId);
 	}
 
 	$scope.onFirebaseSave = function() {
@@ -247,34 +266,19 @@ application.controller('AboutController', ['$scope', 'AppService', 'FirebaseServ
 application.controller('ContactController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService){
 	$scope.appData.current_tab = 'contact';
 	$scope.contacts = angular.copy(application.globals.contact);
-	$scope.showForm = true;
+	$scope.query = {};
+	$scope.showForm = false;
 
 	$scope.$watch('appData.user', function(user) {
-		$scope.query = {};
-
 		if(angular.isDefined(user.uid)) {
-			$scope.showForm = false;
-			FirebaseService.getQuery(user.uid, function(queryData) {
-				$scope.query = queryData;
-				if(queryData == null) {
-					$scope.query = {
-						name: user.name,
-						email: user.email,
-						uid: user.uid,
-						unattended: 0,
-						history: {}
-					}
-				}
-				delete $scope.query.content;
-				$scope.showForm = true;
-			})
+			$scope.query.name = user.name;
+			$scope.query.email = user.email;
+			$scope.query.uid = user.uid;
 		}
+		$scope.showForm = true;
 
 		$scope.submitQuery = function() {
-			var date = new Date().getTime();
-			$scope.query.date = date;
-			$scope.query.priority = date * -1;
-			$scope.query.unattended += 1;
+			$scope.query.date = new Date().getTime();
 			FirebaseService.addQuery($scope.query, function(data) {
 				AppService.showToast(data.message);
 				if(data.status) {

@@ -2,8 +2,9 @@ const functions = require('firebase-functions');
 const fs = require('fs');
 const cors = require('cors')({origin: true});
 const GPA = require('gpa-calculator');
-const firebaseService = require("./firebase-service");
+const FirebaseService = require("./firebase-service");
 const GCloudService = require("./GCloudService");
+const MailService = require('./mail-service');
 const PDFParser = require("pdf2json");
 var pdfParser = new PDFParser(this,1);
  
@@ -37,9 +38,9 @@ var runThroughCORS = function (request, response, responseData) {
 });*/
 
 exports.userLogin = functions.https.onRequest(function(request, response) {
-	firebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
+	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
 		if(isAuthorised) {
-			firebaseService.getUserInfoFromAuthenticatedUser(message, function(userInfo) {
+			FirebaseService.getUserInfoFromAuthenticatedUser(message, function(userInfo) {
 				runThroughCORS(request, response, userInfo)
 			});
 		} else {
@@ -48,20 +49,29 @@ exports.userLogin = functions.https.onRequest(function(request, response) {
 	})
 });
 
-/*
-GPA.getStudentData(destFile, function(data) {
-			if (!fs.existsSync(destFile)){
-			    fs.unlinkSync(destFile);
+exports.sendReply = functions.https.onRequest(function(request, response) {
+	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
+		if(isAuthorised) {
+			var content = JSON.parse(request.query.content);
+			var header = {
+				to: content.email,
+				subject: content.subject
 			}
-			console.log("processed at "+ new Date())
-			if(data != null) {
-				response.status(200).send({"hello":"how are u??"});
-			}
+			MailService.sendMail(header, content.body, function(error, info) {
+				var result = {
+					message: "Failed to send."
+				}
+				if(!error) {
+					result = {
+						status: 1,
+						message: "Reply sent."
+					}
+				}
+				runThroughCORS(request, response, result)
+			})
 			
-			//runThroughCORS(request, response, data);
-			/*firebaseService.setGradeCardData(userId, data, function(error) {
-				var message = data;
-				if(error) {message = error;}
-				runThroughCORS(request, response, message);
-			});
-		});*/
+		} else {
+			runThroughCORS(request, response, message)
+		}
+	})
+});

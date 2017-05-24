@@ -8,22 +8,14 @@
       ".read": "true",
       ".write": "root.child('users').child(auth.uid).child('permission').val() <= 0"
     },
-    "query": {
-      "amazecreationz": {
+    "amazecreationz": {
+      "query": {
+        ".indexOn": "attended",
         ".read": "root.child('users').child(auth.uid).child('permission').val() <= 1",
         ".write": "root.child('users').child(auth.uid).child('permission').val() <= 1",
-        "users": {
-          ".indexOn": "priority",
-          "$userId": {
-            ".read": "auth.uid === $userId",
-            ".write": "auth.uid === $userId"
-          }
-        },
-        "visitors": {
-          ".indexOn": "priority",
-          "$queryId": {
-            ".write": "newData.child('email').val() != null"
-          }
+        "$queryId": {
+          ".read": "auth.uid === data.child('uid').val()", 
+          ".write": "newData.child('email').exists()"
         }
       }
     },
@@ -37,6 +29,9 @@
       "$userId": {
         ".read": "auth.uid === $userId"
       }
-    }
+    },
+  ".write": "root.child('users').child(auth.uid).child('permission').val() === 0",
+  ".read": "root.child('users').child(auth.uid).child('permission').val() === 0"
   }
+  
 }

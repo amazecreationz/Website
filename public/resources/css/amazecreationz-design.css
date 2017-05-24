@@ -55,12 +55,12 @@ a:focus, button:focus, md-icon:focus, :focus {
 .content-container {
   box-sizing: border-box;
 	margin: 0 15%;
-  padding: 20px 10px;
+  padding: 20px 10px 0;
 }
 @media(max-width: 768px	) {
 	.content-container {
 		margin: 0;
-    padding: 10px;
+    padding-top: 10px;
 	}
 }
 /*Container Classes*/
@@ -176,6 +176,7 @@ md-sidenav {
   padding: 10px 15px 0;
 }
 .tabs .tab-item {
+  box-sizing: border-box;
   padding: 5px 10px 10px;
   min-width: 75px;
   text-align: center;
@@ -193,9 +194,14 @@ md-sidenav {
 @media(max-width: 768px) {
   .tabs {
     padding: 5px 10px 0;
+    overflow-x: auto;
   }
   .tabs .tab-item {
     font-size: 14px;
+  }
+  .tabs::-webkit-scrollbar {
+      width: 0px;  /* remove scrollbar space */
+      background: transparent;  /* optional: just make scrollbar invisible */
   }
 }
 /*Tab Classes*/
@@ -243,6 +249,20 @@ md-sidenav {
   font-size: 12px;
   color: #777;
 }
+.query-reply {
+  min-height: 200px;
+  padding: 5px;
+  box-sizing: border-box;
+  word-break: break-all;
+  font-size: 18px;
+}
+.query-list .action {
+  display: none;
+  font-size: 20px;
+}
+.query-list:hover .action {
+  display: block;
+}
 @media(max-width: 768px) {
   .page-header {
     margin-bottom: 10px;
@@ -257,6 +277,12 @@ md-sidenav {
     border-bottom: 1px solid #fff;
     padding: 0px 2px 3px;
     margin-bottom: 2px;
+  }
+  .query-list {
+    padding: 10px 5px;
+  }
+  .query-list .action {
+    display: block;
   }
 }
 /*Custom Classes*/
@@ -725,30 +751,6 @@ md-sidenav {
 .padl15 {
   padding-left: 15px!important;
 }
-.padtop10 {
-  padding-top: 10px!important;
-}
-.padtop20 {
-  padding-top: 20px!important;
-}
-.padtop30 {
-  padding-top: 30px!important;
-}
-.padbot0 {
-  padding-bottom: 0px!important;
-}
-.padbot5 {
-  padding-bottom: 5px!important;
-}
-.padbot10 {
-  padding-bottom: 10px!important;
-}
-.padbot15 {
-  padding-bottom: 15px!important;
-}
-.padbot20 {
-  padding-bottom: 20px!important;
-}
 .padlr0 {
   padding-left: 0px!important;
   padding-right: 0px!important; 
@@ -791,6 +793,30 @@ md-sidenav {
 }
 .padtb20 {
   padding-top: 20px!important;
+  padding-bottom: 20px!important;
+}
+.padtop10 {
+  padding-top: 10px!important;
+}
+.padtop20 {
+  padding-top: 20px!important;
+}
+.padtop30 {
+  padding-top: 30px!important;
+}
+.padbot0 {
+  padding-bottom: 0px!important;
+}
+.padbot5 {
+  padding-bottom: 5px!important;
+}
+.padbot10 {
+  padding-bottom: 10px!important;
+}
+.padbot15 {
+  padding-bottom: 15px!important;
+}
+.padbot20 {
   padding-bottom: 20px!important;
 }
 .mrg0 {
@@ -1123,6 +1149,9 @@ md-sidenav {
 }
 .word-wrap {
   word-wrap: break-word;
+}
+.word-break {
+  word-break: break-all;
 }
 /*General Classes*/
 

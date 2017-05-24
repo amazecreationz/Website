@@ -112,8 +112,20 @@ application.controller('QueryModalController', ['$scope', '$state', '$stateParam
 	};
 
 	$scope.query = dialogParams.queryInfo;
+	$scope.showLoader = false;
 
 	delete $scope.dialog.permissions.VISITOR;
+
+	$scope.sendReply = function() {
+		$scope.showLoader = true;
+		FirebaseService.sendQueryReply($scope.query, function(data) {
+			AppService.showToast(data.message);
+			if(data.status) {
+				$mdDialog.hide();
+			}
+			$scope.showLoader = false;
+		})
+	}
 
 	$scope.cancel = function() {
 		$mdDialog.cancel();

@@ -158,20 +158,31 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 	}
 });
 
-application.service('FirebaseService', function(FirebaseAPIService) {
+application.service('FirebaseService', function($filter, FirebaseAPIService) {
 	var db = firebase.database().ref();
 	var FirebaseService = this;
 
-	this.fetchCurrentUserInfo = function(callback) {
+	this.getAuthToken = function(callback) {
 		firebase.auth().currentUser.getToken().then(function(token) {
+			callback(token)
+		});
+	}
+
+	this.getCurrentUserID = function() {
+		return firebase.auth().currentUser.uid;
+	}
+
+	this.fetchCurrentUserInfo = function(callback) {
+		FirebaseService.getAuthToken(function(token) {
 			FirebaseAPIService.getWithAuth('/userLogin', token).then(function(data) {
 				callback(data.data);
 			});
 		});
 	}
 
-	this.getCurrentUserID = function() {
-		return firebase.auth().currentUser.uid;
+	this.sendNotification = function(notification) {
+		var userId = notification.uid;
+		db.child('amazecreationz').child('notifications').child(userId).push(notification);
 	}
 
 	this.setUserPermission = function(userId, permission) {
@@ -282,76 +293,94 @@ application.service('FirebaseService', function(FirebaseAPIService) {
 	}
 
 	this.addQuery = function(query, callback) {
-		var querySuccessMessage = 'Query sent successfully.';
-		var queryFailMessage = 'Unable to send query. Try again later.'
-		var db_ref = db.child('query').child('amazecreationz');
-		var key = db_ref.push().key;
-		var userId = query.uid;
-		var promise;
-		query.history[key] = {
-			date: query.date,
-			content: query.content
+		var result = {
+			message: "Failed to send query. Try again later."
 		}
-
-		if(angular.isDefined(userId)) {
-			query.id = userId;
-			promise = db_ref.child('users').child(userId).set(query);
-		} else {
-			if(angular.isUndefined(query.id)) {
-				query.id = key;
-			}	
-			promise = db_ref.child('visitors').child(query.id).set(query);
-		}
-
-		promise.then(function() {
-			callback({ status: true, message: querySuccessMessage});
-		}).catch(function(error) {
-			callback({ status: false, message: queryFailMessage});
-		});
-	}
-
-	this.getQuery = function(userId, callback) {
-		db.child('query').child('amazecreationz').child('users').child(userId).once('value', function(data) {
-			callback(data.val());
-		})
-	} 
-
-	this.getQueryByID = function(queryId, callback) {
-		db.child('query').child('amazecreationz').child('users').child(queryId).once('value', function(data) {
-			if(data.val() != null) {
-				callback(data.val());
+		var queryId = db.child('query').child('amazecreationz').push().key;
+		query.id = queryId;
+		db.child('amazecreationz').child('query').child(queryId).set(query).then(function(error) {
+			result = {
+				status: 1,
+				message: "Query sent!"
 			}
+			callback(result);
+		}, function(error) {
+			callback(result);
 		})
+	}
 
-		db.child('query').child('amazecreationz').child('visitors').child(queryId).once('value', function(data) {
-			if(data.val() != null) {
-				callback(data.val());
-			}
+	this.setQueryAttended = function(queryId) {
+		db.child('amazecreationz').child('query').child(queryId).child('attended').set(true);
+	}
+
+	this.getQuery = function(queryId, callback) {
+		db.child('amazecreationz').child('query').child(queryId).once('value', function(data) {
+			callback(data.val());
 		})
+	}
+
+	this.deleteQuery = function(queryId) {
+		db.child('amazecreationz').child('query').child(queryId).set(null);
 	} 
-
-	this.getAllUserQuery = function(callback) {
-		db.child('query').child('amazecreationz').child('users').orderByChild('priority').limitToFirst(20).on('value', function(data) {
-			callback(data.val());
-		}, function(error) {
-			callback(null);
-		})
-	}
-
-	this.getAllVisitorQuery = function(callback) {
-		db.child('query').child('amazecreationz').child('visitors').orderByChild('priority').limitToFirst(20).on('value', function(data) {
-			callback(data.val());
-		}, function(error) {
-			callback(null);
-		})
-	}
 
 	this.getAllQuery = function(callback) {
-		db.child('query').child('amazecreationz').limitToFirst(50).on('value', function(data) {
+		db.child('amazecreationz').child('query').limitToFirst(50).on('value', function(data) {
 			callback(data.val());
 		}, function(error) {
 			callback(null);
 		})
+	}
+
+	this.getAttendedQueries = function(callback) {
+		db.child('amazecreationz').child('query').orderByChild('attended').equalTo(true).limitToFirst(50).on('value', function(data) {
+			callback(data.val());
+		}, function(error) {
+			callback(null);
+		})
+	}
+
+	this.getUnAttendedQueries = function(callback) {
+		db.child('amazecreationz').child('query').orderByChild('attended').equalTo(null).limitToFirst(50).on('value', function(data) {
+			callback(data.val());
+		}, function(error) {
+			callback(null);
+		})
+	}
+
+	this.setQueryReply = function(query) {
+		db.child('amazecreationz').child('query').child(query.id).set(query);
+	}
+
+	this.sendQueryReply = function(query, callback) {
+		var date = new Date().getTime();
+		query.replyDate = date;
+		query.attended = true;
+		delete query.$$hashKey;
+		if(query.uid) {
+			var notification = {
+				uid: query.uid,
+				type: 'query',
+				date: date,
+				query: query.content,
+				reply: query.reply,
+				message: 'Reply for your query - '+ query.content
+			}
+			FirebaseService.sendNotification(notification);
+		}
+		FirebaseService.getAuthToken(function(token) {
+			var params = {
+				content: JSON.stringify({
+					email: query.email,
+					date: query.date,
+					subject: "Query on "+$filter('date')(query.date, application.globals.dateFormat),
+					body: "Query: "+query.content+"<br>Response: "+query.reply
+				})
+			}
+			FirebaseAPIService.getWithAuth('/sendReply', token, params).then(function(data) {
+				FirebaseService.setQueryReply(query);
+				callback(data.data);
+			})
+		})		
 	}
 })
 
@@ -373,7 +402,7 @@ application.service('FirebaseAPIService', function($http) {
 		return $http({
 			method: 'GET',
             url: APIUrl,
-            cache: true
+            cache: false
         });
 	}
 

@@ -1,7 +1,7 @@
 <md-dialog class="modal-container full-screen" aria-label="Add Crew">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>{{query.name}}</h2>
+            <h2 md-truncate>{{query.content}}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
@@ -11,16 +11,60 @@
     <md-dialog-content class="modal-content-container">
         <div class="content-container" layout="column" layout-align="center center">
             <div class="card">
-                <div class="card-header text-size-d">History</div>
+                <div class="card-header text-size-d">Query</div>
                 <div class="card-body">
-                    <div class="bottom-border-1">
-                        <div class="name">{{query.name}}</div>
-                        <div class="email">{{query.email}}</div>
+                    <table>
+                        <tbody class="txt14">
+                            <tr class="padtb5">
+                                <td class="text-bold">Name</td>
+                                <td class="padlr5">:</td>
+                                <td>{{query.name}}</td>
+                            </tr>
+                            <tr class="padtb5">
+                                <td class="text-bold">Email</td>
+                                <td class="padlr5">:</td>
+                                <td>{{query.email}}</td>
+                            </tr>
+                            <tr ng-show="query.uid" class="padtb5">
+                                <td class="text-bold">UserID</td>
+                                <td class="padlr5">:</td>
+                                <td>{{query.uid}}</td>
+                            </tr>
+                            <tr class="padtb5">
+                                <td class="text-bold">Date</td>
+                                <td class="padlr5">:</td>
+                                <td>{{query.date | date: dialog.dateFormat}}</td>
+                            </tr>
+                            <tr class="padtb5">
+                                <td class="text-bold">Content</td>
+                                <td class="padlr5">:</td>
+                                <td class="word-break">{{query.content}}</td>
+                            </tr>
+                            <tr ng-if="query.replyDate && !showLoader" class="padtb5">
+                                <td class="text-bold">Reply</td>
+                                <td class="padlr5">:</td>
+                                <td class="word-break">{{query.reply}} at {{query.replyDate | date: dialog.dateFormat}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div ng-hide="query.attended && !showLoader" class="card">
+                <div class="card-header text-size-d">Reply</div>
+                <div class="card-body" ng-init="showPreview = false">
+                    <div ng-hide="showLoader">
+                        <md-input-container ng-hide="showPreview" class="full-width" flex-gt-xs>
+                            <label>Reply</label>
+                            <textarea name="reply" ng-model="query.reply" rows="5" autocomplete="off" required></textarea>
+                        </md-input-container>
+                        <div ng-show="showPreview" class="query-reply">{{query.reply}}</div>
+                        <div class="mrgtop0 mrgl-5" layout="row" layout-align="start center" layout-align-xs="center center">
+                            <md-button ng-hide="showPreview" class="md-raised" ng-click="showPreview=true">Preview</md-button>
+                            <md-button ng-show="showPreview" class="md-raised" ng-click="showPreview=false">Edit</md-button>
+                            <md-button ng-show="query.reply.length" class="md-raised md-primary" ng-click="sendReply()">Send</md-button>
+                        </div>
                     </div>
-                    <div class="query-history" ng-repeat="(key, query) in query.history">
-                        <div class="content">{{query.content}}</div>
-                        <div class="date">{{query.date}}</div>
-                    </div>
+                    <loader loader="showLoader" flex></loader>
                 </div>
             </div>
         </div>

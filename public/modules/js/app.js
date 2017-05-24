@@ -15,7 +15,7 @@ application.globals = {
 	theme: 'red',
 	logo: '/resources/images/logo/logo.jpg',
 	domain: 'amazecreationz.in',
-	dateFormat: 'MMM dd, yyyy hh:mm',
+	dateFormat: 'MMM dd, yyyy hh:mm a',
 	feedback: {
 		email: 'feedback@amazecreationz.in'
 	},
@@ -23,7 +23,7 @@ application.globals = {
 		email: 'hey@amazecreationz.in',
 		phone: '+91 80 75 688784',
 		location: 'CNRA 51, Chempakasseri Nagar,<br>Kesavadasapuram, Trivandrum,<br>Kerala, India.<br>PIN: 695004',
-		maps: 'https://www.google.co.in/maps/place/Amaze+Creationz/@8.5335103,76.9361003,17z'
+		maps: 'https://www.google.co.in/maps/search/Amaze+Creationz'
 	},
 	html: {
 		views: '/modules/views/',
