@@ -21,14 +21,18 @@
 			<div class="card-body">
 				<a class="contact-location text-size-e" ng-bind-html="contacts.location" href="{{contacts.maps}}" target="_blank"></a>
 			</div>
-			
+		</div>
+	</div>
+	<div class="card social-card" layout="row" layout-wrap>
+		<div class="text-center" ng-repeat="(type, link) in contacts.social" flex>
+			<a href="{{link}}" target="_blank" class="fa fa-{{type}}"></a>
 		</div>
 	</div>
 	<div id="query" class="card">
 		<div class="card-header text-size-d">Query</div>
 		<div class="card-body">
 			<loader loader="!showForm" flex></loader>
-			<form ng-show="showForm" name="queryForm" class="mrgbot30" ng-submit="submitQuery()">
+			<form ng-show="showForm" name="queryForm" ng-submit="submitQuery()">
 				<div layout-gt-xs="row">
 					<md-input-container class="full-width mrgbot0" flex-gt-xs>
 	                    <label>Name</label>

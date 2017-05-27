@@ -6,13 +6,29 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     	<meta name="viewport" content="width=device-width, initial-scale=1">
     	<base href="/">
-    	<title>Amaze Creationz | Sleek Solutions Everywhere</title>
-    	<link rel="SHORTCUT ICON" href="resources/images/favicon.ico">
 
+    	<title>Amaze Creationz | Sleek Solutions Everywhere</title>
+    	<meta name="description" content="Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, EmployeeMeter and so on.">
+		<meta name="keywords" content="Amaze Creationz, Sleek Solutions Everywhere">
+		<meta name="author" content="Anand Mohan">  	
+
+		<meta name=”og:title” content=”Amaze Creationz”>
+		<meta name=”og:image” content=”/resources/images/logo/logo-large.jpg”>
+		<meta name=”og:description content=”Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, EmployeeMeter and so on.”>
+
+		<meta name="twitter:card" content="Amaze Creationz">
+		<meta name="twitter:site" content="@amazecreationz">
+		<meta name="twitter:creator" content="@anandmoghan">
+		<meta name="twitter:title" content="Amaze Creationz">
+		<meta name="twitter:description" content="Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, EmployeeMeter and so on.">
+		<meta name="twitter:image" content="/resources/images/logo/logo-large.jpg">
+
+		<link rel="SHORTCUT ICON" href="resources/images/favicon.ico">
+    	<link rel="manifest" href="/manifest.json">
     	<!--CSS INCLUDES START-->
-    		<link rel="stylesheet" type="text/css" href="resources/css/font-awesome.min.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/angular-material.min.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/material-icons.css">
+			<link rel="stylesheet" type="text/css" href="resources/css/font-awesome.min.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/amazecreationz-design.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/style.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/pt-sans.css">
@@ -32,7 +48,7 @@
 					"https://www.youtube.com/c/amazecreationz",
 					"https://www.instagram.com/amazecreationz",
 					"https://in.pinterest.com/amazecreationz",
-					"https://github.com/amazecreationz"
+					"https://www.github.com/amazecreationz"
 		  		]
 			}
 		</script>
@@ -53,7 +69,7 @@
   			<img src="/resources/images/gif/wave.gif">
   		</div>
   		<div class="body-container" layout="row">
-			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-lg')" md-swipe-left="closeSideMenu()" layout="column" flex>
+			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-md')" md-swipe-left="closeSideMenu()" layout="column" flex>
 	            <div class="side-menu-user-container" ng-class="'bg-theme-{{globals.theme}}'" layout="column" layout-align="end start">
 	                <div class="padbot10">
 	                    <img ng-if="globals.permissions.USER >= appData.user.permission" class="img-circle"  width="60px" height="auto" ng-src="{{appData.user.image}}">
@@ -77,13 +93,44 @@
 		    <div class="app-container" layout="column">
 		        <nav class="nav-bar">
 		            <div class="nav-wrapper" ng-class="'bg-theme-{{globals.theme}}'" layout="row" layout-align="end center">
-		                <div class="nav-menu-button" ng-click="openSideMenu()"><md-icon class="material-icons text-size-d">menu</md-icon></div>
+		                <div class="nav-menu-button" ng-click="openSideMenu()" hide-gt-md>
+		                	<md-icon class="material-icons text-size-d">menu</md-icon>
+		                </div>
 		                <div flex="auto" class="nav-brand-name text-size-d">
 		                    <span class="pointer text-uppercase" ui-sref="home">{{globals.title}}</span>
 		                </div>
+		                <div ng-show="globals.permissions.USER >= appData.user.permission" class="nav-notifications-bell" ng-click="showNotificationsPopup(true); $event.stopPropagation();">
+		                	<md-icon class="material-icons text-size-d none">notifications</md-icon>
+		                	<md-icon class="material-icons text-size-d active" ng-class="'bg-light-theme-{{globals.theme}}'">notifications_active</md-icon>
+		                </div>
 		            </div>
 		        </nav>
+		        <div class="notifications-container" ng-class="{'closed': !showNotifications}" layout="column" ng-click="$event.stopPropagation()">
+		        	<div class="notifications-header" ng-class="'bg-theme-{{globals.theme}}'" layout="row">
+		        		<div flex>Notifications</div>
+		        		<md-icon class="material-icons pointer" ng-click="showNotificationsPopup(false);">close</md-icon>
+		        	</div>
+		        	<div class="notifications-body" flex>
+		        		<list-loader class="pad5" list="notifications" message="'No New Notifications'"></list-loader>
+		        		<div class="card notifications-card" ng-repeat="(key, notification) in notifications" layout="row">
+		        			<div class="notifications-icon">
+		        				<md-icon ng-show="notification.type == 'query'" class="material-icons">textsms</md-icon>
+		        			</div>
+		        			<div layout="column" layout-fill flex>
+		        				<div class="text-16 text-bold full-width" md-truncate>{{notification.title}}</div>
+		        				<div class="text-14 word-break" md-truncate>{{notification.message}}</div>
+		        				<div class="text-12 text-dark-theme-grey">{{notification.date | date: globals.dateFormat}}</div>
+		        			</div>
+		        		</div>
+		        	</div>
+		        	<div class="notifications-footer" layout="row" layout="end center">
+		        		<div ng-hide="notifications | isEmpty" class="pad10 text-right" flex>
+		        			<md-icon class="material-icons pointer text-24" ng-click="dismissNotifications();">clear_all</md-icon>
+		        		</div>
+		        	</div>
+		        </div>
 		        <div class="main-container" ui-view></div>
+				<footer class="hide"></footer>
 	        </div>
         </div>
   		<script type="text/javascript" src="resources/js/jquery.min.js"></script>
@@ -98,7 +145,7 @@
   		<script type="text/javascript" src="resources/js/underscore-min.js"></script>
   		<script type="text/javascript" src="resources/js/async.min.js"></script>
   		<script type="text/javascript" src="resources/js/amazecreationz.min.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
 		<script>
 			var config = {
 				apiKey: "AIzaSyBOutg7AYZilNdMaQr-p-15QGk-JaszRDA",

@@ -1,6 +1,6 @@
 <div class="background-container bg-fixed bg-tinted full-height" image-load image="'brush.jpg'" location="globals.images.root" layout="column" layout-align="center-center">
-	<div class="home-title text-size-a text-uppercase">{{globals.title}}</div>
-	<div class="text-size-c">{{globals.subtitle}}</div>
+	<div class="home-title text-size-a text-uppercase text-no-select">{{globals.title}}</div>
+	<div class="text-size-c text-no-select">{{globals.subtitle}}</div>
 </div>
 <div class="content-container min-full-height" layout="column" layout-align="center center">
 	<div class="page-subtitle text-size-c">Popular Applications</div>
@@ -11,5 +11,5 @@
 			<div flex class="text-center" ng-bind-html="appInfo.description"></div>
 		</div>
 	</div>
-	<md-button class="mrgtop40 md-raised md-primary text-uppercase" ui-sref="apps" aria-label="View all Applications">View all</md-button>
+	<md-button class="mrgtop30 mrgbot20 md-raised md-primary text-uppercase" ui-sref="apps" aria-label="View all Applications">View all</md-button>
 </div>

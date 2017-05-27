@@ -1,0 +1,13 @@
+<md-toast>
+	<div class="notification-container" layout="row">
+		<div ng-show="notification.icon" class="notification-icon" image-load image="notification.icon"></div>
+		<div layout="column" layout-align="start start" flex>
+			<div class="notification-title">{{notification.title}}</div>
+			<div class="notification-body">{{notification.body}}</div>
+		</div>
+		<div class="notification-close">
+			<md-icon class="material-icons pointer" ng-click="closeToast()">close</md-icon>
+		</div>
+	</div>
+
+</md-toast>

@@ -2,7 +2,7 @@
     <div class="app-card-circle" ng-class="appInfo.showPage ? 'pointer' : 'no-pointer'" layout="row" layout-align="center center" ng-click="appInfo.showPage && goToApplicationPage()">
     	<md-icon>{{appInfo.icon}}</md-icon>
     </div>
-    <span class="text-size-c app-card-name">{{appInfo.name}}</span>
+    <span class="text-size-d app-card-name">{{appInfo.name}}</span>
     <span class="border-bottom full-width"></span>
     <div flex class="app-card-description" ng-bind-html="appInfo.description"></div>
     <google-play ng-if="appInfo.links.playstore" class="pad10" link="{{appInfo.links.playstore}}" height="36px"></google-play>

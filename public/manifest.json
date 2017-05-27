@@ -1,0 +1,14 @@
+{
+	"short_name": "Amaze Creationz",
+  	"name": "Amaze Creationz | Sleek Solutions Everywhere",
+  	"start_url": "/",
+  	"orientation": "portrait",
+  	"theme_color": "#D32F2F",
+  	"background_color": "#D32F2F",
+  	"display": "browser",
+  	"icons": [{
+	    "src": "resources/images/logo/logo.jpg",
+	    "type": "image/jpg"
+	}],
+	"gcm_sender_id": "103953800507"
+}

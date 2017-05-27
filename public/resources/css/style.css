@@ -51,7 +51,7 @@
     margin-top: 20px;
 }
 @media(max-width: 768px) {
-    .app-pad, .app-pad.first, .app-pad.third {
+    .app-cards, .app-pad, .app-pad.first, .app-pad.third {
         padding: 0;
     }
 }

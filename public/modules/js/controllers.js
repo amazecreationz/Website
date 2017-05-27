@@ -6,6 +6,14 @@ application.controller('ToastController', ['$scope', '$mdToast', 'toastParams', 
 	}
 }]);
 
+application.controller('NotificationController', ['$scope', '$mdToast', 'notificationParams', function($scope, $mdToast, notificationParams){
+	$scope.notification = notificationParams;
+
+	$scope.closeToast = function() {
+		$mdToast.hide();
+	}
+}]);
+
 application.controller('HomeController', ['$scope', 'AppService', function($scope, AppService){
 	$scope.appData.current_tab = 'home';
 	$scope.appsInfo = angular.copy(application.constants.apps);
@@ -268,6 +276,7 @@ application.controller('ContactController', ['$scope', 'AppService', 'FirebaseSe
 	$scope.contacts = angular.copy(application.globals.contact);
 	$scope.query = {};
 	$scope.showForm = false;
+	$scope.contacts.social = AppService.getSocialLinks();
 
 	$scope.$watch('appData.user', function(user) {
 		if(angular.isDefined(user.uid)) {

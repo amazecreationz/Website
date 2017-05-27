@@ -14,8 +14,23 @@
         ".read": "root.child('users').child(auth.uid).child('permission').val() <= 1",
         ".write": "root.child('users').child(auth.uid).child('permission').val() <= 1",
         "$queryId": {
-          ".read": "auth.uid === data.child('uid').val()", 
+          ".read": "auth.uid === data.child('uid').val()",
           ".write": "newData.child('email').exists()"
+        }
+      },
+      "notifications": {
+        "tokens": {
+          "$userId": {
+            ".read": "auth.uid === $userId",
+            ".write": "auth.uid === $userId"
+          }
+        },
+        "content": {
+          "$userId": {
+            ".indexOn": "read",
+            ".read": "auth.uid === $userId",
+            ".write": "auth.uid === $userId"
+          }
         }
       }
     },
@@ -30,8 +45,7 @@
         ".read": "auth.uid === $userId"
       }
     },
-  ".write": "root.child('users').child(auth.uid).child('permission').val() === 0",
-  ".read": "root.child('users').child(auth.uid).child('permission').val() === 0"
+    ".write": "root.child('users').child(auth.uid).child('permission').val() === 0",
+    ".read": "root.child('users').child(auth.uid).child('permission').val() === 0"
   }
-  
 }

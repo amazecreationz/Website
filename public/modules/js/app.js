@@ -25,6 +25,15 @@ application.globals = {
 		location: 'CNRA 51, Chempakasseri Nagar,<br>Kesavadasapuram, Trivandrum,<br>Kerala, India.<br>PIN: 695004',
 		maps: 'https://www.google.co.in/maps/search/Amaze+Creationz'
 	},
+	social: {
+		github: "amazecreationz",
+		facebook: "amazecreationz",
+		twitter: "amazecreationz",
+		google: "+amazecreationz",
+		linkedin: "company/amazecreationz",
+		instagram: "amazecreationz",
+		youtube: "amazecreationz"
+	},
 	html: {
 		views: '/modules/views/',
 		templates: '/modules/templates/'
@@ -38,11 +47,12 @@ application.globals = {
 	developments: {
 		github: 'amazecreationz'
 	},
-	NotFoundPage: '/modules/views/404.html'
+	NotFoundPage: '/modules/views/404.html',
+	showFooter: true
 }
 
 application.isLive = document.domain != 'localhost'; 
-//application.isLive = true;
+application.isLive = true;
 
 application.mailingDomain = {
 	live: "https://mail-amazecreationz.rhcloud.com",

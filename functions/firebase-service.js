@@ -58,6 +58,26 @@ exports.getUserInfoFromAuthenticatedUser = function(user, callback) {
 	})
 }
 
+exports.sendNotification = function(callback) {
+	var registrationToken = 'dHBeM6hGlcY:APA91bGMWn5YpTBDBqNWLhaxus55r8DTUD3ubyn-oNJ27NRUl6I0Kjqm0HhF5b5XiUW9ub6a6kEK3TzjB9nhbHtlWTC77V1hxSkEzxoBuj8uNWEif607JsFCwbkqLRd-YA612E6DjAca';
+	const payload = {
+      notification: {
+        title: 'You have a new follower!',
+        body: 'jaja is now following you.',
+        icon: "https://amazecreationz.in/resources/images/logo/logo.jpg"
+      }
+    };
+	admin.messaging().sendToDevice(registrationToken, payload).then(function(response) {
+	    // See the MessagingDevicesResponse reference documentation for
+	    // the contents of response.
+	    console.log("Successfully sent message:", response);
+	    callback(response)
+	}).catch(function(error) {
+	    console.log("Error sending message:", error);
+	    callback(error)
+	});
+}
+
 exports.setGradeCardData = function(userId, data, callback) {
 	admin.database().ref('appData/GPACalculator').child(userId).child('studentData').set(data).then(function(){
 		console.log("data put at "+ new Date())

@@ -1,5 +1,8 @@
-application.service('AppService', function($state, $stateParams, $location, $mdToast, $mdSidenav, $mdDialog, FirebaseService) {
+application.service('AppService', function($state, $rootScope, $stateParams, $location, $compile, $mdToast, $mdSidenav, $mdDialog, FirebaseService) {
 	var AppService = this;
+
+	this.initialise = function(globals) {
+	}
 
 	this.backgroundLoader = function(showLoader) {
 		var loader = $('.loader-shadow');
@@ -8,6 +11,15 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 		} else {
 			loader.addClass('hide');
 		}
+	}
+
+	this.getSocialLinks = function() {
+		var social = angular.copy(application.globals.social);
+		var socialLinks = {};
+		angular.forEach(social, function(link, type) {
+			socialLinks[type] = "https://www."+type+".com/"+link;
+		})
+		return socialLinks;
 	}
 
 	this.openSideMenu = function() {
@@ -40,6 +52,28 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 			templateUrl: '/modules/templates/toast.html',
 			parent: document.getElementsByClassName('body-container')
         });
+	}
+
+	this.hideToast = function() {
+		$mdToast.hide();
+	}
+
+	this.showNotification = function(message, timeout) {
+		$mdToast.show({
+			hideDelay: timeout || 5000,
+			position: 'bottom right',
+			toastClass: 'notification',
+			locals:{ 
+				notificationParams: message
+			},
+			controller: 'NotificationController',
+			templateUrl: '/modules/templates/notification.html',
+			parent: document.getElementsByClassName('body-container')
+        });
+	}
+
+	this.onNotification = function(payload) {
+		AppService.showNotification(payload.notification);
 	}
 
 	this.login = function() {
@@ -160,10 +194,31 @@ application.service('AppService', function($state, $stateParams, $location, $mdT
 
 application.service('FirebaseService', function($filter, FirebaseAPIService, MailingService) {
 	var db = firebase.database().ref();
+	var notificationsRef = db.child('amazecreationz').child('notifications');
 	var FirebaseService = this;
 
+	this.getNotificationAccess = function(userId) {
+		firebase.messaging().requestPermission().then(function() {
+		    FirebaseService.saveNotificationToken(userId);
+		}).catch(function(error) {
+		    console.error('Unable to get permission to notify.', error);
+		});
+	}
+
+	this.saveNotificationToken = function(userId) {
+		firebase.messaging().getToken().then(function(currentToken) {
+			if (currentToken) {
+				db.child('amazecreationz').child('notifications').child('tokens').child(userId).set(currentToken);
+		    } else {
+		      FirebaseService.getNotificationAccess(userId);
+		    }
+		}).catch(function(error) {
+    		console.error('Unable to get messaging token.', error);
+    	});
+	}
+
 	this.getAuthToken = function(callback) {
-		firebase.auth().currentUser.getToken().then(function(token) {
+		firebase.auth().currentUser.getIdToken().then(function(token) {
 			callback(token)
 		});
 	}
@@ -180,9 +235,29 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 		});
 	}
 
-	this.sendNotification = function(notification) {
-		var userId = notification.uid;
-		db.child('amazecreationz').child('notifications').child(userId).push(notification);
+	this.sendNotification = function(userId, notification) {
+		notificationsRef.child('content').child(userId).push(notification);
+	}
+
+	this.dismissNotifications = function(userId, notifications) {
+		var updates = {};
+		angular.forEach(notifications, function(notification) {
+			var nid = notification.nid;
+			updates[nid+'/read'] = true;
+		})
+		notificationsRef.child('content').child(userId).update(updates);
+	}
+
+	this.getNewNotifications = function(userId, callback) {
+		notificationsRef.child('content').child(userId).orderByChild('read').equalTo(null).on('value', function(data) {
+			callback(data.val());
+		})
+	}
+
+	this.getNotifications = function(userId, callback) {
+		notificationsRef.child('content').child(userId).on('value', function(data) {
+			callback(data.val());
+		})
 	}
 
 	this.setUserPermission = function(userId, permission) {
@@ -225,8 +300,9 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 		var updates = {}
 		if(crewInfo == null) {
 			isCrew = null;
+		} else {
+			delete crewInfo.$$hashKey;
 		}
-		delete crewInfo.$$hashKey;
 		updates['crew/'+userId] = crewInfo;
 	 	updates['users/'+userId+'/crew'] = isCrew;
 		db.update(updates);
@@ -353,19 +429,19 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 
 	this.sendQueryReply = function(query, callback) {
 		var date = new Date().getTime();
+		var userId = query.uid;
 		query.replyDate = date;
 		query.attended = true;
 		delete query.$$hashKey;
 		if(query.uid) {
 			var notification = {
-				uid: query.uid,
 				type: 'query',
-				date: date,
-				query: query.content,
-				reply: query.reply,
-				message: 'Reply for your query - '+ query.content
+				id: query.id,
+				title: 'Reply for your query - '+ query.content,
+				message: query.reply,
+				date: date
 			}
-			FirebaseService.sendNotification(notification);
+			FirebaseService.sendNotification(userId, notification);
 		}
 		FirebaseService.getAuthToken(function(token) {
 			var params = {
@@ -418,7 +494,6 @@ application.service('FirebaseAPIService', function($http) {
 
 application.service('MailingService', function($http) {
 	var APIDomain = angular.copy(application.mailingDomain.current);
-	console.log(APIDomain)
 	var MailingService = this;
 
 	this.getAPIWithParams = function(API, params) {
@@ -445,7 +520,6 @@ application.service('MailingService', function($http) {
 		}
 		params.authToken = authToken;
 		API = MailingService.getAPIWithParams(API, params);
-		console.log(API)
 		return MailingService.get(API);
 	}
 })
