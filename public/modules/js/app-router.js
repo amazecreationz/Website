@@ -42,7 +42,13 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 		controller: 'ContactController'
 	});
 
-	$stateProvider.state('NotFound', {
+	$stateProvider.state('settings', {
+		url:'/settings',
+		templateUrl: application.globals.html.views + 'settings.html',
+		controller: 'SettingsController'
+	});
+
+	$stateProvider.state('error', {
 		params: {
 			url: undefined
 		},
@@ -51,13 +57,13 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 	});
 
 	$stateProvider.state('view', {
-		url:'/:type/:id?params=',
+		url:'/:type/:id?tab=&params=',
 		templateUrl: application.globals.html.views + 'include.html',
 		controller: 'IncludeController'
 	});
 
 	$urlRouterProvider.otherwise(function($injector, $location){
-	    $injector.get('$state').go('NotFound', {url: $location.path()});
+	    $injector.get('$state').go('error', {url: $location.path()});
 	    return $location.path();
 	});
 

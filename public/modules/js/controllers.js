@@ -16,6 +16,7 @@ application.controller('NotificationController', ['$scope', '$mdToast', 'notific
 
 application.controller('HomeController', ['$scope', 'AppService', function($scope, AppService){
 	$scope.appData.current_tab = 'home';
+	$scope.appData.bgImage = 'laptop.jpg';
 	$scope.appsInfo = angular.copy(application.constants.apps);
 
 	$scope.goToApplicationPage = function(id) {
@@ -271,7 +272,7 @@ application.controller('AboutController', ['$scope', 'AppService', 'FirebaseServ
 	}
 }]);
 
-application.controller('ContactController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService){
+application.controller('ContactController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService) {
 	$scope.appData.current_tab = 'contact';
 	$scope.contacts = angular.copy(application.globals.contact);
 	$scope.query = {};
@@ -296,6 +297,24 @@ application.controller('ContactController', ['$scope', 'AppService', 'FirebaseSe
 				}
 			});		
 		}
+	})
+}]);
+
+application.controller('SettingsController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService) {
+	$scope.appData.current_tab = 'settings';
+
+	$scope.availableThemes = {"red":"#D32F2F","pink":"#C2185B","purple":"#7B1FA2","deep-purple":"#512DA8","indigo":"#303F9F","blue":"#1976D2","light-blue":"#0288D1","cyan":"#0097A7","teal":"#00796B","green":"#388E3C","light-green":"#689F38","lime":"#AFB42B","yellow":"#FBC02D","amber":"#FFA000","orange":"#F57C00","deep-orange":"#E64A19","brown":"#5D4037","grey":"#616161","blue-grey":"#455A64"};
+
+	$scope.onThemeChange = function(theme) {
+		$scope.globals.theme = theme;
+		AppService.setMaterialTheme(theme);
+		if(angular.isDefined($scope.appData.user.uid)) {
+			FirebaseService.setTheme($scope.appData.user.uid, theme);
+		}
+	}
+
+	$scope.$watch('globals.theme', function(theme) {
+		$scope.selectedTheme = theme;
 	})
 }]);
 

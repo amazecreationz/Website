@@ -4,8 +4,18 @@ application.filter('isEmpty', function() {
 			inverse = false;
 		}
 		var output = _.isEmpty(input);
-    	return output != inverse;
-  	}
+  	return output != inverse;
+	}
+})
+
+application.filter('isDefined', function() {
+  return function(input, inverse) {
+    if(!inverse) {
+      inverse = false;
+    }
+    var output = angular.isDefined(input);
+    return output != inverse;
+  }
 })
 
 application.filter('permission', function() {

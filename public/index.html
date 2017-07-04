@@ -24,11 +24,10 @@
 		<meta name="twitter:image" content="/resources/images/logo/logo-large.jpg">
 
 		<link rel="SHORTCUT ICON" href="resources/images/favicon.ico">
-    	<link rel="manifest" href="/manifest.json">
+    	<link rel="manifest" href="/manifest">
     	<!--CSS INCLUDES START-->
 			<link rel="stylesheet" type="text/css" href="resources/css/angular-material.min.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/material-icons.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/font-awesome.min.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/amazecreationz-design.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/style.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/pt-sans.css">
@@ -64,24 +63,24 @@
 			</script>
 		<!--GA INCLUDES END-->
   	</head>
-  	<body ng-app="amazecreationz" ng-controller="AppController">
+  	<body ng-app="amazecreationz" ng-controller="AppController" md-theme="globals.theme">
   		<div class="loader-shadow layout-row layout-align-center-center">
   			<img src="/resources/images/gif/wave.gif">
   		</div>
   		<div class="body-container" layout="row">
 			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-md')" md-swipe-left="closeSideMenu()" layout="column" flex>
-	            <div class="side-menu-user-container" ng-class="'bg-theme-{{globals.theme}}'" layout="column" layout-align="end start">
+	            <div class="side-menu-user-container" ng-class="'bg-theme-'+globals.theme" layout="column" layout-align="end start">
 	                <div class="padbot10">
 	                    <img ng-if="globals.permissions.USER >= appData.user.permission" class="img-circle"  width="60px" height="auto" ng-src="{{appData.user.image}}">
 	                    <md-icon ng-if="globals.permissions.USER < appData.user.permission" class="material-icons text-48">account_circle</md-icon>
 	                </div>
 	                <div ng-if="globals.permissions.USER < appData.user.permission" class="text-16">Hello Guest!</div>
-	                <div class="text-16 text-bold">{{appData.user.name}}</div>
-	                <div class="text-14">{{appData.user.email}}</div>
+	                <div class="text-16 text-bold" md-truncate>{{appData.user.name}}</div>
+	                <div class="text-14" md-truncate>{{appData.user.email}}</div>
 	                <span ng-show="globals.permissions.USER >= appData.user.permission" class="pointer text-12 text-bold-hover" ng-click="signOut();">Sign Out</span>
 	            </div>
 	            <div class="side-menu-tabs-container" flex="auto">
-	                <div class="side-menu-tab" ng-if="tab.permission >= appData.user.permission" ng-repeat="tab in appData.tabs" ng-class="{'active' : appData.current_tab == tab.id}" ng-click="openTab(tab)">
+	                <div class="side-menu-tab" ng-if="(tab.permission >= appData.user.permission) && !tab.hide" ng-repeat="tab in appData.tabs" ng-class="appData.current_tab==tab.id ? 'active bg-light-theme-'+globals.theme : hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="openTab(tab)">
 	                    <md-icon class="material-icons text-20">{{tab.icon}}</md-icon>
 	                    <span class="padlr10 text-16">{{tab.name}}</span>
 	                </div>
@@ -92,21 +91,23 @@
 	        </md-sidenav>
 		    <div class="app-container" layout="column">
 		        <nav class="nav-bar">
-		            <div class="nav-wrapper" ng-class="'bg-theme-{{globals.theme}}'" layout="row" layout-align="end center">
+		            <div class="nav-wrapper" ng-class="'bg-theme-'+globals.theme" layout="row" layout-align="end center">
 		                <div class="nav-menu-button" ng-click="openSideMenu()" hide-gt-md>
 		                	<md-icon class="material-icons text-size-d">menu</md-icon>
 		                </div>
 		                <div flex="auto" class="nav-brand-name text-size-d">
-		                    <span class="pointer text-uppercase" ui-sref="home">{{globals.title}}</span>
+		                    <span class="pointer text-uppercase text-no-select" ui-sref="home">{{globals.title}}</span>
 		                </div>
-		                <div ng-show="globals.permissions.USER >= appData.user.permission" class="nav-notifications-bell" ng-click="showNotificationsPopup(true); $event.stopPropagation();">
-		                	<md-icon class="material-icons text-size-d none">notifications</md-icon>
-		                	<md-icon class="material-icons text-size-d active" ng-class="'bg-light-theme-{{globals.theme}}'">notifications_active</md-icon>
+		                <div ng-show="globals.permissions.USER >= appData.user.permission" class="nav-icon" ng-init="hover=false;" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="showNotificationsPopup(); $event.stopPropagation();">
+		                	<md-icon class="text-size-d" ng-class="(hover || showNotifications) ? 'hide' : 'bg-theme-'+globals.theme">notifications</md-icon>
+		                	<md-icon class="text-size-d" ng-class="(hover || showNotifications) ? 'bg-light-theme-'+globals.theme : 'hide'">notifications_active</md-icon>
 		                </div>
+		                <div class="mrgrt20" hide-xs></div>
+		                <div class="mrgrt15" hide-gt-xs></div>
 		            </div>
 		        </nav>
 		        <div class="notifications-container" ng-class="{'closed': !showNotifications}" layout="column" ng-click="$event.stopPropagation()">
-		        	<div class="notifications-header" ng-class="'bg-theme-{{globals.theme}}'" layout="row">
+		        	<div class="notifications-header" ng-class="'bg-theme-'+globals.theme" layout="row">
 		        		<div flex>Notifications</div>
 		        		<md-icon class="material-icons pointer" ng-click="showNotificationsPopup(false);">close</md-icon>
 		        	</div>

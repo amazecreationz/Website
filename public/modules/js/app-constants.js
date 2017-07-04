@@ -21,6 +21,13 @@ application.constants = {
 		icon: 'computer',
 		state: 'console',
 		permission: application.permissions.MANAGER
+	},{
+		id: 'settings',
+		name:'Site Settings',
+		title: 'Amaze Creationz | Site Settings',
+		icon: 'settings',
+		state: 'settings',
+		permission: application.permissions.USER
 	},/*{
 		id: 'profile',
 		name:'My Profile',

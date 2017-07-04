@@ -1,15 +1,19 @@
-<div class="background-container bg-fixed bg-tinted full-height" image-load image="'brush.jpg'" location="globals.images.root" layout="column" layout-align="center-center">
+<div class="background-container bg-fixed bg-tinted full-height" layout="column" layout-align="center-center" image-load image="appData.bgImage" location="globals.images.root">
 	<div class="home-title text-size-a text-uppercase text-no-select">{{globals.title}}</div>
-	<div class="text-size-c text-no-select">{{globals.subtitle}}</div>
+	<div class="text-size-c text-no-select mrgbot30">{{globals.subtitle}}</div>
 </div>
 <div class="content-container min-full-height" layout="column" layout-align="center center">
+	<div class="mrgtop30" hide-gt-xs></div>
 	<div class="page-subtitle text-size-c">Popular Applications</div>
 	<div class="mrgtop10" layout="row" layout-xs="column" layout-align="center start" layout-wrap>
 		<div ng-if="appInfo.priority > 0" class="width-3 mrgtb10 padlr10" ng-repeat="appInfo in appsInfo | orderBy: 'priority' : true  | limitTo : 3" class="mrg15" layout="column" layout-align="start center">
-			<div flex class="app-card-circle pointer" layout="row" layout-align="center center" ng-click="goToApplicationPage(appInfo.id)"><md-icon>{{appInfo.icon}}</md-icon></div>
-			<span flex class="txt16 text-bold">{{appInfo.name}}</span>
+			<div flex class="app-card-circle" ng-class="(appInfo.showPage ? 'pointer' : '') + ' bg'+(hover ? '-' : '-light-') + 'theme-' + globals.theme" layout="row" layout-align="center center" ng-init="hover=false" ng-click="goToApplicationPage(appInfo.id)" ng-mouseenter="hover=appInfo.showPage" ng-mouseleave="hover=false">
+				<md-icon>{{appInfo.icon}}</md-icon>
+			</div>
+			<span flex class="text-18 text-bold">{{appInfo.name}}</span>
 			<div flex class="text-center" ng-bind-html="appInfo.description"></div>
 		</div>
 	</div>
 	<md-button class="mrgtop30 mrgbot20 md-raised md-primary text-uppercase" ui-sref="apps" aria-label="View all Applications">View all</md-button>
+	<div class="mrgtop30" hide-gt-xs></div>
 </div>

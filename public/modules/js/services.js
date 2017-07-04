@@ -1,16 +1,52 @@
-application.service('AppService', function($state, $rootScope, $stateParams, $location, $compile, $mdToast, $mdSidenav, $mdDialog, FirebaseService) {
+application.service('AppService', function($state, $rootScope, $stateParams, $http, $location, $compile, $mdToast, $mdSidenav, $mdDialog, $mdTheming, $mdThemingProvider, FirebaseService) {
 	var AppService = this;
 
 	this.initialise = function(globals) {
+		AppService.setMaterialTheme(globals.theme);
 	}
 
 	this.backgroundLoader = function(showLoader) {
 		var loader = $('.loader-shadow');
 		if(showLoader) {
-			loader.removeClass('hide');
+			loader.removeClass('hidden');
 		} else {
-			loader.addClass('hide');
+			loader.addClass('hidden');
 		}
+	}
+
+	this.loadScript = function(script, isLocal) {
+		if(isLocal) {
+			script = application.globals.scripts + script;
+		}
+		return $.getScript(script);
+	}
+
+	this.loadStyle = function(style, isLocal) {
+		if(isLocal) {
+			style = application.globals.styles + style;
+		}
+		var promise = $http.get(style);
+		promise.then(function() {
+			$('<link>', {rel:'stylesheet', type:'text/css', 'href':style}).appendTo('head');
+		})
+		return promise;
+	}
+
+	this.setMaterialTheme = function(theme) {
+		theme = theme.toLowerCase();
+	  	$mdThemingProvider.theme(theme).primaryPalette(theme, {
+			'default': '700',
+	      	'hue-1': '300',
+	      	'hue-2': '600',
+	      	'hue-3': '900'
+		}).accentPalette(theme, {
+			'default': '50',
+			'hue-1': '50',
+	      	'hue-2': '50',
+	      	'hue-3': '50'
+		});
+		$mdThemingProvider.setDefaultTheme(theme);
+		$mdTheming.generateTheme(theme);
 	}
 
 	this.getSocialLinks = function() {
@@ -81,14 +117,17 @@ application.service('AppService', function($state, $rootScope, $stateParams, $lo
 		AppService.backgroundLoader(true);
 		var provider = new firebase.auth.GoogleAuthProvider();
 		provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-		firebase.auth().signInWithPopup(provider);
+		firebase.auth().signInWithPopup(provider).catch(function(error) {
+			console.error(error)
+			AppService.backgroundLoader(false);
+			AppService.showToast(error.message);
+		});
 	}
 
-	this.logout = function(callback) {
+	this.logout = function() {
 		AppService.closeSideMenu();
 		firebase.auth().signOut().then(function() {
 			AppService.showToast('Signed out successfully');
-			callback();
 		}, function(error) {
 		});
 	}
@@ -113,7 +152,7 @@ application.service('AppService', function($state, $rootScope, $stateParams, $lo
 	}
 
 	this.showNotFound = function() {
-		$state.go('NotFound', {url: $location.path()});
+		$state.go('error', {url: $location.absUrl()});
 	}
 
 	this.getPermissionType = function(value) {
@@ -194,6 +233,7 @@ application.service('AppService', function($state, $rootScope, $stateParams, $lo
 
 application.service('FirebaseService', function($filter, FirebaseAPIService, MailingService) {
 	var db = firebase.database().ref();
+	var usersRef = db.child('users');
 	var notificationsRef = db.child('amazecreationz').child('notifications');
 	var FirebaseService = this;
 
@@ -227,12 +267,18 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 		return firebase.auth().currentUser.uid;
 	}
 
-	this.fetchCurrentUserInfo = function(callback) {
+	this.fetchCurrentUserInfo = function(callback, eCallback) {
 		FirebaseService.getAuthToken(function(token) {
 			FirebaseAPIService.getWithAuth('/userLogin', token).then(function(data) {
 				callback(data.data);
+			}, function(error) {
+				eCallback(error);
 			});
 		});
+	}
+
+	this.setTheme = function(userId, theme) {
+		usersRef.child(userId).child('theme').set(theme);
 	}
 
 	this.sendNotification = function(userId, notification) {
@@ -495,6 +541,38 @@ application.service('FirebaseAPIService', function($http) {
 application.service('MailingService', function($http) {
 	var APIDomain = angular.copy(application.mailingDomain.current);
 	var MailingService = this;
+
+	this.getAPIWithParams = function(API, params) {
+		var paramsURL = '?';
+		angular.forEach(params, function(value, key) {
+			paramsURL += key+'='+value+'&';
+		})
+		paramsURL = paramsURL.substring(0, paramsURL.length - 1);
+		return API + paramsURL;
+	}
+
+	this.get = function(API) {
+		var APIUrl = APIDomain + API;
+		return $http({
+			method: 'GET',
+            url: APIUrl,
+            cache: false
+        });
+	}
+
+	this.getWithAuth = function(API, authToken, params) {
+		if(angular.isUndefined(params)) {
+			params = {};
+		}
+		params.authToken = authToken;
+		API = MailingService.getAPIWithParams(API, params);
+		return MailingService.get(API);
+	}
+})
+
+application.service('JavaServerService', function($http) {
+	var APIDomain = angular.copy(application.javaServerDomain.current);
+	var JavaServerService = this;
 
 	this.getAPIWithParams = function(API, params) {
 		var paramsURL = '?';

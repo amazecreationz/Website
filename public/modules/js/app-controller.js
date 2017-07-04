@@ -32,6 +32,7 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 
 	$scope.openTab = function(tab) {
 		AppService.closeSideMenu();
+		$scope.appData.current_tab = tab.id;
 		$state.go(tab.state, tab.stateParams , {reload: true});
 	}
 
@@ -44,32 +45,48 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
     }
 
 	$scope.signOut = function() {
-		AppService.logout(function() {
-			$scope.appData.user = {
-				permission: $scope.globals.permissions.VISITOR
-			};
-		})
+		AppService.logout();
+	}
+
+	$scope.openSettings = function() {
+		$state.go('settings');
 	}
 
 	$scope.showNotificationsPopup = function(value) {
-		$scope.showNotifications = value;
 		AppService.hideToast();
+		$scope.showNotifications = value ? true : !$scope.showNotifications;
 	}
 
 	$scope.dismissNotifications = function() {
 		FirebaseService.dismissNotifications($scope.appData.user.uid, $scope.notifications);
 	}
 
+	AppService.loadStyle('font-awesome.min.css', true).then(function() {
+		$scope.appData.loaded = {
+			fontAwesome: true
+		}		
+	})
+
 	firebase.messaging().onMessage(AppService.onNotification);
 	
 	firebase.auth().onAuthStateChanged(function(user) {
     	if(user){
     		FirebaseService.fetchCurrentUserInfo(function(userInfo) {
+    			$scope.appData.user = userInfo;
+    			if(userInfo.theme) {
+    				$scope.globals.theme = userInfo.theme;
+    				AppService.setMaterialTheme(userInfo.theme);
+    			}
 				AppService.backgroundLoader(false);
-				$scope.appData.user = userInfo;
 				AppService.showToast('Signed in as '+$scope.appData.user.name);
 				FirebaseService.getNotificationAccess(userInfo.uid);
 				_.defer(function(){$scope.$apply();});
+			}, function(error) {
+				console.error(error);
+				AppService.backgroundLoader(false);
+				$scope.appData.user = {
+					permission: $scope.globals.permissions.VISITOR
+				};
 			})
 			FirebaseService.getNewNotifications(user.uid, function(data) {
 				$scope.notifications = _.filter(data, function(notification, nid) {
@@ -80,13 +97,16 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 			});
 		} else {
 			AppService.backgroundLoader(false);
+			$scope.appData.user = {
+				permission: $scope.globals.permissions.VISITOR
+			};
 		}
     })
 
-   	$scope.$watch('appData.current_tab', function(value){	
-		if(value) {
+   	$scope.$watch('appData.current_tab', function(newTab, oldTab) {	
+		if(angular.isDefined(newTab) && newTab != oldTab) {
 			var tab = _.find($scope.appData.tabs, function(tabData){
-				return (tabData.id == value);
+				return (tabData.id == newTab);
 			})
 			setTitle(tab.title);
 		}

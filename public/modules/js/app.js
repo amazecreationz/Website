@@ -12,7 +12,7 @@ application.permissions = {
 application.globals = {
 	title: 'Amaze Creationz',
 	subtitle: 'sleek solutions everywhere',
-	theme: 'red',
+	theme: 'blue-grey',
 	logo: '/resources/images/logo/logo.jpg',
 	domain: 'amazecreationz.in',
 	dateFormat: 'MMM dd, yyyy hh:mm a',
@@ -26,20 +26,23 @@ application.globals = {
 		maps: 'https://www.google.co.in/maps/search/Amaze+Creationz'
 	},
 	social: {
-		github: "amazecreationz",
-		facebook: "amazecreationz",
-		twitter: "amazecreationz",
-		google: "+amazecreationz",
-		linkedin: "company/amazecreationz",
-		instagram: "amazecreationz",
-		youtube: "amazecreationz"
+		github: 'amazecreationz',
+		facebook: 'amazecreationz',
+		twitter: 'amazecreationz',
+		google: '+amazecreationz',
+		linkedin: 'company/amazecreationz',
+		instagram: 'amazecreationz',
+		youtube: 'amazecreationz'
 	},
 	html: {
 		views: '/modules/views/',
 		templates: '/modules/templates/'
 	},
+	scripts: '/resources/js/',
+	styles: '/resources/css/',
 	images: {
 		root: '/resources/images/',
+		thumbs: '/resources/images/thumbs/',
 		logo: '/resources/images/logo/',
 		crew: '/resources/images/crew/',
 		gif: '/resources/images/gif/'
@@ -55,8 +58,12 @@ application.isLive = document.domain != 'localhost';
 application.isLive = true;
 
 application.mailingDomain = {
-	live: "https://mail-amazecreationz.rhcloud.com",
-	local: "http://localhost:3030"
+	live: 'https://mail-amazecreationz.rhcloud.com',
+	local: 'http://localhost:3030'
+}
+
+application.javaServerDomain = {
+	current: 'https://javaserver-amazecreationz.rhcloud.com'
 }
 
 application.firebase = {
@@ -68,21 +75,7 @@ application.firebase = {
 	}
 }
 
-application.config(function($mdThemingProvider) {
-  $mdThemingProvider.theme('default')
-	.primaryPalette(application.globals.theme, {
-		'default': '700',
-      	'hue-1': '300',
-      	'hue-2': '600',
-      	'hue-3': '900'
-	})
-	.accentPalette(application.globals.theme, {
-		'default': '50',
-		'hue-1': '50',
-      	'hue-2': '50',
-      	'hue-3': '50'
-	});
-});
+application.colors = ['#D32F2F', '#C2185B', '#7B1FA2', '#512DA8', '#1976D2', '#616161', '#0097A7', '#00796B', '#388E3C', '#689F38', '#AFB42B', '#FBC02D', '#FFA000', '#E64A19', '#5D4037', '#455A64']
 
 if(application.isLive) {
 	application.firebase.current = application.firebase.live;
@@ -91,6 +84,11 @@ if(application.isLive) {
 	application.firebase.current = application.firebase.local;
 	application.mailingDomain.current = application.mailingDomain.local;
 }
+
+application.config(function ($provide, $mdThemingProvider) {
+	$mdThemingProvider.alwaysWatchTheme(true);
+	$provide.value('$mdThemingProvider', $mdThemingProvider);
+});
 
 var printString = function(value) {
 	console.log(JSON.stringify(value));

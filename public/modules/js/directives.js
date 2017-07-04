@@ -8,14 +8,51 @@ application.directive("imageLoad", [function() {
         link: function(scope, elements, attributes) {
             scope.$watch('image', function(image){
                 var location = scope.location ? scope.location : '';
-                var img_url = location+image;
+                var parent = $(elements[0]);
+                var imgLoaded = false;
+                if(location && imgLoaded) {
+                    var thumbs = new Image();
+                    thumbs.src = location+'thumbs/'+image;
+                    thumbs.onload = function() {
+                      parent.css({'background-image':'url('+thumbs.src+')'});
+                    }
+                }
                 var img = new Image();
-                img.src = img_url;
+                img.src = location+image;
                 img.onload = function() {
-                  $(elements[0]).css({'background-image':'url('+img.src+')'});
+                    imgLoaded = true;
+                    parent.css({'background-image':'url('+img.src+')'});
                 } 
             })
             
+        }
+    }
+}]);
+
+application.directive("fileSelect", [function () {
+    return {
+        scope: {
+            onFileSelect: '=',
+            selectedFile: '=',
+            label: '=',
+            accept: '@'
+        },
+        template: '<md-button class="md-raised" ng-click="selectFile()">{{label}}</md-button><input id="file-select-input" type="file" name="file-select-input" accept="{{accept}}" style="display: none;"/><span class="pad10 text-16">{{selectedFile.name}}</span>',
+        link: function (scope, elements, attributes) {
+            var fileInput = $(elements[0]).find('#file-select-input');
+            scope.label = scope.label || 'Choose File';
+
+            
+            fileInput.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.selectedFile = changeEvent.target.files[0];
+                    scope.onFileSelect(scope.selectedFile);
+                });
+            });
+
+            scope.selectFile = function() {
+                fileInput.trigger('click');
+            }
         }
     }
 }]);
@@ -115,7 +152,9 @@ application.directive("pageHeader", [function() {
             
             scope.changeTab = function(tab) {
                 scope.currentTab = tab.id;
-                scope.onTabSelect(tab);
+                if(scope.onTabSelect) {
+                    scope.onTabSelect(tab);
+                }
             }
         }  
     }
@@ -192,7 +231,7 @@ application.directive("listLoader", ['$compile', function($compile) {
             }
             body.html(messageHtml)
             
-            scope.$watch('list', function(list){
+            scope.$watch('list', function(list) {
                 if(angular.isUndefined(list)) {
                     scope.showLoader = true;
                     body.addClass('hide')
@@ -211,10 +250,116 @@ application.directive("listLoader", ['$compile', function($compile) {
     }
 }]);
 
+application.directive("overviewCalendar", [function() {
+    return {
+        restrict: "E",
+        scope: {
+            minDate: '=',
+            maxDate: '=',
+            selectedDate: '=',
+            onDateSelect: '=',
+            barsData: '=',
+            theme: '='
+        },
+        templateUrl: application.globals.html.templates + 'overview-calendar.html',
+        link: function(scope, elements, attributes) {
+            scope.months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            scope.days = ["S", "M", "T", "W", "T", "F", "S"];
+
+            var getDateFromDay = function(day) {
+                return new Date(scope.selectedYear, scope.selectedMonth, day).getTime();
+            }            
+
+            var setMonthDates = function(month, year) {
+                var startWeekDay = new Date(year, month, 1).getDay(),
+                    lastDay =  new Date(year, month+1, 0).getDate();//month+1 gives proper result.
+
+                scope.monthDates = Array(startWeekDay).fill(0);
+                scope.validDates = [];
+
+                for(var i=0; i<lastDay; i++) {
+                    scope.monthDates.push(i+1);
+                    scope.validDates.push(scope.isRange(i+1));
+                }
+
+                var zeroPad = 7 - scope.monthDates.length % 7;
+                while(zeroPad>0) {
+                    scope.monthDates.push(0);
+                    zeroPad--;
+                }
+            }
+
+            scope.onDatePickerChange = function(month, year) {
+                var lastDay =  new Date(year, month+1, 0).getDate(),//month+1 gives proper result.
+                    date = 1;
+
+                while(!scope.isRange(date) && date <= lastDay+1) {
+                    date ++;
+                }
+                scope.selectedDate = date <= lastDay ? new Date(year, month, date).getTime() : undefined;
+            }
+
+            scope.onDaySelect = function(day) {
+                var date = getDateFromDay(day);
+                scope.selectedDate = date;    
+            }
+
+            scope.isSelectedDate = function(day) {
+                return scope.selectedDate == getDateFromDay(day);
+            }
+
+            
+
+            scope.$watchGroup(['minDate', 'maxDate'], function(values) {
+                var minDate = values[0],
+                    maxDate = values[1],
+                    minMonth = 0,
+                    maxMonth = 12;
+
+                if(angular.isDefined(minDate)) {
+                    minMonth = new Date(minDate).getMonth();
+                }
+
+                if(angular.isDefined(maxDate)) {
+                    maxMonth = new Date(maxDate).getMonth();
+                }
+
+                scope.isValidMonth = function(month) {
+                    month = scope.months.indexOf(month);
+                    return (month >= minMonth) && (month <= maxMonth);
+                }
+
+                scope.isRange = function(day) {
+                    if(day == 0) {
+                        return false;
+                    }
+                    var date = getDateFromDay(day);
+                    var result = true;
+                    result = result && (angular.isDefined(minDate) ? date >= minDate : true);
+                    result = result && (angular.isDefined(maxDate) ? date <= maxDate : true);
+                    return result;
+                }
+
+            })
+
+            scope.$watch('selectedDate', function(sD) {
+                if(angular.isDefined(sD)) {
+                    scope.onDateSelect(sD);
+                    sD = new Date(sD);
+                    scope.selectedMonth = sD.getMonth();
+                    scope.selectedYear = sD.getFullYear();
+                    setMonthDates(scope.selectedMonth, scope.selectedYear);
+                }   
+            }) 
+        }
+    }
+}])
+
 application.directive("appCard", ['AppService', function(AppService) {
     return {
         restrict: "E",
         scope: {
+            theme: '=',
             appInfo: '=',
             index: '='
         },
@@ -351,6 +496,35 @@ application.directive('googlePlay', ['$state', function($state) {
                     'width': 'auto'
                 };
             }
+        }
+    }
+}]);
+
+application.directive('chart', ['$state', function($state) {
+    return {
+        restrict:'E',
+        scope: {
+            chartData: '=',
+            chartLoaded: '=',
+            chartObject: '=?'
+        },
+        replace: true,
+        template: '<canvas class="chart-container"></canvas>',
+        link: function (scope, elements, attributes) {
+            var chartLoaded;
+            var chartData;
+            var chartElement = elements[0].getContext('2d');
+            scope.chartObject = null;
+            scope.$watchGroup(['chartLoaded', 'chartData'], function(values) {
+                chartLoaded = values[0];
+                chartData = values[1];
+                if(chartLoaded && chartData) {
+                    if(scope.chartObject != null) {
+                        scope.chartObject.destroy();
+                    }
+                    scope.chartObject = new Chart(chartElement, chartData);
+                }             
+            })
         }
     }
 }]);

@@ -1,0 +1,49 @@
+<style type="text/css">
+	.overview-calendar, .overview-calendar .day {
+		box-sizing: border-box;
+	}
+	.overview-calendar {
+		border: 1px solid #aaa;
+	}
+	.overview-calendar .day {
+		border: 1px solid #aaa;
+		padding-left: 5px;
+		font-size: 20px;
+	}
+	.overview-calendar .bars {
+		width: 100%;
+		height: 5px;
+		background: transparent;
+		margin: 5px 0 3px; 
+	}
+	.overview-calendar .bar {
+		margin-right: 5px;
+	}
+	.overview-calendar .day.not-in-range .bars, .overview-calendar .day.not-in-range .content {
+		opacity: 0.4;
+	}
+	@media(max-width: 600px) {
+		.overview-calendar .day {
+			font-size: 16px;
+		}
+		.overview-calendar .bars {
+			height: 3px;
+			margin: 3px 0 1px;
+		}
+	}
+</style>
+<md-select ng-model="selectedMonth" ng-change="onDatePickerChange(selectedMonth, selectedYear)" aria-label="month-select">
+	<md-option ng-show="isValidMonth(month)" ng-repeat="month in months" ng-value="$index">{{month}}</md-option>
+</md-select>
+<loader loader="barsData | isDefined : true"></loader>
+<div ng-show="barsData | isDefined" class="overview-calendar text-no-select" layout="row" layout-align="start start" layout-wrap>
+	<div class="day" ng-repeat="day in days track by $index" ng-class="'bg-theme-'+theme" ng-style="{'width': '14.28%', 'text-align': 'center'}">
+		{{day}}
+	</div>
+	<div class="day" ng-repeat="day in monthDates track by $index" ng-class="validDates[day-1] ? isSelectedDate(day) ? 'pointer bg-light-theme-'+theme : 'pointer' : 'not-in-range'" ng-style="{'width': '14.28%', 'height': 0, 'padding-bottom': '14.28%'}" ng-click="validDates[day-1] && onDaySelect(day)">
+		<div class="bars" layout="row">
+			<div class="bar" ng-repeat="bar in barsData[day]" ng-class="bar" flex></div>
+		</div>
+		<div class="content" ng-show="day">{{day}}</div>
+	</div>
+</div>

@@ -1,0 +1,22 @@
+<div class="content-container">
+	<page-header theme="globals.theme" header="Site Settings"></page-header>
+	<div class="card">
+		<div class="card-header text-size-d">Theme</div>
+		<div class="card-body" permission-check="appData.user.permission" min-permission="globals.permissions.USER">
+			<div class="full-width" layout="row" layout-align="start center">
+				<div class="mrgrt10 text-18">Color : </div>
+				<md-select class="mrg0 theme-select" ng-model="selectedTheme" aria-label="theme-select" ng-change="onThemeChange(selectedTheme)" flex-xs>
+		            <md-option ng-repeat="(themeId, themeColor) in availableThemes" ng-value="themeId">
+		                <div class="pad5" layout="row" layout-align="start center">
+		                	<div class="theme-select-color" ng-style="{'background': themeColor}"></div>
+		                    <div class="padlr5">
+		                    	<div class="text-16">{{themeId | uppercase}}</div>
+		                    	<div class="text-12">{{themeColor}}</div>
+		                    </div>
+		                </div>
+		            </md-option>
+		        </md-select>
+	        </div>
+		</div>
+	</div>
+</div>

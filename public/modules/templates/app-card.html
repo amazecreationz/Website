@@ -1,5 +1,5 @@
 <div class="card app-card" layout="column" layout-align="start center">
-    <div class="app-card-circle" ng-class="appInfo.showPage ? 'pointer' : 'no-pointer'" layout="row" layout-align="center center" ng-click="appInfo.showPage && goToApplicationPage()">
+    <div class="app-card-circle" ng-class="(appInfo.showPage ? 'pointer' : '') + ' bg'+(hover ? '-' : '-light-') + 'theme-' + theme" layout="row" layout-align="center center" ng-click="appInfo.showPage && goToApplicationPage()" ng-init="hover=false;" ng-mouseenter="hover=appInfo.showPage" ng-mouseleave="hover=false">
     	<md-icon>{{appInfo.icon}}</md-icon>
     </div>
     <span class="text-size-d app-card-name">{{appInfo.name}}</span>

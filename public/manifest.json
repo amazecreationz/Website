@@ -1,14 +1,14 @@
 {
-	"short_name": "Amaze Creationz",
-  	"name": "Amaze Creationz | Sleek Solutions Everywhere",
-  	"start_url": "/",
+	"short_name": "AMAZE CREATIONZ",
+  	"name": "AMAZE CREATIONZ",
   	"orientation": "portrait",
-  	"theme_color": "#D32F2F",
-  	"background_color": "#D32F2F",
-  	"display": "browser",
+  	"theme_color": "#455A64",
+  	"background_color": "#455A64",
+  	"display": "standalone",
   	"icons": [{
-	    "src": "resources/images/logo/logo.jpg",
-	    "type": "image/jpg"
+	    "src": "resources/images/logo/logo-circle-250.png",
+	    "type": "image/png",
+      "sizes": "250x250"
 	}],
 	"gcm_sender_id": "103953800507"
 }

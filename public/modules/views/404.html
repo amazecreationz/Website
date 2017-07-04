@@ -1,16 +1,15 @@
 <div class="content-container min-full-height padtop30" layout="row" layout-align="center start">
-    <div class="card" flex="60" flex-md="75" flex-sm="75" flex-xs="100" layout="column" layout-align="start start">
+    <div class="card" flex="75" flex-md="90" flex-sm="90" flex-xs="100" layout="column" layout-align="start start">
         <div class="border-bottom-1 full-width padbot10" layout="row" layout-align="start center">
-            <md-icon class="material-icon text-48 text-center text-dark-theme-red mrglr10">error</md-icon>
+            <md-icon class="material-icon text-48 text-center text-theme-red mrglr10">error</md-icon>
             <div class="mrgl10" flex>
-                <div class="text-28">Error Code: <span class="text-dark-theme-red">404</span></div>
+                <div class="text-28">Error Code: <span class="text-theme-red">404</span></div>
                 <div class="text-20">Page Not Found</div>
             </div>
         </div>
-        <div class="text-18 mrgtop30 mrgbot20">Oops! We can't seem to find the page<span ng-if="url" class="text-bold"> {{url}}</span> you are looking for or the page does not exist. Check the url you typed. :)</div>
+        <div class="text-18 mrgtop30 mrgbot20 text-justify">Oops! We can't seem to find the page<span ng-if="url" class="text-bold word-break"> {{url}}</span> you are looking for or the page does not exist. Check the url you typed. :)</div>
         <div class="full-width text-center">
             <md-button class="md-raised md-primary" ui-sref="home">Home</md-button> 
         </div>
-        
     </div>
 </div>

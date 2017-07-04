@@ -21,29 +21,19 @@
     padding-right: 0px;
 }
 .app-card-circle {
-    border: 2px solid;
-    border-radius: 50%;
-    height: 100px;
-    width: 100px;
-    margin: 10px;
-    transition: background-color 0.5s ease;
+   border-radius: 50%;
+   padding: 20px;
+   margin: 20px;
+   transition: background-color 0.5s ease; 
 }
 .app-card-circle md-icon {
     font-size: 60px;
-    margin: 20px;
     width: 60px;
     height: 60px;
-    color: rgba(0,0,0,0.87);
-}
-.app-card-circle:hover, .app-card-circle:focus {
-    background-color: #000;
-}
-.app-card-circle:hover md-icon, .app-card-circle:focus md-icon {
-    color: #fff;
 }
 .app-card-name {
     text-transform: uppercase;
-    margin: 40px 0 10px;
+    margin: 20px 0 10px;
 }
 .app-card-description {
     text-align: center;
@@ -53,5 +43,117 @@
 @media(max-width: 768px) {
     .app-cards, .app-pad, .app-pad.first, .app-pad.third {
         padding: 0;
+    }
+}
+
+.employee-list {
+    padding-right: 20px; 
+}
+.employee-list .divider {
+    border-top: 1px solid #ccc;
+    padding-bottom: 20px;
+    margin-top: 20px;
+}
+.employee-list .name {
+    font-size: 20px;
+}
+.employees-container {
+    margin-top: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 280px;
+}
+.employee {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.employee .image {
+    width: 50px;
+    height: 50px;
+    background-size: 50px 50px;
+    background-repeat: no-repeat;
+}
+.employee .icon, .employee .image {
+    border-radius: 50%;
+    margin-right: 20px;
+}
+.employee .icon {
+    padding: 10px;
+}
+.employee md-icon {
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+}
+.employee-container {
+    border-left: 1px solid #ccc;
+    padding-left: 20px;
+}
+.employee-container .image {
+    width: 150px;
+    height: 150px;
+    background-size: 150px 150px;
+    margin-right: 20px;
+}
+.employee-days, .employee-days .day {
+    border: 1px solid #ccc;
+}
+.employee-days .day {
+    padding: 10px 5px;
+    text-align: center;
+    font-size: 18px;
+}
+.employee-container .table {
+    font-size: 18px;
+}
+.employee-summary {
+    margin-left: 20px;
+    padding-top: 15px;
+    padding-left: 20px;
+    border-left: 1px solid #ccc;
+}
+.employee-daily {
+    padding: 10px 0 15px 0;
+}
+
+@media(max-width: 959px) {
+    .employee-list {
+        padding: 0;
+    }
+    .employee-container {
+        border-left: none;
+        padding: 20px 0 0 0;
+    }
+    .employee-summary {
+        border-top: 1px solid #ccc;
+        border-left: none;
+        padding: 15px 0 0 0;
+        margin: 15px 0 0 0;
+    }
+    .employee-daily {
+        padding: 0 0 15px 15px;
+        border-left: 1px solid #ccc; 
+    }
+}
+
+@media(max-width: 599px) {
+    .employee-container .image {
+        width: 150px;
+        height: 150px;
+        background-size: 150px 150px;
+        margin: 0 0 15px 0;
+    }
+    .employee-days {
+        margin-top: 10px;
+    }
+    .employee-container .table {
+        font-size: 16px;
+        margin-top: 15px;
+    }
+    .employee-daily {
+        border-left: none;
+        padding: 20px 0 10px 0;
+        margin: 0;
     }
 }
