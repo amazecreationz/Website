@@ -6,8 +6,32 @@
     "public": "public",
     "rewrites": [
       {
+        "source": "/manifest",
+        "destination": "/manifest.json"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/resources/js/*.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
+          }
+        ]
+      },
+      {
+        "source": "/resources/css/*.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
+          }
+        ]
       }
     ]
   }

@@ -1,0 +1,157 @@
+<div ng-Controller="SATController" class="content-container min-full-height sat" layout="column" layout-align="start center">
+	<page-header theme="globals.theme" header="{{appInfo.name}}" tabs="SAT.tabs" current-tab="SAT.currentTab" on-tab-select="SAT.onTabSelect"></page-header>
+	<line-message class="full-width" type="warning" message="BETA : Application is under development"></line-message>
+	<div ng-if="SAT.currentTab == 'overview'" class="full-width">
+		<div class="card">
+			<div class="card-header text-size-d">Description</div>
+			<div class="card-body text-justify">
+				<div class="padbot10">
+					SAT is a brand new web application by Amaze Creationz to save you from all the troubles in tracking your attendance.
+					It will give you a comprehensive analysis of your attendance for chosen periods. 
+					All your attendance data will be synced and you will be able to access it from anywhere.
+				</div>
+				<div class="padbot10">
+					Give us your feedback at : <a href="mailto:{{globals.feedback.email}}">{{globals.feedback.email}}</a>.
+				</div>
+			</div>
+		</div>
+		<div ng-hide="appInfo.contributorsList | isEmpty" class="card">
+			<div class="card-header text-size-d">Contributors</div>
+			<div class="card-body" layout="row" layout-wrap>
+				<loader flex="100" loader="!appInfo.contributorsList"></loader>
+				<contributor flex="33" flex-sm="50" flex-xs="100" ng-repeat="crewInfo in appInfo.contributorsList" crew-info="crewInfo" on-click="onCrewSelect"></contributor>
+			</div>
+		</div>
+	</div>
+	<div ng-if="SAT.currentTab == 'dashboard'" class="full-width">
+		<line-message ng-hide="appData.user.permission < globals.permissions.VISITOR" class="full-width" type="info" message="LOGIN REQUIRED : Please login to use the application"></line-message>
+		<div ng-class="{'card': mSize('gt-sm') || globals.permissions.VISITOR == appData.user.permission}">
+			<div permission-check="appData.user.permission" min-permission="globals.permissions.USER" layout="row" layout-sm="column" layout-xs="column">
+				<div ng-hide="!mSize('gt-sm') && (SAT.periodList | isEmpty)" class="section-list" ng-class="{'card': !mSize('gt-sm')}" flex="40" flex-sm="100" flex-xs="100">
+					<div class="each text-no-select" layout="row" layout-align="center center" ng-class="hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="SAT.periodFunction('add')">
+						<div class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
+                            <md-icon class="material-icons text-size-c">add</md-icon>
+                        </div>
+                        <div class="title" flex>Add Period</div>
+					</div>
+					<div class="divider"></div>
+					<div class="scroll-container">
+						<loader loader="SAT.periodList | isDefined : true" flex="100"></loader>
+						<div class="each text-no-select" ng-init="hover=false" ng-repeat="(key, period) in SAT.periodList" ng-class="hover || (key == SAT.period.id) ? 'bg-light-theme-'+globals.theme : ''" ng-mouseover="hover=true" ng-mouseleave="hover=false" ng-click="SAT.periodFunction('select', key)">
+							<div class="title">{{period.l}}</div>
+							<div class="sub-title">{{period.i}}</div>
+						</div>
+					</div>
+				</div>
+				<div id="section-form" class="section-form" ng-class="{'card': !mSize('gt-sm')}" layout="column" flex>
+					<div ng-show="SAT.periodList | isDefined" class="card-header text-size-d" hide-gt-sm>{{SAT.period.id ? 'Period Info' : 'Add Period'}}</div>
+					<loader class="full-width" loader="SAT.loadPeriod"></loader>
+					<div ng-hide="SAT.loadPeriod" ng-class="{'card-body': !mSize('gt-sm')}" layout="column" flex>
+						<form ng-if="SAT.showPeriodForm" name="periodForm" ng-submit="SAT.periodFunction('save', SAT.period.id)">
+							<md-input-container class="full-width mrgbot0 mrgtop15" flex-gt-xs>
+	                            <label>Label</label>
+	                            <input type="text" name="label" ng-model="SAT.period.l" autocomplete="off" required autofocus>
+	                            <div ng-messages="periodForm.label.$error" role="alert">
+	                                <div ng-message="required">Label can't be empty.</div>
+	                            </div>
+	                        </md-input-container>
+	                        <div layout-gt-xs="row">
+		                        <md-input-container class="full-width mrgbot0 mrgtop15" flex-gt-xs="60">
+		                            <label>Institute</label>
+		                            <input type="text" name="institute" ng-model="SAT.period.i" autocomplete="off" required>
+		                            <div ng-messages="periodForm.institute.$error" role="alert">
+		                                <div ng-message="required">Institute can't be empty.</div>
+		                            </div>
+		                        </md-input-container>
+		                        <md-input-container class="full-width mrgbot0 mrgtop15" flex-gt-xs>
+		                        	<label>Start Date</label>
+                                    <md-datepicker ng-model="SAT.sD" md-max-date="SAT.today" md-placeholder="Start Date" required ng-disabled="SAT.period.id"></md-datepicker>
+		                        </md-input-container>
+	                        </div>
+	                        <div class="full-width text-center mrgtop30">
+	                        	<md-button type="submit" class="md-raised">Save</md-button>
+	                        	<md-button ng-if="SAT.period.id" class="md-raised md-primary" ng-click="SAT.periodFunction('select', SAT.period.id)">Cancel</md-button>
+	                        </div>
+						</form>
+						<div ng-if="!SAT.showPeriodForm" layout="column" flex>
+							<div flex>
+								<table class="table">
+                                    <tbody>
+                                        <tr class="padtb10">
+                                            <td class="text-bold">Label</td>
+                                            <td class="padlr10">:</td>
+                                            <td>{{SAT.period.l}}</td>
+                                        </tr>
+                                        <tr class="padtb10">
+                                            <td class="text-bold">Institute</td>
+                                            <td class="padlr10">:</td>
+                                            <td>{{SAT.period.i}}</td>
+                                        </tr>
+                                        <tr class="padtb10">
+                                            <td class="text-bold no-word-wrap">Start Date</td>
+                                            <td class="padlr10">:</td>
+                                            <td>{{SAT.period.sD | date : 'dd MMMM, yyyy'}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>     
+							</div>
+							<div class="full-width text-right mrgtop30 text-28">
+                                <md-icon class="pointer" ng-click="SAT.periodFunction('edit', SAT.period.id)">edit</md-icon>
+                                <md-icon class="pointer" ng-click="SAT.periodFunction('delete', SAT.period.id)">delete</md-icon>
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-if="SAT.period.id" ng-class="{'card': mSize('gt-sm')}">
+			<div layout="row" layout-sm="column" layout-xs="column">
+				<div ng-hide="!mSize('gt-sm') && (SAT.courseList | isEmpty)" class="section-list" ng-class="{'card': !mSize('gt-sm')}" flex="40" flex-sm="100" flex-xs="100">
+					<div class="each text-no-select" layout="row" layout-align="center center" ng-class="chover ? 'bg-light-theme-'+globals.theme : ''" ng-init="chover=false" ng-mouseenter="chover=true" ng-mouseleave="chover=false" ng-click="SAT.courseFunction('add')">
+						<div class="icon" ng-class="'bg' + (chover ? '-' : '-light-') + 'theme-' + globals.theme">
+	                        <md-icon class="material-icons text-size-c">add</md-icon>
+	                    </div>
+	                    <div class="title" flex>Add Course</div>
+					</div>
+					<div class="divider"></div>
+					<div class="scroll-container">
+						<loader loader="SAT.courseList | isDefined : true" flex="100"></loader>
+						<div class="each text-no-select" ng-init="hover=false" ng-repeat="(key, course) in SAT.courseList" ng-class="hover || (key == SAT.course.id) ? 'bg-light-theme-'+globals.theme : ''" ng-mouseover="hover=true" ng-mouseleave="hover=false" ng-click="SAT.courseFunction('select', key)">
+							<div class="title">{{course.l}}</div>
+							<div class="sub-title">{{course.p}}</div>
+						</div>
+					</div>
+				</div>
+				<div id="course-form" class="section-form" ng-class="{'card': !mSize('gt-sm')}" layout="column" flex>
+					<div ng-show="SAT.courseList | isDefined" class="card-header text-size-d" hide-gt-sm>{{SAT.course.id ? 'Course Info' : 'Add Course'}}</div>
+					<loader class="full-width" loader="SAT.loadCourse"></loader>
+					<div ng-show="SAT.courseList | isDefined" ng-class="{'card-body': !mSize('gt-sm')}" layout="column" flex>
+						<form ng-if="SAT.showCourseForm" name="courseForm" ng-submit="SAT.courseFunction('save', SAT.course.id)">
+							<md-input-container class="full-width mrgbot0 mrgtop15" flex-gt-xs>
+	                            <label>Label</label>
+	                            <input type="text" name="label" ng-model="SAT.course.l" autocomplete="off" required autofocus>
+	                            <div ng-messages="courseForm.label.$error" role="alert">
+	                                <div ng-message="required">Label can't be empty.</div>
+	                            </div>
+	                        </md-input-container>
+						</form>
+						<div ng-if="!SAT.showCourseForm" layout="column" flex>
+							
+							<div class="full-width text-right mrgtop30 text-28">
+	                            <md-icon class="pointer" ng-click="SAT.courseFunction('edit', SAT.course.id)">edit</md-icon>
+	                            <md-icon class="pointer" ng-click="SAT.courseFunction('delete', SAT.course.id)">delete</md-icon>
+	                        </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-if="SAT.period.id" class="card">
+			<div class="card-header text-size-d">Daily Summary</div>
+			<loader loader="SAT.loadPeriod" flex="100"></loader>
+			<div ng-hide="SAT.loadPeriod" class="card-body">
+				
+			</div>
+		</div>
+	</div>
+</div>

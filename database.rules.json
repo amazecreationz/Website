@@ -1,5 +1,24 @@
 {
   "rules": {
+    "appData" : {
+      "EmployeeMeter": {
+        "$userId" : {
+          ".read": "auth.uid === $userId",
+          ".write": "auth.uid === $userId",
+          "eD": {
+            "$eID": {
+              ".indexOn": "key"
+            }
+          }
+        }
+      },
+      "GPACalculator": {
+        "$user" : {
+          ".read": "auth.uid === $user",
+          ".write": "auth.uid === $user"
+        }
+      }
+    },
     "crew": {
       ".indexOn": [
         "crewType",
@@ -42,7 +61,8 @@
       ".write": "data.child(auth.uid).child('permission').val() === 0",
       ".read": "data.child(auth.uid).child('permission').val() <= 1",
       "$userId": {
-        ".read": "auth.uid === $userId"
+        ".read": "auth.uid === $userId",
+        ".write": "auth.uid === $userId"
       }
     },
     ".write": "root.child('users').child(auth.uid).child('permission').val() === 0",

@@ -1,0 +1,29 @@
+<md-dialog class="modal-container" aria-label="User">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{dialog.course.l}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <div class="card">
+                <div class="card-header text-size-d">Course Info</div>
+                <div class="card-body">
+                    <form name="courseInfoForm" ng-submit="">
+                        
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header text-size-d">Add Session</div>
+                <div class="card-body">
+                    
+                </div>
+            </div>
+        </div>
+    </md-dialog-content>
+</md-dialog>

@@ -67,8 +67,8 @@
   		<div class="loader-shadow layout-row layout-align-center-center">
   			<img src="/resources/images/gif/wave.gif">
   		</div>
-  		<div class="body-container" layout="row">
-			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-md')" md-swipe-left="closeSideMenu()" layout="column" flex>
+  		<div class="body-container" layout="row" ng-init="fullScreen=false">
+			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-md') && !fullScreen" md-swipe-left="closeSideMenu()" layout="column" flex>
 	            <div class="side-menu-user-container" ng-class="'bg-theme-'+globals.theme" layout="column" layout-align="end start">
 	                <div class="padbot10">
 	                    <img ng-if="globals.permissions.USER >= appData.user.permission" class="img-circle"  width="60px" height="auto" ng-src="{{appData.user.image}}">
@@ -90,10 +90,12 @@
 	            </div>
 	        </md-sidenav>
 		    <div class="app-container" layout="column">
-		        <nav class="nav-bar">
+		        <nav class="nav-bar" ng-style="fullScreen && {'z-index': 59}">
 		            <div class="nav-wrapper" ng-class="'bg-theme-'+globals.theme" layout="row" layout-align="end center">
-		                <div class="nav-menu-button" ng-click="openSideMenu()" hide-gt-md>
-		                	<md-icon class="material-icons text-size-d">menu</md-icon>
+		                <div class="nav-menu-button">
+		                	<md-icon class="material-icons text-size-d" ng-click="openSideMenu();" hide-gt-md>menu</md-icon>
+		                	<md-icon ng-show="fullScreen" class="material-icons text-size-c" hide show-gt-md ng-click="fullScreen = false;">fullscreen_exit</md-icon>
+		                	<md-icon ng-show="!fullScreen" class="material-icons text-size-c" hide show-gt-md ng-click="$mdSidenav('side-menu').close(); fullScreen = true;">fullscreen</md-icon>
 		                </div>
 		                <div flex="auto" class="nav-brand-name text-size-d">
 		                    <span class="pointer text-uppercase text-no-select" ui-sref="home">{{globals.title}}</span>
@@ -146,7 +148,7 @@
   		<script type="text/javascript" src="resources/js/underscore-min.js"></script>
   		<script type="text/javascript" src="resources/js/async.min.js"></script>
   		<script type="text/javascript" src="resources/js/amazecreationz.min.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+  		<script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
 		<script>
 			var config = {
 				apiKey: "AIzaSyBOutg7AYZilNdMaQr-p-15QGk-JaszRDA",
