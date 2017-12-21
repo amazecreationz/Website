@@ -1,7 +1,7 @@
-<md-dialog class="modal-container full-screen" aria-label="Add Crew">
+<md-dialog class="modal-container full-screen" aria-label="Add Query">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2 md-truncate>{{query.content}}</h2>
+            <h2 md-truncate>{{query.c}}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
@@ -18,12 +18,12 @@
                             <tr class="padtb5">
                                 <td class="text-bold">Name</td>
                                 <td class="padlr5">:</td>
-                                <td>{{query.name}}</td>
+                                <td>{{query.n}}</td>
                             </tr>
                             <tr class="padtb5">
                                 <td class="text-bold">Email</td>
                                 <td class="padlr5">:</td>
-                                <td>{{query.email}}</td>
+                                <td>{{query.e}}</td>
                             </tr>
                             <tr ng-show="query.uid" class="padtb5">
                                 <td class="text-bold">UserID</td>
@@ -33,17 +33,17 @@
                             <tr class="padtb5">
                                 <td class="text-bold">Date</td>
                                 <td class="padlr5">:</td>
-                                <td>{{query.date | date: dialog.dateFormat}}</td>
+                                <td>{{query.d | date: dialog.dateFormat}}</td>
                             </tr>
                             <tr class="padtb5">
                                 <td class="text-bold">Content</td>
                                 <td class="padlr5">:</td>
-                                <td class="word-break">{{query.content}}</td>
+                                <td class="word-break">{{query.c}}</td>
                             </tr>
                             <tr ng-if="query.replyDate && !showLoader" class="padtb5">
                                 <td class="text-bold">Reply</td>
                                 <td class="padlr5">:</td>
-                                <td class="word-break">{{query.reply}} at {{query.replyDate | date: dialog.dateFormat}}</td>
+                                <td class="word-break">{{query.r}} at {{query.rD | date: dialog.dateFormat}}</td>
                             </tr>
                         </tbody>
                     </table>

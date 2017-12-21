@@ -1,6 +1,60 @@
-<div class="content-container">
+<div class="content-container profile">
 	<page-header theme="globals.theme" header="Profile"></page-header>
+	<div class="card min-zero-height">
+		<div class="card-body">
+			<div layout-gt-xs="row" layout-xs="column" layout-align-xs="start center">
+				<div class="image" ng-class="'{{'bg-light-theme-'+globals.theme}}'" image-load image="appData.user.pURL" layout="column" layout-align="end center">
+					<div class="edit" ng-click="changePicture()">CHANGE</div>
+				</div>
+				<div class="content" layout="column">
+					<table flex>
+						<tbody>
+							<tr>
+								<td class="text-bold">Name</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{appData.user.n}}</td>
+							</tr>
+							<tr>
+								<td class="text-bold">Email</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{appData.user.e}}</td>
+							</tr>
+							<tr>
+								<td class="text-bold">User ID</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{appData.user.uid}}</td>
+							</tr>
+							<tr>
+								<td class="text-bold">Permission</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{getPermissionLabel(appData.user.p)}}</td>
+							</tr>
+						</tbody>
+					</table>
+					<div ng-if="false" class="mrgtop20">
+						<md-button class="md-raised md-primary mrg0" ng-click="editProfile()">Edit Profile</md-button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="card">
-		Profile Card
+		<div class="card-header text-size-d">Theme</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.USER">
+			<div class="full-width" layout="row" layout-align="start center">
+				<div class="mrgrt10 text-18">Color : </div>
+				<md-select class="mrg0 theme-select" ng-model="selectedTheme" aria-label="theme-select" ng-change="onThemeChange(selectedTheme)" flex-xs>
+		            <md-option ng-repeat="(themeId, themeColor) in availableThemes" ng-value="themeId">
+		                <div class="pad5" layout="row" layout-align="start center">
+		                	<div class="theme-select-color" ng-style="{'background': themeColor}"></div>
+		                    <div class="padlr5">
+		                    	<div class="text-16">{{themeId | uppercase}}</div>
+		                    	<div class="text-12">{{themeColor}}</div>
+		                    </div>
+		                </div>
+		            </md-option>
+		        </md-select>
+	        </div>
+		</div>
 	</div>
 </div>

@@ -13,7 +13,7 @@
 		<meta name="author" content="Anand Mohan">  	
 
 		<meta name=”og:title” content=”Amaze Creationz”>
-		<meta name=”og:image” content=”/resources/images/logo/logo-large.jpg”>
+		<meta name=”og:image” content=”https://static.amazecreationz.in/images/logo/logo-large.jpg”>
 		<meta name=”og:description content=”Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, EmployeeMeter and so on.”>
 
 		<meta name="twitter:card" content="Amaze Creationz">
@@ -21,16 +21,16 @@
 		<meta name="twitter:creator" content="@anandmoghan">
 		<meta name="twitter:title" content="Amaze Creationz">
 		<meta name="twitter:description" content="Welcome to Amaze Creationz | Sleek Solutions Everywhere. We provide software that helps you in your day to day lives. Some of our applications are GPA Calculator, EmployeeMeter and so on.">
-		<meta name="twitter:image" content="/resources/images/logo/logo-large.jpg">
+		<meta name="twitter:image" content="https://static.amazecreationz.in/images/logo/logo-large.jpg">
 
 		<link rel="SHORTCUT ICON" href="resources/images/favicon.ico">
     	<link rel="manifest" href="/manifest">
     	<!--CSS INCLUDES START-->
-			<link rel="stylesheet" type="text/css" href="resources/css/angular-material.min.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/material-icons.css">
+			<link rel="stylesheet" type="text/css" href="https://static.amazecreationz.in/latest/css/angular-material.min.css">
+			<link rel="stylesheet" type="text/css" href="https://static.amazecreationz.in/latest/css/material-icons.css">
+			<link rel="stylesheet" type="text/css" href="https://static.amazecreationz.in/latest/css/pt-sans.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/amazecreationz-design.css">
 			<link rel="stylesheet" type="text/css" href="resources/css/style.css">
-			<link rel="stylesheet" type="text/css" href="resources/css/pt-sans.css">
 		<!--CSS INCLUDES END--> 		
 		<script type="application/ld+json">
 			{
@@ -38,7 +38,7 @@
 		  		"@type" : "Organization",
 		  		"name" : "Amaze Creationz",
 		  		"url" : "http://www.amazecreationz.in",
-				"logo": "https://www.amazecreationz.in/resources/images/logo.png",
+				"logo": "https://static.amazecreationz.in/images/logo.png",
 		  		"sameAs" : [
 		    		"https://www.facebook.com/amazecreationz",
 		    		"https://www.twitter.com/amazecreationz",
@@ -64,29 +64,35 @@
 		<!--GA INCLUDES END-->
   	</head>
   	<body ng-app="amazecreationz" ng-controller="AppController" md-theme="globals.theme">
-  		<div class="loader-shadow layout-row layout-align-center-center">
-  			<img src="/resources/images/gif/wave.gif">
+  		<div class="loader-shadow layout-column layout-align-center-center">
+  			<div class="logo" style="background-image: url('resources/images/logo.jpg')"></div>
+  			<div class="linear-loader">
+  				<div class="md-container">
+  					<div class="md-bar md-bar2"></div>
+  				</div>
+  			</div>
+  			<div style="margin-top: 60px;"></div>
   		</div>
   		<div class="body-container" layout="row" ng-init="fullScreen=false">
 			<md-sidenav class="md-sidenav-left" md-component-id="side-menu" md-whiteframe="1" md-is-locked-open="$mdMedia('gt-md') && !fullScreen" md-swipe-left="closeSideMenu()" layout="column" flex>
 	            <div class="side-menu-user-container" ng-class="'bg-theme-'+globals.theme" layout="column" layout-align="end start">
 	                <div class="padbot10">
-	                    <img ng-if="globals.permissions.USER >= appData.user.permission" class="img-circle"  width="60px" height="auto" ng-src="{{appData.user.image}}">
-	                    <md-icon ng-if="globals.permissions.USER < appData.user.permission" class="material-icons text-48">account_circle</md-icon>
+	                    <img ng-if="globals.p.USER >= appData.user.p" class="img-circle"  width="60px" height="60px" ng-src="{{appData.user.pURL}}">
+	                    <md-icon ng-if="globals.p.USER < appData.user.p" class="material-icons text-48">account_circle</md-icon>
 	                </div>
-	                <div ng-if="globals.permissions.USER < appData.user.permission" class="text-16">Hello Guest!</div>
-	                <div class="text-16 text-bold" md-truncate>{{appData.user.name}}</div>
-	                <div class="text-14" md-truncate>{{appData.user.email}}</div>
-	                <span ng-show="globals.permissions.USER >= appData.user.permission" class="pointer text-12 text-bold-hover" ng-click="signOut();">Sign Out</span>
+	                <div ng-if="globals.p.USER < appData.user.p" class="text-16">Hello Guest!</div>
+	                <div class="text-16 text-bold" md-truncate>{{appData.user.n}}</div>
+	                <div class="text-14" style="margin-top: -3px;" md-truncate>{{appData.user.e}}</div>
+	                <span ng-show="globals.p.USER >= appData.user.p" class="pointer text-12 text-bold-hover" style="margin-top: -1px;" ng-click="signOut();">Sign Out</span>
 	            </div>
 	            <div class="side-menu-tabs-container" flex="auto">
-	                <div class="side-menu-tab" ng-if="(tab.permission >= appData.user.permission) && !tab.hide" ng-repeat="tab in appData.tabs" ng-class="appData.current_tab==tab.id ? 'active bg-light-theme-'+globals.theme : hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="openTab(tab)">
+	                <div class="side-menu-tab" ng-if="(tab.p >= appData.user.p) && !tab.hide" ng-repeat="tab in appData.tabs" ng-class="appData.current_tab==tab.id ? 'active bg-light-theme-'+globals.theme : hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="openTab(tab)">
 	                    <md-icon class="material-icons text-20">{{tab.icon}}</md-icon>
 	                    <span class="padlr10 text-16">{{tab.name}}</span>
 	                </div>
 	            </div>
-	            <div class="side-menu-footer">
-	                <md-button ng-if="globals.permissions.USER < appData.user.permission" id="my-login" class="md-raised side-menu-button" ng-click="login();"  layout="row" layout-align="center center"><img class="mrgrt20" height="24px" width="auto" src="/resources/images/icons/google.png"/>Sign in with Google</md-button>
+	            <div class="side-menu-footer" layout="column">
+	                <md-button ng-if="globals.p.VISITOR == appData.user.p" class="md-raised md-primary mrg20" ng-click="customLogin()">Sign in / Sign up</md-button>
 	            </div>
 	        </md-sidenav>
 		    <div class="app-container" layout="column">
@@ -94,19 +100,20 @@
 		            <div class="nav-wrapper" ng-class="'bg-theme-'+globals.theme" layout="row" layout-align="end center">
 		                <div class="nav-menu-button">
 		                	<md-icon class="material-icons text-size-d" ng-click="openSideMenu();" hide-gt-md>menu</md-icon>
-		                	<md-icon ng-show="fullScreen" class="material-icons text-size-c" hide show-gt-md ng-click="fullScreen = false;">fullscreen_exit</md-icon>
-		                	<md-icon ng-show="!fullScreen" class="material-icons text-size-c" hide show-gt-md ng-click="$mdSidenav('side-menu').close(); fullScreen = true;">fullscreen</md-icon>
+		                	<md-icon ng-show="false" class="material-icons text-size-c" hide show-gt-md ng-click="fullScreen = false;">fullscreen_exit</md-icon>
+		                	<md-icon ng-show="false" class="material-icons text-size-c" hide show-gt-md ng-click="$mdSidenav('side-menu').close(); fullScreen = true;">fullscreen</md-icon>
 		                </div>
-		                <div flex="auto" class="nav-brand-name text-size-d">
+		                <div flex="auto" class="nav-brand-name text-size-d" layout-xs="column" layout-align-xs="center center">
 		                    <span class="pointer text-uppercase text-no-select" ui-sref="home">{{globals.title}}</span>
 		                </div>
-		                <div ng-show="globals.permissions.USER >= appData.user.permission" class="nav-icon" ng-init="hover=false;" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="showNotificationsPopup(); $event.stopPropagation();">
+		                <div ng-show="globals.p.USER >= appData.user.p" class="nav-icon" ng-init="hover=false;" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="showNotificationsPopup(); $event.stopPropagation();">
 		                	<md-icon class="text-size-d" ng-class="(hover || showNotifications) ? 'hide' : 'bg-theme-'+globals.theme">notifications</md-icon>
 		                	<md-icon class="text-size-d" ng-class="(hover || showNotifications) ? 'bg-light-theme-'+globals.theme : 'hide'">notifications_active</md-icon>
 		                </div>
 		                <div class="mrgrt20" hide-xs></div>
 		                <div class="mrgrt15" hide-gt-xs></div>
 		            </div>
+		            <md-progress-linear ng-show="appData.viewLoader" md-mode="query"></md-progress-linear>
 		        </nav>
 		        <div class="notifications-container" ng-class="{'closed': !showNotifications}" layout="column" ng-click="$event.stopPropagation()">
 		        	<div class="notifications-header" ng-class="'bg-theme-'+globals.theme" layout="row">
@@ -132,24 +139,13 @@
 		        		</div>
 		        	</div>
 		        </div>
-		        <div class="main-container" ui-view></div>
+		        <div ng-hide="appData.viewLoader" class="main-container" ui-view></div>
 				<footer class="hide"></footer>
 	        </div>
         </div>
-  		<script type="text/javascript" src="resources/js/jquery.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular-animate.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular-aria.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular-material.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular-messages.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular-ui-router.min.js"></script>
-  		<script type="text/javascript" src="resources/js/angular-sanitize.min.js"></script>
-  		<script type="text/javascript" src="resources/js/ng-file-upload.min.js"></script>
-  		<script type="text/javascript" src="resources/js/underscore-min.js"></script>
-  		<script type="text/javascript" src="resources/js/async.min.js"></script>
-  		<script type="text/javascript" src="resources/js/amazecreationz.min.js"></script>
-  		<script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script>
-		<script>
+  		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/amazecreationz-bundle.min.js"></script>
+  		<script type="text/javascript" src="/resources/js/amazecreationz.min.js"></script>
+		<script type="text/javascript">
 			var config = {
 				apiKey: "AIzaSyBOutg7AYZilNdMaQr-p-15QGk-JaszRDA",
 				authDomain: "amazecreationz-web.firebaseapp.com",

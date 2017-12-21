@@ -6,6 +6,12 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 		controller: 'HomeController'
 	});
 
+	$stateProvider.state('login', {
+		url:'/login?signup=&rP=&code=&redirect=',
+		templateUrl: application.globals.html.views + 'login.html',
+		controller: 'LoginController'
+	});	
+
 	$stateProvider.state('apps', {
 		url:'/applications',
 		templateUrl: application.globals.html.views + 'applications.html',
@@ -21,11 +27,14 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 	$stateProvider.state('console.tab', {
 		url:'/:tab?id=',
 		templateUrl: application.globals.html.views + 'include.html',
-		controller: 'ConsoleTabController'
+		controller: 'ConsoleTabController',
+		params: {
+			action: null
+		}
 	});
 
 	$stateProvider.state('profile', {
-		url:'/profile',
+		url:'/profile?action=',
 		templateUrl: application.globals.html.views + 'profile.html',
 		controller: 'ProfileController'
 	});
@@ -62,7 +71,10 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 		controller: 'IncludeController'
 	});
 
+	$urlRouterProvider.when('/token', '/');
+
 	$urlRouterProvider.otherwise(function($injector, $location){
+		console.log($location.url())
 	    $injector.get('$state').go('error', {url: $location.path()});
 	    return $location.path();
 	});

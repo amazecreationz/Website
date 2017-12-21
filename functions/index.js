@@ -9,6 +9,18 @@ var runThroughCORS = function (request, response, responseData) {
 	})
 }
 
+exports.createCustomToken = functions.https.onRequest(function(request, response) {
+	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
+		if(isAuthorised) {
+			FirebaseService.getCustomToken(message, function(data) {
+				runThroughCORS(request, response, data)
+			});
+		} else {
+			runThroughCORS(request, response, message)
+		}
+	})
+});
+
 exports.userLogin = functions.https.onRequest(function(request, response) {
 	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
 		if(isAuthorised) {

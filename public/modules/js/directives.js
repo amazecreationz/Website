@@ -7,14 +7,16 @@ application.directive("imageLoad", [function() {
         },
         link: function(scope, elements, attributes) {
             scope.$watch('image', function(image){
-                var location = scope.location ? scope.location : '';
+                var location = scope.location ? 'https://static.amazecreationz.in' + scope.location : '';
                 var parent = $(elements[0]);
                 var imgLoaded = false;
-                if(location && imgLoaded) {
+                if(location && !imgLoaded) {
                     var thumbs = new Image();
                     thumbs.src = location+'thumbs/'+image;
                     thumbs.onload = function() {
-                      parent.css({'background-image':'url('+thumbs.src+')'});
+                        if(!imgLoaded) {
+                            parent.css({'background-image':'url('+thumbs.src+')'});
+                        }
                     }
                 }
                 var img = new Image();
@@ -35,9 +37,10 @@ application.directive("fileSelect", [function () {
             onFileSelect: '=',
             selectedFile: '=',
             label: '=',
+            hideName: '@',
             accept: '@'
         },
-        template: '<md-button class="md-raised" ng-click="selectFile()">{{label}}</md-button><input id="file-select-input" type="file" name="file-select-input" accept="{{accept}}" style="display: none;"/><span class="pad10 text-16">{{selectedFile.name}}</span>',
+        template: '<md-button class="md-raised" ng-click="selectFile()">{{label}}</md-button><input id="file-select-input" type="file" name="file-select-input" accept="{{accept}}" style="display: none;"/><span ng-hide="hideName" class="pad10 text-16">{{selectedFile.name}}</span>',
         link: function (scope, elements, attributes) {
             var fileInput = $(elements[0]).find('#file-select-input');
             scope.label = scope.label || 'Choose File';
@@ -124,7 +127,7 @@ application.directive("loader", ['$compile', function($compile) {
         scope: {
             loader: '=',
         },
-        template: '<div ng-if="loader" class="mrg20" layout="row" layout-align="space-around"><md-progress-circular class="md-primary" md-diameter="40"></md-progress-circular></div',
+        template: '<div ng-if="loader" class="mrg20" layout="row" layout-align="space-around"><md-progress-circular class="md-primary" md-diameter="40"></md-progress-circular></div>',
         link: function(scope, elements, attributes) {}
     }
 }]);
@@ -135,12 +138,11 @@ application.directive("pageHeader", [function() {
         replace: true,
         scope: {
             theme: '=',
+            backButton: '=',
             header: '@',
             tabs: '=',
             currentTab: '=',
             onTabSelect: '=',
-            buttonLabel: '@',
-            buttonClick: '=',
             menuItems: '=',
             menuFunction: '='
         },
@@ -148,6 +150,10 @@ application.directive("pageHeader", [function() {
         link: function(scope, elements, attributes) {
             if(scope.tabs && !scope.currentTab) {
                 scope.currentTab = scope.tabs[0].id;
+            }
+
+            scope.goBack = function() {
+                history.back();
             }
             
             scope.changeTab = function(tab) {
@@ -172,7 +178,7 @@ application.directive("permissionCheck", ['$compile', 'AppService', function($co
             var permissions = angular.copy(application.permissions);
             var minPermission = scope.minPermission;
             var bodyHtml = body.html();
-            var emptyDiv = '<div class="padtb15"></div>'
+            var emptyDiv = '<div></div>'
             var loginMessageHtml = '<span>You have to <span class="text-bold pointer" ng-click="showLogin()">login</span> to view this content.</span>'
             var permissionsMessageHtml = '<span>You don\'t have sufficient permissions to view this content. Contact Administrator.</span>'
             
@@ -180,7 +186,7 @@ application.directive("permissionCheck", ['$compile', 'AppService', function($co
             var messageDiv = body.next();
 
             scope.showLogin = function(){
-                AppService.showLogin();
+                AppService.customLogin();
             }
 
             scope.$watch('permissionCheck', function(permissionCheck){
@@ -358,6 +364,7 @@ application.directive("overviewCalendar", [function() {
 application.directive("appCard", ['AppService', function(AppService) {
     return {
         restrict: "E",
+        replace: true,
         scope: {
             theme: '=',
             appInfo: '=',
@@ -385,54 +392,43 @@ application.directive("user", ['FirebaseService', function(FirebaseService) {
     return {
         restrict: "E",
         scope: {
-            userInfo: '=',
+            info: '=',
             userId: '=',
-            onClick: '='
+            onClick: '=',
+            theme: '='
         },
         templateUrl: application.globals.html.templates + 'user.html',
         link: function(scope, elements, attributes) {
-            if(scope.userInfo) {
-                scope.userData = scope.userInfo;
+            if(scope.info) {
+                scope.userData = scope.info;
             }
             else if(scope.userId) {
-                FirebaseService.getUserInfo(scope.userId, function(userInfo) {
-                    scope.userData = userInfo;
+                FirebaseService.getUserInfo(scope.userId, function(info) {
+                    scope.userData = info;
                 });
             }
         }
     }
 }]);
 
-application.directive("crew", ['FirebaseService', function(FirebaseService) {
+application.directive("teamMember", ['AppService', function(AppService) {
     return {
         restrict: "E",
         scope: {
-            crewInfo: '=',
-            crewUrl: '=',
-            isSmall: '=',
-            onClick: '='
+            info: '=',
+            onClick: '=',
+            theme: '='
         },
-        templateUrl: application.globals.html.templates + 'crew.html',
+        template: '<div ng-click="onTeamSelect(info)" style="padding: 10px 15px; cursor: pointer;" ng-class="{\'bg-light\': hover}" layout="row" layout-align="start center" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false"><div style="width: 50px; height: 50px; background-size: 50px; border-radius: 50%; margin-right: 10px;" ng-class="\'bg-light-theme-\'+\'{{theme}}\'" image-load image="info.pURL"></div><div style="padding: 0 10px;" ><div style="font-size: 20px;">{{info.n}}</div><div style="margin-top: -5px; font-size: 14px;">{{info.e}}</div></div></div>',
         link: function(scope, elements, attributes) {
-            if(angular.isDefined(scope.crewUrl)) {
-                FirebaseService.getCrewInfoFromURL(scope.crewUrl, function(crewInfo) {
-                    scope.crewInfo = crewInfo;
-                    _.defer(function(){scope.$apply();});
-                })
+            scope.onTeamSelect = function(info) {
+                AppService.viewProfile(info.profileURL);
+            }
+
+            if (angular.isDefined(scope.onClick)) {
+                scope.onTeamSelect = scope.onClick;
             }
         }
-    }
-}]);
-
-application.directive("contributor", ['AppService', function(AppService) {
-    return {
-        restrict: "E",
-        scope: {
-            crewInfo: '=',
-            onClick: '='
-        },
-        templateUrl: application.globals.html.templates + 'contributor.html',
-        link: function(scope, elements, attributes) {}
     }
 }]);
 
@@ -462,7 +458,7 @@ application.directive('tags', ['$state', function($state) {
         scope: {
             tagData: '='
         },
-        template: "<span ng-repeat=\"tag in tagData | orderBy : 'priority' : true\" style='background-color: {{tag.color}}; padding: 5px 10px; margin: 0 5px; color: #FFF'>{{tag.title}}</span>",
+        template: "<div layout='row'><div ng-repeat=\"tag in tagData | orderBy : 'priority' : true\" ng-class=\"'text-no-select bg-theme-'+tag.theme\" style='padding: 5px 10px; margin-right: 10px;'>{{tag.title}}</div></div>",
         link: function (scope, elements, attributes) {}
     }
 }]);
@@ -475,14 +471,15 @@ widget: Get from Play Store
 link: playstore link
 height: (optional) height of image - default height: 30px
 */
-application.directive('googlePlay', ['$state', function($state) {
+application.directive('googlePlay', [function() {
     return {
         restrict:'E',
+        replace: true,
         scope: {
             link: '@',
             height: '@'
         },
-        template: '<a href="{{link}}" target="_blank"><img alt="Get it on Google Play" ng-style="imgClass" src="/resources/images/google-play-badge.png"/></a>',
+        template: '<a href="{{link}}" target="_blank"><img alt="Get it on Google Play" ng-style="imgClass" src="https://static.amazecreationz.in/images/google-play-badge.png"/></a>',
         link: function (scope, elements, attributes) {
             if(angular.isUndefined(scope.height)){
                 scope.imgClass={
@@ -528,3 +525,29 @@ application.directive('chart', ['$state', function($state) {
         }
     }
 }]);
+
+application.directive('lineMessage', [function() {
+    return {
+        restrict:'E',
+        scope: {
+            type: '@',
+            message: '@'
+        },
+        template: '<div ng-show="message" class="card line-message text-no-select" ng-class="\'bg-light-theme-\'+types[type].theme" layout="row" layout-align="start center"><md-icon class="material-icons text-size-c">{{types[type].icon}}</md-icon><div class="message" ng-bind-html="message" flex></div></div',
+        link: function (scope, elements, attributes) {
+            scope.types = {"error":{"icon":"error","theme":"red"},"warning":{"icon":"warning","theme":"orange"},"info":{"icon":"info","theme":"teal"},"help":{"icon":"help","theme":"blue"}};
+        }
+    }
+}]);
+
+application.directive('help', [function() {
+    return {
+        restrict:'E',
+        scope: {
+            message: '='
+        },
+        template: '<div ng-show="message" class="padtb10" layout="row" layout-align="start center"><md-icon class="material-icons mrg0 text-size-e mrgrt10 text-theme-blue">help</md-icon><div class="text-16 text-theme-grey" ng-bind="message"></div></div>',
+        link: function (scope, elements, attributes) { }
+    }
+}]);
+

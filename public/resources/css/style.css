@@ -1,67 +1,69 @@
 .app-cards {
     width: 100%;
     box-sizing: border-box;
-    padding-bottom: 10px;
-}
-.app-card {
-    height: 450px;
-    margin-bottom: 10px;
-    width: 100%;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 .app-pad {
-    padding: 0 5px;
-    width: 100%;
+    width: 50%;
+    box-sizing: border-box;
+    padding-right: 10px;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
 }
-.app-pad.first {
-    padding-left: 0px;
-    padding-right: 5px;
+.app-pad:nth-child(2n) {
+    padding-left: 10px;
+    padding-right: 0;
 }
-.app-pad.third {
-    padding-left: 5px;
-    padding-right: 0px;
+.app-card {
+    min-height: 0;
 }
 .app-card-circle {
    border-radius: 50%;
    padding: 20px;
-   margin: 20px;
-   transition: background-color 0.5s ease; 
+   transition: background-color 0.5s ease;
+   margin: 10px 30px 10px 10px; 
 }
-.app-card-circle md-icon {
-    font-size: 60px;
-    width: 60px;
-    height: 60px;
+.app-card .content {
+    min-height: 150px;
 }
-.app-card-name {
-    text-transform: uppercase;
-    margin: 20px 0 10px;
+.app-card .name {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
 }
-.app-card-description {
-    text-align: center;
-    font-size: 16px;
-    margin-top: 20px;
+.app-card .description {
+    margin-bottom: 20px;
 }
-@media(max-width: 768px) {
-    .app-cards, .app-pad, .app-pad.first, .app-pad.third {
+@media(max-width: 959px) {
+    .app-pad, .app-pad:nth-child(2n) {
         padding: 0;
+        width: 100%;
+    }
+    .app-card-circle {
+        padding: 15px;
+        margin: 10px 20px 10px 5px;
     }
 }
-
 .employee-list {
     padding-right: 20px; 
 }
 .employee-list .divider {
     border-top: 1px solid #ccc;
-    padding-bottom: 20px;
-    margin-top: 20px;
+    padding-bottom: 25px;
+    margin-top: 25px;
 }
 .employee-list .name {
     font-size: 20px;
 }
 .employees-container {
-    margin-top: 5px;
     overflow-x: hidden;
     overflow-y: auto;
-    height: 280px;
+    height: 210px;
 }
 .employee {
     padding: 10px;
@@ -157,3 +159,69 @@
         margin: 0;
     }
 }
+
+/*General Application Classes*/
+
+.section-list {
+    padding-right: 20px;
+    margin-right: 20px;
+    border-right: 1px solid #ccc;
+}
+
+.section-list .divider {
+    border-top: 1px solid #ccc;
+    padding-bottom: 20px;
+    margin-top: 20px;
+}
+
+.section-list .scroll-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100px;
+    max-height: 250px;
+}
+
+.section-list .each {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.section-list .each .icon {
+    padding: 10px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.section-list .each .title {
+    font-size: 20px;
+    color: rgba(0,0,0,0.67) !important;
+}
+
+.section-list .each .sub-title {
+    font-size: 16px;
+    color: #616161 !important;
+}
+
+@media(max-width: 959px) {
+    .section-list {
+        padding: 15px;
+        margin-right: 0;
+        border-right: none;
+    }
+    .section-list .divider {
+        padding-bottom: 15px;
+        margin-top: 15px;
+    }
+}
+
+/*General Application Classes*/
+
+
+.sat .section-list .scroll-container {
+    max-height: 400px;
+}
+
+.sat .table .md-chips {
+  box-shadow: 0 0px !important;
+}
+

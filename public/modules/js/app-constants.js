@@ -5,7 +5,7 @@ application.constants = {
 		title: 'Amaze Creationz | Home',
 		icon: 'home',
 		state: 'home',
-		permission: application.permissions.VISITOR
+		p: application.permissions.VISITOR
 	},{
 		id: 'apps',
 		name:'Applications',
@@ -13,71 +13,71 @@ application.constants = {
 		icon: 'apps',
 		state: 'apps',
 		stateParams: {type: null},
-		permission: application.permissions.VISITOR
+		p: application.permissions.VISITOR
+	},{
+		id: 'profile',
+		name:'Profile',
+		title: 'Amaze Creationz | Profile',
+		icon: 'face',
+		state: 'profile',
+		p: application.permissions.USER
 	},{
 		id: 'console',
 		name:'Console',
 		title: 'Amaze Creationz | Console',
 		icon: 'computer',
 		state: 'console',
-		permission: application.permissions.MANAGER
-	},{
+		p: application.permissions.MANAGER
+	},/*{
 		id: 'settings',
 		name:'Site Settings',
 		title: 'Amaze Creationz | Site Settings',
 		icon: 'settings',
 		state: 'settings',
-		permission: application.permissions.USER
-	},/*{
-		id: 'profile',
-		name:'My Profile',
-		title: 'Amaze Creationz | My Profile',
-		icon: 'face',
-		state: 'profile',
-		permission: application.permissions.USER
+		p: application.permissions.USER
 	},*/{
 		id: 'about',
 		name:'About',
 		title: 'Amaze Creationz | About Us',
 		icon: 'info_outline',
 		state: 'about',
-		permission: application.permissions.VISITOR
+		p: application.permissions.VISITOR
 	},{
 		id: 'contact',
 		name:'Get In Touch',
 		title: 'Amaze Creationz | Get In Touch',
 		icon: 'contacts',
 		state: 'contact',
-		permission: application.permissions.VISITOR
+		p: application.permissions.VISITOR
 	}],
-	crew: {
+	team: {
 		levels: [{
 			id: 'level0',
 			name: 'Level 0',
 			value: 0
 		},{
-			id: 'level1',
+			id: 'l1',
 			name: 'Level 1',
 			value: 1
 		},{
-			id: 'level2',
+			id: 'l2',
 			name: 'Level 2',
 			value: 2
 		},{
-			id: 'level3',
+			id: 'l3',
 			name: 'Level 3',
 			value: 3
 		},{
-			id: 'level4',
+			id: 'l4',
 			name: 'Level 4',
 			value: 4
 		}],
-		crewTypes: [{
-			id: 'fullTime',
-			name: 'Full Time'
+		types: [{
+			id: 'EMPLOYEE',
+			name: 'Employee'
 		},{
-			id: 'collaborator',
-			name: 'Collaborator'
+			id: 'CONTRIBUTOR',
+			name: 'Contributor'
 		}]
 	},
 	apps: [{
@@ -103,28 +103,51 @@ application.constants = {
 		id: 'EmployeeMeter',
 		icon: 'supervisor_account',
 		name: 'Employee Meter',
-		description: 'Keep track of your employee\'s attendance and payments.',
+		description: 'Monitor your personal employee\'s attendance and payments from anywhere.',
 		page: 'employee-meter.html',
 		showPage: true,
+		dev: 'BETA',
 		links: {
-			github: 'https://github.com/amazecreationz/EmployeeMeter',
+			github: 'https://github.com/amazecreationz/EmployeeMeter'
 		},
 		development: {
 			git: 'EmployeeMeter',
 			contributors: ['anandmoghan']
+		}
+	},{
+		priority: 3,
+		id: 'ASYNC',
+		icon: 'cloud_done',
+		name: 'Async',
+		description: 'Hassle free sync of your files and media across all your connected devices.',
+		page: 'async.html',
+		showPage: true,
+		dev: 'ALPHA',
+		links: {
+			github: 'https://github.com/amazecreationz/Async',
+			playstore: 'https://play.google.com/store/apps/details?id=com.amazecreationz.async'
+		},
+		development: {
+			git: 'Async',
+			contributors: ['anandmoghan']
+		}
+	},{
+		priority: 4,
+		id: 'pDairy',
+		icon: 'book',
+		name: 'P-Dairy',
+		description: 'Private and secure dairy at your finger-tips.',
+		page: 'pDairy.html',
+		showPage: false,
+		development: {
+			contributors: ['anandmoghan']
 		},
 		tags: [
 			{
-				title: 'beta',
-				color: '#E53935'
+				title: 'Coming Soon',
+				theme: 'cyan'
 			}
 		]
-	},{
-		id: 'Ideas',
-		icon: 'lightbulb_outline',
-		name: 'Have an Idea?',
-		description: 'Write to us at <a href="mailto:ideas@amazecreationz.in">ideas@amazecreationz.in</a>.<br>We will make it happen. :)',
-		showPage: false,
 	}],
 	query: {
 		types: [{

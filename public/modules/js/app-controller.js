@@ -1,6 +1,6 @@
-application.controller('AppController', ['$scope', '$state', '$stateParams', 'AppService', 'FirebaseService', function($scope, $state, $stateParams, AppService, FirebaseService){
+application.controller('AppController', ['$scope', '$rootScope', '$state', '$stateParams', 'AppService', 'FirebaseService', function($scope, $rootScope, $state, $stateParams, AppService, FirebaseService){
 	$scope.globals = angular.copy(application.globals);
-	$scope.globals.permissions = angular.copy(application.permissions);
+	$scope.globals.p = angular.copy(application.permissions);
 	$scope.globals.social = AppService.getSocialLinks();
 	$scope.showNotifications = false;
 
@@ -13,13 +13,18 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 
 	$scope.appData = {
 		tabs: angular.copy(application.constants.tabs),
+		viewLoader: false,
 		user: {
-			permission: $scope.globals.permissions.VISITOR
+			p: $scope.globals.p.VISITOR
 		}
 	};
 	
 	var setTitle = function(title) {
 		$('title').text(title);
+	}
+
+	$scope.mSize = function(mSize) {
+		return AppService.mSize(mSize);
 	}
 
 	$scope.openSideMenu = function() {
@@ -37,11 +42,15 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 	}
 
 	$scope.showLogin = function(){
-        AppService.showLogin();
+        AppService.customLogin();
     }
 
 	$scope.login = function() {
 		AppService.login();
+    }
+
+    $scope.customLogin = function() {
+    	AppService.customLogin();
     }
 
 	$scope.signOut = function() {
@@ -71,23 +80,17 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 	
 	firebase.auth().onAuthStateChanged(function(user) {
     	if(user){
-    		FirebaseService.fetchCurrentUserInfo(function(userInfo) {
+    		FirebaseService.fetchUserInfo(user, function(userInfo) {
     			$scope.appData.user = userInfo;
-    			if(userInfo.theme) {
-    				$scope.globals.theme = userInfo.theme;
-    				AppService.setMaterialTheme(userInfo.theme);
+    			if(userInfo.t) {
+    				$scope.globals.theme = userInfo.t;
+    				AppService.setMaterialTheme(userInfo.t);
     			}
 				AppService.backgroundLoader(false);
-				AppService.showToast('Signed in as '+$scope.appData.user.name);
-				FirebaseService.getNotificationAccess(userInfo.uid);
+				AppService.showToast('Signed in as '+$scope.appData.user.n);
 				_.defer(function(){$scope.$apply();});
-			}, function(error) {
-				console.error(error);
-				AppService.backgroundLoader(false);
-				$scope.appData.user = {
-					permission: $scope.globals.permissions.VISITOR
-				};
-			})
+    		})
+
 			FirebaseService.getNewNotifications(user.uid, function(data) {
 				$scope.notifications = _.filter(data, function(notification, nid) {
 					notification.nid = nid;
@@ -98,10 +101,20 @@ application.controller('AppController', ['$scope', '$state', '$stateParams', 'Ap
 		} else {
 			AppService.backgroundLoader(false);
 			$scope.appData.user = {
-				permission: $scope.globals.permissions.VISITOR
+				p: $scope.globals.p.VISITOR
 			};
 		}
     })
+
+    $rootScope.$on('$stateChangeStart', function(e, toState, toParams, fromState, fromParams) {
+    	if(toState.name != fromState.name) {
+    		$scope.appData.viewLoader = true;
+    	}
+    });
+
+    $scope.$on('$viewContentLoaded', function(event){
+    	$scope.appData.viewLoader = false;
+    });
 
    	$scope.$watch('appData.current_tab', function(newTab, oldTab) {	
 		if(angular.isDefined(newTab) && newTab != oldTab) {

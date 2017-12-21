@@ -36,7 +36,7 @@
 				<div layout-gt-xs="row">
 					<md-input-container class="full-width mrgbot0" flex-gt-xs>
 	                    <label>Name</label>
-	                    <input type="text" name="name" ng-model="query.name" ng-disabled="appData.user.permission != globals.permissions.VISITOR" autocomplete="off" required>
+	                    <input type="text" name="name" ng-model="query.n" ng-disabled="appData.user.p != globals.p.VISITOR" autocomplete="off" required>
 	                    <div ng-messages="queryForm.name.$error" role="alert">
 				        	<div ng-message="required">Name can't be empty.</div>
 				        </div>
@@ -44,7 +44,7 @@
 	                <span hide-xs class="padlr10"></span>
 	                <md-input-container class="full-width mrgbot0" flex-gt-xs>
 	                    <label>Email</label>
-	                    <input type="email" name="email" ng-model="query.email" ng-disabled="appData.user.permission != globals.permissions.VISITOR" autocomplete="off" ng-pattern="/^.+@.+\..+$/" required>
+	                    <input type="email" name="email" ng-model="query.e" ng-disabled="appData.user.p != globals.p.VISITOR" autocomplete="off" ng-pattern="/^.+@.+\..+$/" required>
 	                    <div ng-messages="queryForm.email.$error" role="alert">
 				        	<div ng-message="required">Email address can't be empty.</div>
 				        	<div ng-message="pattern">Enter a valid email address.</div>
@@ -53,7 +53,7 @@
                 </div>
                 <md-input-container class="full-width" flex-gt-xs>
 	                <label>Query</label>
-	                <textarea name="content" ng-model="query.content" md-maxlength="500" rows="5" autocomplete="off" required></textarea>
+	                <textarea name="content" ng-model="query.c" md-maxlength="500" rows="5" autocomplete="off" required></textarea>
 	                <div ng-messages="queryForm.content.$error" role="alert">
 			        	<div ng-message="required">Query can't be empty.</div>
 			        	<div ng-message="md-maxlength">Exceeded maximum allowed characters for query.</div>
@@ -63,7 +63,7 @@
                 	<md-button type="submit" class="md-raised md-primary mrg0 padlr20">Send Query</md-button>
                 </div>
 			</form>
-			<div ng-if="appData.user.permission == globals.permissions.VISITOR" class="text-14">*<a class="pointer" ng-click="showLogin()">Login</a><span class="text-italic"> to get priority response.</span></div>
+			<div ng-if="appData.user.p == globals.p.VISITOR" class="text-14">*<a class="pointer" ng-click="showLogin()">Login</a><span class="text-italic"> to get priority response.</span></div>
 		</div>
 	</div>
 </div>

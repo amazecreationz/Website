@@ -1,4 +1,4 @@
-application.service('AppService', function($state, $rootScope, $stateParams, $http, $location, $compile, $mdToast, $mdSidenav, $mdDialog, $mdTheming, $mdThemingProvider, FirebaseService) {
+application.service('AppService', function($state, $rootScope, $stateParams, $http, $location, $compile, $mdToast, $mdSidenav, $mdDialog, $mdTheming, $mdThemingProvider, $mdMedia, FirebaseService) {
 	var AppService = this;
 
 	this.initialise = function(globals) {
@@ -58,6 +58,10 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 		return socialLinks;
 	}
 
+	this.mSize = function(mSize) {
+		return $mdMedia(mSize);
+	}
+
 	this.openSideMenu = function() {
 		$mdSidenav('side-menu').open();
 	}
@@ -72,6 +76,12 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 
 	this.openURLinNewTab = function(URL) {
 		window.open(URL, '_blank');
+	}
+
+	this.scrollTo = function(scrollTop, scrollTime) {
+		$('.main-container').animate({
+		    scrollTop: scrollTop - 59 || 0
+		 }, scrollTime || 800);
 	}
 
 	this.showToast = function(message, timeout) {
@@ -117,11 +127,16 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 		AppService.backgroundLoader(true);
 		var provider = new firebase.auth.GoogleAuthProvider();
 		provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-		firebase.auth().signInWithPopup(provider).catch(function(error) {
+		firebase.auth().signInWithRedirect(provider).catch(function(error) {
 			console.error(error)
 			AppService.backgroundLoader(false);
 			AppService.showToast(error.message);
 		});
+	}
+
+	this.customLogin = function() {
+		AppService.closeSideMenu();
+		window.location.href = '/auth?redirect='+$location.url();
 	}
 
 	this.logout = function() {
@@ -143,12 +158,20 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 		$state.go(state, stateParams, {reload: reload, notify: notify});
 	}
 
+	this.goToURL = function(url) {
+		if(url.includes('appLogin')) {
+			window.location.href = url;
+		} else {
+			$location.url(url);
+		}
+	}
+
 	this.goToApplicationPage = function(id) {
 		$state.go('view', {type: 'application', id: id});
 	}
 
-	this.goToCrewPage = function(id) {
-		$state.go('view', {type: 'crew', id: id});
+	this.viewProfile = function(id) {
+		$state.go('view', {type: 'profile', id: id, tab: null});
 	}
 
 	this.showNotFound = function() {
@@ -166,7 +189,24 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 		return permissionType;
 	}
 
-	this.openUserModel = function(userInfo, permission, state, stateParams) {
+	this.openEditProfileModal = function(userInfo, action, theme, dismissCallback, cancelCallback) {
+		$mdDialog.show({
+			controller: 'EditProfileModalController',
+			templateUrl: application.globals.html.views + 'modal-edit-profile.html',
+			parent: angular.element(document.body),
+			clickOutsideToClose:true,
+			fullscreen: true,
+			locals: {
+				dialogParams: {
+					userInfo: userInfo,
+					action: action,
+					theme: theme
+				}
+			}
+		}).then(dismissCallback, cancelCallback);
+	}
+
+	this.openUserModal = function(userInfo, permission, dismissCallback, cancelCallback) {
 		$mdDialog.show({
 			controller: 'UserModalController',
 			templateUrl: application.globals.html.views + 'modal-user.html',
@@ -179,17 +219,13 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 					permission: permission
 				}
 			}
-		}).then(function(dialogData) {
-			AppService.goToState(state, stateParams, false, false);
-		}, function() {
-			AppService.goToState(state, stateParams, false, false);
-		});
+		}).then(dismissCallback, cancelCallback);
 	}
 
-	this.openCrewModal = function(title, crewInfo, permission, state, stateParams) {
+	this.openTeamModal = function(title, info, param, permission, dismissCallback, cancelCallback) {
 		$mdDialog.show({
-			controller: 'CrewModalController',
-			templateUrl: application.globals.html.views + 'modal-crew.html',
+			controller: 'TeamModalController',
+			templateUrl: application.globals.html.views + 'modal-team.html',
 			parent: angular.element(document.body),
 			clickOutsideToClose:true,
 			fullscreen: true,
@@ -197,16 +233,12 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 			locals: {
 				dialogParams: {
 					title: title,
-					crewInfo: crewInfo,
+					info: info,
+					param: param,
 					permission: permission
 				}
 			}
-		}).then(function(dialogData) {
-			FirebaseService.putCrewInfo(dialogData.uid, dialogData.crewInfo);
-			AppService.goToState(state, stateParams, false, false);
-		}, function() {
-			AppService.goToState(state, stateParams, false, false);
-		});
+		}).then(dismissCallback, cancelCallback);
 	}
 
 	this.openQueryModal = function(queryInfo, permission, state, stateParams) {
@@ -233,9 +265,26 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 
 application.service('FirebaseService', function($filter, FirebaseAPIService, MailingService) {
 	var db = firebase.database().ref();
-	var usersRef = db.child('users');
+	var firestore = firebase.firestore();
+	var storageRef = firebase.storage().ref();
+	var usersRef = firestore.collection('USERS');
+	var usersStorageRef = storageRef.child('USERS');
+	var teamRef = firestore.collection('TEAM');
+	var queryRef = firestore.collection('QUERY');
 	var notificationsRef = db.child('amazecreationz').child('notifications');
 	var FirebaseService = this;
+
+	this.changeUserPicture = function(uid, image, callback) {
+		usersStorageRef.child(uid).child('dp.jpg').put(image).then(function(snapshot) {
+			usersRef.doc(uid).update({
+				pURL: snapshot.downloadURL
+			}).then(function(data) {
+				callback(snapshot.downloadURL)
+			});
+		}).catch(function(error) {
+			callback(null);
+		})
+	}
 
 	this.getNotificationAccess = function(userId) {
 		firebase.messaging().requestPermission().then(function() {
@@ -267,18 +316,38 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 		return firebase.auth().currentUser.uid;
 	}
 
-	this.fetchCurrentUserInfo = function(callback, eCallback) {
-		FirebaseService.getAuthToken(function(token) {
-			FirebaseAPIService.getWithAuth('/userLogin', token).then(function(data) {
-				callback(data.data);
-			}, function(error) {
-				eCallback(error);
-			});
-		});
+	this.getCurrentUser = function() {
+		return firebase.auth().currentUser;
+	}
+
+	this.setUserInfo = function(user) {
+		return usersRef.doc(user.uid).set(user);
+	}
+
+	this.fetchUserInfo = function(user, callback) {
+		usersRef.doc(user.uid).get().then(function(doc) {
+			var userInfo;
+			if(!doc.exists) {
+				userInfo = {
+					n: user.displayName,
+					e: user.email,
+					pURL: user.photoURL  || application.globals.logo,
+					p: application.permissions.USER
+				}
+				if(user.emailVerified) {
+					userInfo.p = application.permissions.VERIFIED_USER;
+					usersRef.doc(user.uid).set(userInfo);
+				}
+			} else {
+				userInfo = doc.data();
+			}
+			userInfo.uid = user.uid;
+			callback(userInfo);
+		})
 	}
 
 	this.setTheme = function(userId, theme) {
-		usersRef.child(userId).child('theme').set(theme);
+		usersRef.doc(userId).update({t: theme});
 	}
 
 	this.sendNotification = function(userId, notification) {
@@ -307,7 +376,9 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 	}
 
 	this.setUserPermission = function(userId, permission) {
-		db.child('users').child(userId).child('permission').set(permission);
+		usersRef.doc(userId).update({
+			p: permission
+		});
 	}
 
 	this.addFirebaseData = function(dataPoint, dataJSON, operation) {
@@ -328,99 +399,160 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 	}
 
 	this.getUserInfo = function(userId, callback) {
-		db.child('users').child(userId).once('value', function(data){
-			callback(data.val());	
+		usersRef.doc(userId).get().then(function(doc){
+			if(!doc.empty) {
+				var user = doc.data();
+				user.uid = doc.id;
+				callback(user);
+			} else {
+				callback(null);
+			}
 		});
+	}
+
+	this.getUserPromiseFromUID = function(uid) {
+		return usersRef.doc(uid).get();
+	}
+
+	this.getUserFromUID = function(uid, callback) {
+		FirebaseService.getUserPromiseFromUID(uid).then(function(user) {
+			if(user.exists) {
+				user = user.data();
+				user.uid = uid;
+				callback(user);
+			} else {
+				callback(null);
+			}
+		})
 	}
 
 	this.getAllUsers = function(callback) {
-		db.child('users').orderByChild('permission').limitToFirst(20).on('value', function(data){
-			callback(data.val());	
-		}, function(error) {
-			callback(null);
+		usersRef.onSnapshot(function(data){
+			var users = {};
+			var user;
+			data.forEach(function(doc) {
+				user = doc.data();
+				user.uid = doc.id;
+				user.p = angular.isDefined(user.p) ? user.p : application.permissions.VERIFIED_USER;
+				users[doc.id] = user;
+			})
+			callback(users);
 		});
 	}
 
-	this.putCrewInfo = function(userId, crewInfo) {
-		var isCrew = true;
-		var updates = {}
-		if(crewInfo == null) {
-			isCrew = null;
-		} else {
-			delete crewInfo.$$hashKey;
+	this.saveTeamInfo = function(uid, info) {
+		if(info != null) {
+			delete info.n;
+			delete info.e;
+			delete info.pURL;
+			delete info.p;
+			delete info.uid;
+			delete info.t;
+			delete info.c;
+			delete info.$$hashKey;
 		}
-		updates['crew/'+userId] = crewInfo;
-	 	updates['users/'+userId+'/crew'] = isCrew;
-		db.update(updates);
+		var batch = firestore.batch();
+		batch.set(teamRef.doc(uid), info);
+		batch.update(usersRef.doc(uid), {team: info.type});
+		batch.commit();
 	}
 
-	this.getCrewInfo = function(userId, callback) {
-		db.child('crew').child(userId).once('value', function(data){
-			callback(data.val());	
+	this.deleteTeamMember = function(uid) {
+		var batch = firestore.batch();
+		batch.delete(teamRef.doc(uid));
+		batch.update(usersRef.doc(uid), {team: firebase.firestore.FieldValue.delete()});
+		batch.commit();
+	}
+
+	this.getTeamPromiseFromURL = function(profileURL) {
+		return teamRef.where('profileURL', '==', profileURL).get();
+	}
+
+	this.getTeamInfoFromURL = function(profileURL, callback) {
+		FirebaseService.getTeamPromiseFromURL(profileURL).then(function(info) {
+			if(!info.empty) {
+				info = info.docs[0];
+				var profile = info.data();
+				FirebaseService.getUserFromUID(info.id, function(user) {
+					if (user != null) {
+						angular.extend(profile, user);
+					}
+					callback(profile);
+				});
+			} else {
+				callback(null);
+			}
 		});
 	}
 
-	this.getCrewInfoFromURL = function(crewURL, callback) {
-		db.child('crew').orderByChild('crewURL').equalTo(crewURL).once('value', function(data){
-			var crewInfo;
-			if(data.val() != null) {
-				crewInfo = _.find(data.val(), function(crewInfo, userId) {
-					return crewInfo.crewURL == crewURL;
+	this.getTeamProfile = function(param, callback) {
+		FirebaseService.getTeamInfoFromURL(param, callback);
+	}
+
+	this.getTeam = function(callback) {
+		teamRef.onSnapshot(function(data) {
+			if(!data.empty) {
+				var list = {};
+				var promises = [];
+				data.forEach(function(doc) {
+					list[doc.id] = doc.data();
+					list[doc.id].uid = doc.id;
+					promises.push(FirebaseService.getUserPromiseFromUID(doc.id));
 				})
+				Promise.all(promises).then(function(users) {
+					users.forEach(function(user) {
+						if(user.exists) {
+							angular.extend(list[user.id], user.data());
+						}
+					});
+					callback(list);
+				})
+			} else {
+				callback(null);
 			}
-			callback(crewInfo);	
 		});
 	}
 
-	this.getCrewInfo = function(param, callback) {
-		FirebaseService.getCrewInfo(param, function(crewInfo) {
-			if(crewInfo != null) {
-				callback(crewInfo);
-			}
-		})
-
-		FirebaseService.getCrewInfoFromURL(param, function(crewInfo) {
-			if(crewInfo != null) {
-				callback(crewInfo);
-			}
-		})
-	}
-
-	this.getCompleteCrewData = function(param, callback) {
-		FirebaseService.getCrewInfoFromURL(param, callback);
-	}
-
-	this.getCrewExcludedUsers = function(callback) {
-		db.child('users').orderByChild('crew').equalTo(null).limitToFirst(20).once('value', function(data){
-			callback(data.val());	
-		});
-	}
-
-	this.getAllCrew = function(callback) {
-		db.child('crew').limitToFirst(20).on('value', function(data){
-			callback(data.val());	
-		});
-	}
-
-	this.getContributor = function(crewURL, callback) {
-		FirebaseService.getCrewInfoFromURL(crewURL, function(crewInfo) {
-			callback(null, crewInfo);
+	this.getContributor = function(profileURL, callback) {
+		FirebaseService.getTeamInfoFromURL(profileURL, function(info) {
+			callback(null, info);
 		})
 	}
 
 	this.getContributors = function(contributors, callback) {
-		async.map(contributors, FirebaseService.getContributor, function(errors, contributorsList) {
-			callback(contributorsList);
+		var promises = [];
+		contributors.forEach(function(contributor) {
+			promises.push(FirebaseService.getTeamPromiseFromURL(contributor));
 		})
+
+		var contributorsList = {};
+		Promise.all(promises).then(function(data) {
+			promises = [];
+			data.forEach(function(contributor) {
+				if(!contributor.empty) {
+					contributor = contributor.docs[0];
+					contributorsList[contributor.id] = contributor.data();
+					promises.push(FirebaseService.getUserPromiseFromUID(contributor.id));
+				}
+			});
+			Promise.all(promises).then(function(users) {
+				users.forEach(function(user) {
+					if(user.exists) {
+						angular.extend(contributorsList[user.id], user.data());
+					}
+				})
+				callback(contributorsList);
+			})
+		})
+		callback(null)
 	}
 
 	this.addQuery = function(query, callback) {
 		var result = {
 			message: "Failed to send query. Try again later."
 		}
-		var queryId = db.child('query').child('amazecreationz').push().key;
-		query.id = queryId;
-		db.child('amazecreationz').child('query').child(queryId).set(query).then(function(error) {
+		query.a = false;
+		queryRef.add(query).then(function(error) {
 			result = {
 				status: 1,
 				message: "Query sent!"
@@ -436,41 +568,75 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 	}
 
 	this.getQuery = function(queryId, callback) {
-		db.child('amazecreationz').child('query').child(queryId).once('value', function(data) {
-			callback(data.val());
+		queryRef.doc(queryId).get().then(function(query) {
+			if(query.empty) {
+				callback(null);
+			} else {
+				callback(query.data());
+			}
 		})
 	}
 
 	this.deleteQuery = function(queryId) {
-		db.child('amazecreationz').child('query').child(queryId).set(null);
+		queryRef.doc(queryId).delete();
 	} 
 
 	this.getAllQuery = function(callback) {
-		db.child('amazecreationz').child('query').limitToFirst(50).on('value', function(data) {
-			callback(data.val());
+		queryRef.onSnapshot(function(queries) {
+			if(queries.empty) {
+				callback(null);
+			} else {
+				callback(queries.data())
+			}
 		}, function(error) {
 			callback(null);
 		})
 	}
 
 	this.getAttendedQueries = function(callback) {
-		db.child('amazecreationz').child('query').orderByChild('attended').equalTo(true).limitToFirst(50).on('value', function(data) {
-			callback(data.val());
+		queryRef.where('a', '==', true).onSnapshot(function(queries) {
+			if(queries.empty) {
+				callback(null);
+			} else {
+				var queryList = [];
+				queries = queries.docs;
+				queries.forEach(function(query) {
+					if(query.exists) {
+						var queryId = query.id;
+						query = query.data();
+						query.id = queryId;
+						queryList.push(query);
+					}
+				})
+				callback(queryList)
+			}
 		}, function(error) {
 			callback(null);
 		})
 	}
 
 	this.getUnAttendedQueries = function(callback) {
-		db.child('amazecreationz').child('query').orderByChild('attended').equalTo(null).limitToFirst(50).on('value', function(data) {
-			callback(data.val());
+		queryRef.where('a', '==', false).onSnapshot(function(queries) {
+			if(queries.empty) {
+				callback(null);
+			} else {
+				var queryList = {};
+				queries = queries.docs;
+				queries.forEach(function(query) {
+					if(query.exists) {
+						queryList[query.id] = query.data();
+						queryList[query.id].id = query.id;
+					}
+				})
+				callback(queryList)
+			}
 		}, function(error) {
 			callback(null);
 		})
 	}
 
 	this.setQueryReply = function(query) {
-		db.child('amazecreationz').child('query').child(query.id).set(query);
+		queryRef.doc(query.id).set(query);
 	}
 
 	this.sendQueryReply = function(query, callback) {

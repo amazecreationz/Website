@@ -1,11 +1,34 @@
-application.controller('CrewController', ['$scope', '$state', '$stateParams', function($scope, $state, $stateParams){
-	var params = $stateParams.params;
-	var id = $stateParams.id;
-
-	var setParams = function(params) {
-		$state.go('view', {params: params})
+application.controller('EditProfileModalController', ['$scope', '$state', '$stateParams', 'dialogParams', '$mdDialog', 'AppService', 'FirebaseService', function($scope, $state, $stateParams, dialogParams, $mdDialog, AppService, FirebaseService){
+	$scope.dialog = {
+		action: dialogParams.action,
+		theme: dialogParams.theme,
+		userInfo: dialogParams.userInfo,
+		loader: false,
+		selectedImage : []
 	}
-}]);
+
+	$scope.onImageSelect = function(image) {
+		var reader = new FileReader();
+		reader.onload = function(event) {
+			$scope.imageSrc = event.target.result;
+			$scope.$apply();
+		}
+		reader.readAsDataURL(image);
+	}
+
+	$scope.upload = function() {
+		$scope.dialog.loader = true;
+		FirebaseService.changeUserPicture(dialogParams.userInfo.uid, $scope.dialog.selectedImage, function(pURL) {
+			$scope.dialog.loader = false;
+			$mdDialog.cancel(pURL);
+			$scope.$apply();
+		})
+	}
+
+	$scope.cancel = function() {
+		$mdDialog.cancel();
+	};
+}]);	
 
 application.controller('UserModalController', ['$scope', '$state', '$stateParams', 'dialogParams', '$mdDialog', 'AppService', 'FirebaseService', function($scope, $state, $stateParams, dialogParams, $mdDialog, AppService, FirebaseService){
 	$scope.dialog = {
@@ -15,93 +38,82 @@ application.controller('UserModalController', ['$scope', '$state', '$stateParams
 	};
 
 	$scope.userInfo = dialogParams.userInfo;
-
 	delete $scope.dialog.permissions.VISITOR;
+	delete $scope.dialog.permissions.USER;
 
 	$scope.cancel = function() {
 		$mdDialog.cancel();
 	};
 
 	$scope.setPermission = function() {
-		FirebaseService.setUserPermission($scope.userInfo.uid, $scope.userInfo.permission);
+		FirebaseService.setUserPermission($scope.userInfo.uid, $scope.userInfo.p);
 	}
 
 	$scope.getPermissionLabel = function(permission) {
 		return AppService.getPermissionType(permission);
 	}
+
+	$scope.addToTeam = function() {
+		$mdDialog.cancel('ADD_TEAM');
+	}
 }]);
 
-application.controller('CrewModalController', ['$scope', '$state', '$stateParams', '$mdDialog', 'dialogParams', 'FirebaseService', function($scope, $state, $stateParams, $mdDialog, dialogParams, FirebaseService){
+application.controller('TeamModalController', ['$scope', '$state', '$stateParams', '$mdDialog', 'dialogParams', 'FirebaseService', function($scope, $state, $stateParams, $mdDialog, dialogParams, FirebaseService){
 	$scope.dialog = {
-		levels: angular.copy(application.constants.crew.levels),
-		crewTypes: angular.copy(application.constants.crew.crewTypes),
+		levels: angular.copy(application.constants.team.levels),
+		types: angular.copy(application.constants.team.types),
 		permission: dialogParams.permission,
 		permissions: angular.copy(application.permissions),
 		title: dialogParams.title
-	}	
-
-	if(angular.isDefined(dialogParams.crewInfo)) {
-		$scope.crewInfo = dialogParams.crewInfo;
-		$scope.crewId = dialogParams.crewInfo.uid;
 	}
 
-	FirebaseService.getCrewExcludedUsers(function(users) {
-		$scope.users = _.filter(users, function(user, userId) {
-    		return true;
-    	});
-    	_.defer(function(){$scope.$apply();});
-	})
-
-	$scope.setDefault = function(crewType) {
-		if(crewType == 'fullTime') {
-			$scope.crewInfo.level = 4;
-			$scope.crewInfo.designation = 'Developer';
+	$scope.setDefault = function(type) {
+		if(type == 'EMPLOYEE') {
+			$scope.info.l = 4;
+			$scope.info.d = 'Developer';
 		} else {
-			delete $scope.crewInfo.level;
-			delete $scope.crewInfo.designation;
+			delete $scope.info.l;
+			delete $scope.info.d;
 		}
-		$scope.crewInfo.crewType = crewType;
+		$scope.info.type = type;
 	}
 
-	$scope.deleteCrew = function() {
+	$scope.delete = function() {
 		var dialogData = {
-			uid: $scope.crewId,
-			crewInfo: null
+			uid: $scope.userId,
+			info: null
 		}
 		$mdDialog.hide(dialogData);
 	}
 
-	$scope.saveCrew = function() {
+	$scope.save = function() {
 		var dialogData = {
-			uid: $scope.crewId,
-			crewInfo: $scope.crewInfo
+			uid: $scope.userId,
+			info: $scope.info
 		}
 		$mdDialog.hide(dialogData);
 	}
 
-	$scope.onUserSelect = function(userInfo) {
-		$scope.newCrew = true;
-		$scope.crewInfo = {
-			name: userInfo.name,
-			email: userInfo.email,
-			uid: userInfo.uid,
-			image: userInfo.image,
-			crewURL: userInfo.uid
-		}
-		$scope.crewId = userInfo.uid;
-		$scope.dialog.title = userInfo.name;
-		$scope.setDefault(angular.copy(application.constants.crew.crewTypes[0].id))
-	}
-
-	$scope.getCrewTypeLabel = function(crewType) {
-		return _.find($scope.dialog.crewTypes, function(crew) {
-			return crew.id == crewType;
+	$scope.getTypeLabel = function(type) {
+		return _.find($scope.dialog.types, function(item) {
+			return item.id == type;
 		}).name;
 	}
 
 	$scope.cancel = function() {
 		$mdDialog.cancel();
-	};
+	};	
+
+	if(angular.isDefined(dialogParams.info)) {
+		$scope.info = dialogParams.info;
+		$scope.userId = dialogParams.info.uid;
+	}
+
+	if(dialogParams.param) {
+		$scope.addToTeam = true;
+		$scope.info.profileURL = $scope.info.uid;
+		$scope.setDefault(angular.copy(application.constants.team.types[0].id))
+	}
 }]);
 
 application.controller('QueryModalController', ['$scope', '$state', '$stateParams', 'dialogParams', '$mdDialog', 'AppService', 'FirebaseService', function($scope, $state, $stateParams, dialogParams, $mdDialog, AppService, FirebaseService){
@@ -155,6 +167,12 @@ application.controller('GPACalculatorController', ['$scope', '$state', '$http','
 		showUploadLoader: false,
 		selectedFile: null
 	};
+
+	if(tab) {
+		if(_.findIndex($scope.GPACalculator.tabs, { id: tab }) == -1) {
+			AppService.showNotFound();
+		}
+	}
 
 	var setTab = function(tabId) {
 		AppService.goToState(currentState, {tab: tabId}, false, false);
@@ -255,17 +273,17 @@ application.controller('GPACalculatorController', ['$scope', '$state', '$http','
 
 	$scope.$watch('appData.user', function(user) {
 		if(user.uid) {
-			var chartPromise = AppService.loadScript('Chart.min.js', true);
+			/*var chartPromise = AppService.loadScript('Chart.min.js', true);
 			var chartBundlePromise = AppService.loadScript('Chart.bundle.min.js', true);
 			Promise.all([chartPromise, chartBundlePromise]).then(function(values) {
 				$scope.chartLoaded = true;
-			})
+			})*/
 
-			dbRef.child(user.uid).on('value', function(data) {
+			/*dbRef.child(user.uid).on('value', function(data) {
 				$scope.GPACalculator.studentData = data.val().studentData;
 				$scope.GPACalculator.semesterChartData = setSGPATextOnChart(data.val().semesterChartData);
 				_.defer(function(){$scope.$apply();});
-			})
+			})*/
 		} else {
 			$scope.GPACalculator.studentData = null;
 			$scope.GPACalculator.semesterChartData = null;
@@ -275,7 +293,6 @@ application.controller('GPACalculatorController', ['$scope', '$state', '$http','
 
 application.controller('EmployeeMeterController', ['$scope', '$state', '$filter', 'AppService', function($scope, $state, $filter, AppService){
 	var params = $state.params.params;
-	var id = $state.params.id;
 	var tab = $state.params.tab;
 	var currentState = $state.current.name;
 	var today = new Date(new Date().setHours(0,0,0,0));
@@ -293,8 +310,15 @@ application.controller('EmployeeMeterController', ['$scope', '$state', '$filter'
 		currentTab: tab || 'overview',
 		today: today,
 		loadEmployee: true,
-		showEmployeeForm: false
+		showEmployeeForm: false,
+		calLegends: {"Weekly Holidays":"bg-theme-lime", "Special Holidays":"bg-theme-yellow", "Absent":"bg-theme-red", "Payment":"bg-theme-grey"}  
 	};
+
+	if(tab) {
+		if(_.findIndex($scope.EmployeeMeter.tabs, { id: tab }) == -1) {
+			AppService.showNotFound();
+		}
+	}
 
 	var setTab = function(tabId) {
 		AppService.goToState(currentState, {tab: tabId}, false, false);
@@ -356,6 +380,13 @@ application.controller('EmployeeMeterController', ['$scope', '$state', '$filter'
 		s.tW = fT.tD - (fT.tH + s.tOH);
 		s.tP = s.tW - s.tA;
 		s.nB = s.fP - (s.tP*$scope.EmployeeMeter.employee.wage);
+		if(s.nB > 0) {
+			$scope.EmployeeMeter.oweMessage = $scope.EmployeeMeter.employee.name + " owes you " + s.nB + " " + $scope.EmployeeMeter.employee.cU;
+		} else if(s.nB < 0) {
+			$scope.EmployeeMeter.oweMessage = "You owe " + $scope.EmployeeMeter.employee.name + " " + s.nB*-1 + " " + $scope.EmployeeMeter.employee.cU;
+		} else {
+			$scope.EmployeeMeter.oweMessage = "All dues cleared"
+		} 
 		$scope.EmployeeMeter.s = s;
 	}
 
@@ -448,7 +479,6 @@ application.controller('EmployeeMeterController', ['$scope', '$state', '$filter'
 			cU: 'INR',
 			h: [0] /*Sunday as default holiday*/
 		}
-		$scope.EmployeeMeter.showEmployeeForm = true;
 	}
 
 	var showEmployee = function(employeeId) {
@@ -673,6 +703,7 @@ application.controller('EmployeeMeterController', ['$scope', '$state', '$filter'
 				$scope.EmployeeMeter.employeeList = data.val();
 		    	if(data.val() == null) {
 		    		$scope.EmployeeMeter.loadEmployee = false;
+		    		$scope.EmployeeMeter.showEmployeeForm = true;
 		    		addEmployee();
 		    	} else if(!params) {
 		    		showEmployee(_.keys(data.val())[0]);
@@ -685,6 +716,198 @@ application.controller('EmployeeMeterController', ['$scope', '$state', '$filter'
 			}
 		} else {
 			addEmployee();
+		}
+	})
+}]);
+
+application.controller('SATController', ['$scope', '$state', 'AppService', function($scope, $state, AppService) {
+	var params = $state.params.params || null;
+	var tab = $state.params.tab || 'overview';
+	var currentState = $state.current.name;
+}]);
+
+application.controller('SATController', ['$scope', '$state', '$mdDialog', 'AppService', function($scope, $state, $mdDialog, AppService) {
+	var params = $state.params.params || null;
+	var tab = $state.params.tab || 'overview';
+	var currentState = $state.current.name;
+	var dbRef, pLRef, pDRef, pCRef, periodId;
+	var today = new Date(new Date().setHours(0,0,0,0));
+	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+	$scope.SAT = {
+		tabs: [{
+			id: 'overview',
+			name: 'Overview'
+		}, {
+			id: 'dashboard',
+			name: 'Dashboard'
+		}],
+		currentTab: tab,
+		today: today,
+		showPeriodForm: true,
+		loadPeriod: true
+	};
+
+	if(tab) {
+		if(_.findIndex($scope.SAT.tabs, { id: tab }) == -1) {
+			AppService.showNotFound();
+		}
+	}
+
+	var changeState = function(tabId, pId) {
+		AppService.goToState(currentState, {tab: tabId, params: pId}, false, false);
+	}
+
+	var setTab = function(tabId) {
+		AppService.goToState(currentState, {tab: tabId}, false, false);
+	}
+
+	var setParams = function(params) {
+		AppService.goToState(currentState, {params: params}, false, false);
+	}
+
+	var scrollToSection = function(id) {
+		var top = angular.element(document.getElementById(id)).prop('offsetTop');
+		top -= AppService.mSize('gt-sm') ? 40 : 10;
+		AppService.scrollTo(top);
+	}
+
+	var resetPeriod = function() {
+		$scope.SAT.period = {
+			aC: []
+		}
+	}
+
+	var resetCourse = function() {
+		$scope.course = {
+			s: {}
+		}
+	}
+
+	var setSchedule = function(cData, date) {
+		var day = date.getDay();
+	}
+
+	var setPeriod = function(pId) {
+		$scope.SAT.loadPeriod = true;
+
+		pLRef.child(pId).once('value').then(function(data) {
+			var pData = data.val();
+
+			if(pData == null) {
+				AppService.showNotFound();
+				return;
+			}
+
+			$scope.SAT.period = pData;
+			$scope.SAT.period.aC = pData.aC || [];
+			$scope.SAT.period.id = periodId = data.key;
+			$scope.SAT.showPeriodForm = false;
+			$scope.SAT.loadPeriod = false;
+			_.defer(function(){$scope.$apply();});
+		})
+
+		pCRef.child(pId).once('value').then(function(data) {
+			$scope.SAT.courseList = data.val();
+			_.defer(function(){$scope.$apply();});
+		}) 
+	}
+
+	var setCourse = function(cId) {
+		if($scope.SAT.courseList != null) {
+			pDRef.child(periodId).child(cId).once('value').then(function(data) {
+				$scope.SAT.course = $scope.SAT.courseList[cId];
+				$scope.SAT.cS = data.val();
+			})
+		}
+	}
+
+	$scope.SAT.onTabSelect = function(tab) {
+		setTab(tab.id);
+	}
+
+
+	$scope.SAT.periodFunction = function(action, pId) {
+		switch(action) {
+			case 'delete': pLRef.child(pId).remove();
+				pDRef.child(pId).remove();
+				pCRef.child(pId).remove();
+			case 'add': resetPeriod();
+				$scope.SAT.showPeriodForm = true;
+				$scope.SAT.loadPeriod = false;
+				$scope.SAT.sD = today;
+				scrollToSection('section-form');
+				setParams(null);
+				break;
+			case 'edit': $scope.SAT.showPeriodForm = true;
+				$scope.SAT.sD = new Date($scope.SAT.period.sD);
+				break;
+			case 'save': $scope.SAT.showPeriodForm = false;
+				if(!pId) {
+					$scope.SAT.period.sD = $scope.SAT.sD.getTime();
+				}
+				pId = pId || pLRef.push().key;
+				delete $scope.SAT.period.id;
+				printString($scope.SAT.period)
+				$scope.SAT.period.aC = JSON.parse(angular.toJson($scope.SAT.period.aC));
+				pLRef.child(pId).set($scope.SAT.period);
+				break;
+			case 'select': $scope.SAT.showPeriodForm = false;
+				setPeriod(pId);
+				setParams(pId);
+				scrollToSection('section-form');
+				break;
+		}
+	}
+
+	$scope.SAT.courseFunction = function(action, cId) {
+		switch(action) {
+			case 'delete': var pId = $scope.SAT.period.id;
+				pDRef.child(pId).child(cId).remove();
+				pCRef.child(pId).child(cId).remove();
+			case 'add': resetCourse();
+				$scope.SAT.showCourseForm = true;
+				$scope.SAT.loadCourse = false;
+				scrollToSection('course-form');
+				break;
+			case 'edit': $scope.SAT.showCourseForm = true;
+				break;
+			case 'save': $scope.SAT.showCourseForm = false;
+				break;
+			case 'select': $scope.SAT.showCourseForm = false;
+				setCourse(pId);
+				scrollToSection('course-form');
+				break;
+		}
+	}
+
+	$scope.$watch('appData.user', function(user) {
+		if(user.uid) {
+			dbRef = firebase.database().ref('appData').child('SAT').child(user.uid);
+			pLRef = dbRef.child('pL');
+			pCRef = dbRef.child('pC');
+			pDRef = dbRef.child('pD');
+			pLRef.on('value', function(data) {
+				data = data.val();
+				$scope.SAT.periodList = data;
+				if(data != null) {
+					$scope.SAT.showPeriodForm = false;
+					if(params == null) {
+						setPeriod(_.keys(data)[0]);
+					}
+				} else {
+					resetPeriod();
+					$scope.SAT.loadPeriod = false;
+				}
+				_.defer(function(){$scope.$apply();});
+			});
+
+			if(params != null) {
+				setPeriod(params);
+				setParams(params);
+			}
+		} else {
+			resetPeriod();
 		}
 	})
 }]);

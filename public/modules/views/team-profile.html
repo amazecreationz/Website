@@ -1,0 +1,37 @@
+<div class="content-container min-full-height">
+	<page-header theme="globals.theme" header="{{profile.n ? profile.n + ' - ': ''}}Profile"></page-header>
+	<loader flex="100" loader="profile | isEmpty"></loader>
+	<div ng-hide="profile | isEmpty" class="card min-zero-height" layout="column">
+		<div class="card-body team-profile">
+			<div layout-gt-xs="row" layout-xs="column" layout-align-xs="start center">
+				<div class="image" ng-class="'{{'bg-light-theme-'+globals.theme}}'" image-load image="profile.pURL"></div>
+				<div class="content">
+					<table>
+						<tbody>
+							<tr>
+								<td class="text-bold">Name</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{profile.n}}</td>
+							</tr>
+							<tr ng-if="profile.type == 'EMPLOYEE'">
+								<td class="text-bold">Designation</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{profile.d}}</td>
+							</tr>
+							<tr>
+								<td class="text-bold">Email</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{profile.e}}</td>
+							</tr>
+							<tr>
+								<td class="text-bold">Profile URL</td>
+								<td class="padlr10">:</td>
+								<td class="word-break">{{profile.profileURL}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>	

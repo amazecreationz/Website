@@ -1,0 +1,91 @@
+<md-dialog class="modal-container full-screen" aria-label="Add Team">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{dialog.title}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content class="modal-content-container">
+        <div class="content-container" layout="column" layout-align="center center">
+            <div class="full-width">
+                <div class="card">
+                    <div class="card-body" layout="column">
+                        <div layout="row" layout-xs="column" layout-align-xs="center center" layout-wrap>
+                            <div class="team-image" image-load image="info.pURL"></div>
+                            <table class="team-data padtop10 table">
+                                <tbody class="txt14">
+                                    <tr class="padtb10">
+                                        <td class="text-bold">Name</td>
+                                        <td class="padlr5">:</td>
+                                        <td>{{info.n}}</td>
+                                    </tr>
+                                    <tr class="padtb10">
+                                        <td class="text-bold">Email</td>
+                                        <td class="padlr5">:</td>
+                                        <td>{{info.e}}</td>
+                                    </tr>
+                                    <tr class="padtb10">
+                                        <td class="text-bold">UserID</td>
+                                        <td class="padlr5">:</td>
+                                        <td class="word-break">{{info.uid}}</td>
+                                    </tr>
+                                    <tr class="padtb10">
+                                        <td class="text-bold">Type</td>
+                                        <td class="padlr5">:</td>
+                                        <td ng-if="dialog.permission == dialog.permissions.ADMIN" class="word-break">
+                                            <md-select ng-model="info.type" aria-label="team-type-select" ng-change="setDefault(info.type)">
+                                                <md-option ng-repeat="type in dialog.types" ng-value="type.id">{{type.name}}</md-option>
+                                            </md-select>
+                                        </td>
+                                        <td ng-if="dialog.permission == dialog.permissions.MANAGER">{{getTypeLabel(info.type)}}</td>
+                                    </tr>
+                                    <tr ng-if="(dialog.permission == dialog.permissions.MANAGER) && info.l!=null" class="padtb10">
+                                        <td class="text-bold">Level</td>
+                                        <td class="padlr5">:</td>
+                                        <td class="word-break">{{info.l}}</td>
+                                    </tr>
+                                    <tr ng-if="(dialog.permission == dialog.permissions.MANAGER) && info.d" class="padtb10">
+                                        <td class="text-bold">Job</td>
+                                        <td class="padlr5">:</td>
+                                        <td class="word-break">{{info.d}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <form  ng-if="dialog.permission == dialog.permissions.ADMIN" name="teamForm" ng-submit="save()" ng-validate>
+                            <div class="mrgtop10" layout-gt-xs="row" layout-fill>
+                                <md-input-container ng-if="info.type == 'EMPLOYEE'" class="full-width" flex-gt-xs>
+                                    <md-select ng-model="info.l" aria-label="level-select">
+                                        <md-option ng-repeat="level in dialog.levels" ng-value="level.value">{{level.name}}</md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-input-container ng-if="info.type == 'EMPLOYEE'" class="full-width mrgbot0" flex-gt-xs>
+                                    <label>Designation</label>
+                                    <input type="text" name="designation" ng-model="info.d" autocomplete="off" ng-required="info.type == 'EMPLOYEE'">
+                                    <div ng-messages="teamForm.designation.$error" role="alert">
+                                        <div ng-message="required">Designation can't be empty.</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="full-width" flex-gt-xs>
+                                    <label>Profile URL</label>
+                                    <input type="text" name="profileURL" ng-model="info.profileURL" autocomplete="off" maxlength="30" required>
+                                    <div ng-messages="teamForm.profileURL.$error" role="alert">
+                                        <div ng-message="required">Profile URL can't be empty.</div>
+                                        <div ng-message="maxlength">Exceeded maximum allowed characters.</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div class="text-center full-width">
+                                <md-button class="md-raised" type="submit">Save</md-button>
+                                <md-button ng-hide="addToTeam" class="md-raised md-primary" ng-click="delete()">Delete</md-button>
+                            </div> 
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </md-dialog-content>
+</md-dialog>

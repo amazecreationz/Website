@@ -10,16 +10,16 @@
 			</div>
 		</div>
 	</div>
-	<div ng-hide="crewList.fullTime | isEmpty" class="card">
-		<div class="card-header text-size-d">Crew</div>
+	<div ng-hide="infoList.e | isEmpty" class="card">
+		<div class="card-header text-size-d">Team</div>
 		<div class="card-body" layout="row">
-			<crew is-small="true" crew-info="crew" on-click="onCrewSelect" ng-repeat="crew in crewList.fullTime | orderBy : 'level'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></crew>
+			<team-member info="info" theme="globals.theme" ng-repeat="info in infoList.e | orderBy : 'l'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></team-member>
 		</div>
 	</div>
-	<div ng-hide="crewList.collaborators | isEmpty" class="card">
-		<div class="card-header text-size-d">Collaborators</div>
+	<div ng-hide="infoList.c | isEmpty" class="card">
+		<div class="card-header text-size-d">Other Contributors</div>
 		<div class="card-body" layout="row">
-			<contributor crew-info="crew" on-click="onCrewSelect" ng-repeat="crew in crewList.collaborators | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></contributor>
+			<team-member info="info" theme="globals.theme" ng-repeat="info in infoList.c | orderBy : 'n'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></team-member>
 		</div>
 	</div>
 </div>

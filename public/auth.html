@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    	<meta charset="utf-8">
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<base href="/">
+    	<title>Amaze Creationz | Login</title>
+    	<link rel="stylesheet" type="text/css" href="https://static.amazecreationz.in/latest/css/angular-material.min.css">
+    	<link rel="stylesheet" type="text/css" href="https://static.amazecreationz.in/latest/css/material-icons.css">
+		<link rel="stylesheet" type="text/css" href="https://static.amazecreationz.in/latest/css/pt-sans.css">
+		<style type="text/css">
+			html, body {
+				width: 100%;
+				height: 100%;
+				max-width: 100%;
+				font-family: 'PT Sans', sans-serif;
+				padding: 0;
+				margin: 0;
+				overflow-y: auto;
+			}
+			a {
+				color: rgba(0,0,0,0.8);
+				font-weight: bold;
+				cursor: pointer;
+			}
+			a:focus {
+				outline: none!important;
+			}
+			.flow {
+				overflow: hidden;
+			}
+			.loader-shadow {
+				width: 100%;
+				height: 100%;
+				background: #fff;
+				position: fixed;
+				top: 0;
+				transition-property: top;
+				transition-duration: 300ms;
+				transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+				z-index: 999;
+			}
+			.container {
+				min-height: 100%;
+				width: 100%;
+				background-color: #FAFAFA;
+			}
+			.card {
+				box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
+				box-sizing: border-box;
+				background: #fff;
+				padding: 20px;
+				color: rgba(0,0,0,0.8);
+				overflow: hidden;
+				margin-top: 25px;
+			}
+			.card, .footer {
+				width: 350px;
+			}
+			.content {
+				margin-top: 30px;
+				width: 100%;
+			}
+			.footer {
+				font-size: 14px;
+				padding-top: 10px;
+				margin-bottom: 60px;
+			}
+			.footer a {
+				font-weight: normal;
+				text-decoration: none!important;
+				padding: 5px 10px;
+			}
+			.footer a:hover {
+				color: rgba(0,0,0,1);
+				font-weight: bolder;
+			}
+			.full-width {
+				width: 100%;
+			}
+			.mrgbot0 {
+				margin-bottom: 0;
+			}
+			.pointer {
+				cursor: pointer;
+			}
+			.md-raised {
+				padding: 0 20px;
+				margin-left: 0;
+			}
+			@media(max-width: 768px) {
+				.container {
+					background-color: #ffffff;
+				}
+				.card {
+					box-shadow: none;
+					height: 100%;
+					margin-top: 0;
+				}
+				.card, .footer {
+					width: 100%;
+				}
+				.content {
+					margin-top: 15px;
+				}
+				.footer {
+					font-size: 14px;
+					padding: 0 15px 30px;
+					margin: 0;
+				}
+			}
+		</style>
+		<link rel="SHORTCUT ICON" href="https://static.amazecreationz.in/images/favicon.ico">
+	</head>
+	<body ng-app="amazecreationzAuth" ng-controller="AuthController">
+		<div class="loader-shadow"></div>
+		<div class="container" layout="column" layout-align="center center">
+			<div class="card" layout="column" flex-xs>
+				<div class="header" layout="row" layout-align="start center">
+					<img class="img-circle"  width="45px" height="auto" src='https://static.amazecreationz.in/images/logo/logo-circle-250.png'>
+					<span style="padding: 5px 15px; font-size: 24px;">amaze creationz</span>
+				</div>
+				<div layout-xs="column" layout-align-xs="center start" flex-xs>
+					<div ng-if="loader" layout="row" layout-align="center center" style="width: 100%; min-height: 300px" flex>
+						<md-progress-circular class="md-primary" md-diameter="40"></md-progress-circular>
+					</div>
+					<div ng-if="action != 'AUTHENTICATE' && !loader" style="font-size: 20px; margin-top: 25px;">
+						<div ng-if="action == 'SIGN_IN'">Sign in</div>
+						<div ng-if="action == 'SIGN_UP'"><md-icon class="pointer" style="padding-right: 10px" ng-click="changeAction('SIGN_IN')">arrow_back</md-icon> Sign up</div>
+						<div ng-if="action == 'RESET_PWD'"><md-icon class="pointer" style="padding-right: 10px" ng-click="changeAction('SIGN_IN')">arrow_back</md-icon> Reset Password</div>
+					</div>
+					<div ng-hide="loader" class="content" layout="row" flex>
+						<div ng-if="action == 'AUTHENTICATE' && user" layout="column" layout-align="center center" flex>
+							<img class="img-circle"  width="100px" height="auto" ng-src="{{user.pURL}}">
+							<div class="text-name" style="margin-top: 22px; font-size: 18px;">{{user.name}}</div>
+							<div class="text-email" style="font-size: 14px; color: #424242; margin-top: -2px">{{user.email}}</div>
+							<div ng-show="user.name" style="font-size: 12px;">
+								Not {{user.nickName}}? <a ng-click="signOut()" style="cursor: pointer;">Sign out</a>
+							</div>
+							<a ng-href="{{appIntentURL}}" style="max-width: 250px; width: 80%; margin: 45px 10% 20px;">
+								<md-button class="md-raised md-warn" style="margin: 0; padding: 0px 20px; width: 100%;">Authenticate</md-button>
+							</a>
+						</div>
+						<div ng-if="action == 'SIGN_IN'">
+							<form name="lF" ng-submit="signIn(lFD.email, lFD.pwd)">
+								<md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Email</label>
+				                    <input type="email" name="acEmail" ng-model="lFD.email" ng-pattern="/^.+@.+\..+$/" required>
+				                    <div ng-messages="lF.acEmail.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        	<div ng-message="pattern">Enter a valid email.</div>
+							        </div>
+				                </md-input-container>
+				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Password</label>
+				                    <input type="password" name="acPwd" ng-model="lFD.pwd" autocomplete="off" required>
+				                    <div ng-messages="lF.acPwd.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        </div>
+				                </md-input-container>
+				                <div ng-if="signinErrorMsg" style="font-size: 12px; color: #D84315;">{{signinErrorMsg}}</div>
+				                <div layout="column" layout-align="start start" style="margin-top: 15px;">
+				                	<div style="font-size: 14px;" flex><a class="pointer" ng-click="changeAction('RESET_PWD')">Reset Password</a> | New user? <a class="pointer" ng-click="changeAction('SIGN_UP')">Sign Up</a></div>
+				                	<div class="mrgtop10" hide-gt-xs></div>
+				                	<md-button type="submit" class="md-raised md-primary" style="margin: 15px 0 0;">Login</md-button>
+				                </div>
+							</form>
+						</div>
+						<div ng-if="action == 'SIGN_UP'">
+							<form name="supF" ng-submit="signUp(sfD.name, sfD.email, sfD.pwd)">
+								<md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Name</label>
+				                    <input type="text" name="acName" ng-model="sfD.name" autocomplete="off" required>
+				                    <div ng-messages="supF.acName.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        </div>
+				                </md-input-container>
+								<md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Email</label>
+				                    <input type="email" name="acEmail" ng-model="sfD.email" ng-pattern="/^.+@.+\..+$/" autocomplete="off" required>
+				                    <div ng-messages="supF.acEmail.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        	<div ng-message="pattern">Enter a valid email address.</div>
+							        </div>
+				                </md-input-container>
+				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Password</label>
+				                    <input type="password" name="acPwd" ng-model="sfD.pwd" autocomplete="off" required>
+				                    <div ng-messages="supF.acPwd.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        </div>
+				                </md-input-container>
+				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Confirm Password</label>
+				                    <input type="password" name="acCPwd" ng-model="sfD.cpwd" autocomplete="off" ng-pattern="{{sfD.pwd}}" autocomplete="off"  required>
+				                    <div ng-messages="supF.acCPwd.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        	<div ng-message="pattern">Passwords doesn't match.</div>
+							        </div>
+				                </md-input-container>
+				                <div ng-if="signupErrorMsg" style="font-size: 12px; color: #D84315;">{{signupErrorMsg}}</div>
+				                <div style="margin-top: 10px;">
+				                	<md-button type="submit" class="md-raised md-primary" style="margin: 0;">Sign Up</md-button>
+				                </div>
+							</form>
+						</div>
+						<div ng-if="action == 'RESET_PWD'">
+							<form name="rpF" ng-submit="sendRM(rPD.email, rPD.cemail)">
+								<md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Email</label>
+				                    <input type="email" name="email" ng-model="rPD.email" ng-pattern="/^.+@.+\..+$/" autocomplete="off" required>
+				                    <div ng-messages="rpF.email.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        	<div ng-message="pattern">Enter a valid email address.</div>
+							        </div>
+				                </md-input-container>
+				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+				                    <label>Confirm Email</label>
+				                    <input type="email" name="cemail" ng-model="rPD.cemail" ng-pattern="{{rPD.email}}" autocomplete="off" required>
+				                    <div ng-messages="rpF.cemail.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        	<div ng-message="pattern">Emails doesn't match.</div>
+							        </div>
+				                </md-input-container>
+				                <div ng-if="resendMsg" style="font-size: 12px; color: #D84315;">{{resendMsg}}</div>
+				                <div class="text-center mrgtop10">
+				                	<md-button type="submit" class="md-raised md-primary mrg0">Send Reset Mail</md-button>
+				                </div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer" layout="row" layout="start center">
+				<a class="pointer" ng-click="goToURL('/')">Home</a>
+				<a class="pointer" ng-click="goToURL('/privacy')">Privacy</a>
+				<a class="pointer" ng-click="goToURL('/about')">About</a>
+			</div>
+		</div>
+		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/angular.min.js"></script>
+		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/angular-animate.min.js"></script>
+		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/angular-aria.min.js"></script>
+  		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/angular-material.min.js"></script>
+  		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/angular-messages.min.js"></script>
+		<script type="text/javascript" src="https://static.amazecreationz.in/latest/js/jquery.min.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.6.2/firebase-firestore.js"></script>
+		<script type="text/javascript">
+			var config = {
+				apiKey: "AIzaSyBOutg7AYZilNdMaQr-p-15QGk-JaszRDA",
+				authDomain: "amazecreationz-web.firebaseapp.com",
+				databaseURL: "https://amazecreationz-web.firebaseio.com",
+				projectId: "amazecreationz-web",
+				storageBucket: "amazecreationz-web.appspot.com",
+				messagingSenderId: "407161045317"
+			};
+			firebase.initializeApp(config);
+		</script>
+		<script type="text/javascript" src="/modules/js/login.js"></script>
+	</body>	
+</html>	

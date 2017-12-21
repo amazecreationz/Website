@@ -5,15 +5,16 @@ application.permissions = {
 	ADMIN: 0,
 	MANAGER: 1,
 	BLOGGER: 2,
-	USER: 3,
-	VISITOR: 4
+	VERIFIED_USER: 3,
+	USER: 4,
+	VISITOR: 5
 }
 
 application.globals = {
 	title: 'Amaze Creationz',
 	subtitle: 'sleek solutions everywhere',
 	theme: 'blue-grey',
-	logo: '/resources/images/logo/logo.jpg',
+	logo: 'https://static.amazecreationz.in/images/logo/logo.jpg',
 	domain: 'amazecreationz.in',
 	dateFormat: 'MMM dd, yyyy hh:mm a',
 	feedback: {
@@ -38,15 +39,15 @@ application.globals = {
 		views: '/modules/views/',
 		templates: '/modules/templates/'
 	},
-	scripts: '/resources/js/',
-	styles: '/resources/css/',
+	styles: 'https://static.amazecreationz.in/latest/css/',
 	images: {
-		root: '/resources/images/',
-		thumbs: '/resources/images/thumbs/',
-		logo: '/resources/images/logo/',
-		crew: '/resources/images/crew/',
-		gif: '/resources/images/gif/'
+		root: '/images/',
+		thumbs: '/images/thumbs/',
+		logo: '/images/logo/',
+		gif: '/images/gif/',
+		icons: '/images/icons/'
 	},
+	logo: 'https://static.amazecreationz.in/images/logo/logo-circle-250.png',
 	developments: {
 		github: 'amazecreationz'
 	},

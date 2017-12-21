@@ -1,0 +1,122 @@
+<div ng-show="console.currentTab == 'users'">
+	<div ng-hide="console.admins | isEmpty" class="card">
+		<div class="card-header text-size-d">Admins</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<loader flex="100" loader="console.admins | isEmpty"></loader>
+			<user info="admin" on-click="onUserSelect" theme="globals.theme" ng-repeat="admin in console.admins | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
+		</div>
+	</div>
+	<div ng-hide="console.managers | isEmpty" class="card">
+		<div class="card-header text-size-d">Managers</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<loader flex="100" loader="console.managers | isEmpty"></loader>
+			<user info="manager" on-click="onUserSelect" theme="globals.theme" ng-repeat="manager in console.managers | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
+		</div>
+	</div>
+	<div ng-hide="console.bloggers | isEmpty" class="card">
+		<div class="card-header text-size-d">Bloggers</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<loader flex="100" loader="console.bloggers | isEmpty"></loader>
+			<user info="blogger" on-click="onUserSelect" theme="globals.theme" ng-repeat="blogger in console.bloggers | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header text-size-d">Users</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.users" list-param="Users"></list-loader>
+			<user info="user" on-click="onUserSelect" theme="globals.theme" ng-repeat="user in console.users | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
+		</div>
+	</div>
+	<div ng-show="console.admins | isEmpty" class="mrgtop30 text-center">
+		<md-button ng-if="globals.p.USER == appData.user.p" class="md-raised md-primary padlr20" ng-click="grantAdminPrevilages()">Grant Admin Previlages for Client</md-button>
+	</div>
+</div>
+<div ng-show="console.currentTab == 'team'">
+	<div class="card">
+		<div class="card-header text-size-d" layout="row" layout="start center">Employees</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.eT" list-param="Employees"></list-loader>
+			<team-member info="info" theme="globals.theme" on-click="onTeamSelect" ng-repeat="info in console.eT | orderBy : 'level'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></team-member>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-header text-size-d" layout="row" layout="start center">Contributors</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.cT" list-param="Contributors"></list-loader>
+			<team-member info="info" theme="globals.theme" on-click="onTeamSelect" ng-repeat="info in console.cT | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></team-member>
+		</div>
+	</div>
+</div>
+<div ng-show="console.currentTab == 'query'">
+	<div class="card">
+		<div class="card-header text-size-d" layout="row" layout="start center">User Queries</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.userQuery" list-param="Queries"></list-loader>
+			<div class="query-list" layout="row" layout-align="start center" ng-repeat="query in console.userQuery | orderBy : 'date' : true" flex="100" ng-click="onQuerySelect(query)">
+				<div class="main" flex>
+					<div class="content" md-truncate>{{query.c}}</div>
+					<div class="name">{{query.n}}</div>
+					<div class="date">{{query.d | date : globals.dateFormat}}</div>
+				</div>
+				<div class="action">
+					<md-icon class="material-icons" ng-click="deleteQuery(query.id); $event.stopPropagation();">delete</md-icon>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div ng-hide="console.visitorQuery | isEmpty" class="card">
+		<div class="card-header text-size-d" layout="row" layout="start center">Visitor Queries</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.visitorQuery" list-param="Queries"></list-loader>
+			<div class="query-list" layout="row" layout-align="start center" ng-repeat="query in console.visitorQuery | orderBy : 'date' : true" flex="100" ng-click="onQuerySelect(query)">
+				<div class="main" flex>
+					<div class="content" md-truncate>{{query.c}}</div>
+					<div class="name">{{query.n}}</div>
+					<div class="date">{{query.d | date : globals.dateFormat}}</div>
+				</div>
+				<div class="action">
+					<md-icon class="material-icons" ng-click="deleteQuery(query.id); $event.stopPropagation();">delete</md-icon>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div ng-hide="console.attendedQuery | isEmpty" class="card">
+		<div class="card-header text-size-d" layout="row" layout="start center">Attended Queries</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.attendedQuery" list-param="Queries"></list-loader>
+			<div class="query-list" layout="row" layout-align="start center" ng-repeat="query in console.attendedQuery | orderBy : 'date' : true" flex="100" ng-click="onQuerySelect(query)">
+				<div class="main" flex>
+					<div class="content" md-truncate>{{query.c}}</div>
+					<div class="name">{{query.n}}</div>
+					<div class="date">{{query.d | date : globals.dateFormat}}</div>
+				</div>
+				<div class="action">
+					<md-icon class="material-icons" ng-click="deleteQuery(query.id); $event.stopPropagation();">delete</md-icon>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div ng-show="console.currentTab == 'firebase'">
+	<div class="card">
+		<div class="card-header" layout="row" layout="start center">
+			<div class="text-size-d" flex>Add Data</div>
+			<div>
+				<md-switch class="mrg0 text-uppercase md-primary" ng-model="console.firebase.operation" aria-label="Switch" ng-true-value="'set'" ng-false-value="'push'">{{console.firebase.operation}}</md-switch>
+			</div>
+	  	</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.ADMIN" layout="row" layout-wrap>
+			<form name="firebaseForm" class="full-width" ng-submit="onFirebaseSave()">
+				<md-input-container class="full-width mrgbot0" flex-gt-xs>
+	                <label>Data Point</label>
+	                <input ng-model="console.firebase.dataPoint" autocomplete="off" ng-required>
+	            </md-input-container>
+	            <md-input-container class="full-width" flex-gt-xs>
+	                <label>Data JSON</label>
+	                <textarea ng-model="console.firebase.dataJSON" md-maxlength="250" autocomplete="off" ng-required></textarea>
+	            </md-input-container>
+	            <md-button class="md-raised md-primary" ng-click="onFirebaseSave()">Save</md-button>
+			</form>
+		</div>
+	</div>
+</div>

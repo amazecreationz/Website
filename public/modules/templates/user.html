@@ -1,7 +1,7 @@
 <div class="user-card" layout="row" layout-align="start center" ng-click="onClick(userData)">
-	<div class="user-image small" image-load image="userData.image"></div>
+	<div class="user-image small" ng-class="'bg-light-theme-'+'{{theme}}'" image-load image="userData.pURL"></div>
 	<div class="user-data">
-		<div class="user-name">{{userData.name}}</div>
-		<div class="user-email">{{userData.email}}</div>
+		<div class="user-name">{{userData.n}}</div>
+		<div class="user-email">{{userData.e}}</div>
 	</div>
 </div>

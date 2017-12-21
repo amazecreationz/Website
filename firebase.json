@@ -1,13 +1,23 @@
 {
-  "database": {
-    "rules": "database.rules.json"
-  },
   "hosting": {
     "public": "public",
+    "redirects": [ {
+      "source": "/auth/*",
+      "destination": "/",
+      "type": 301
+    }],
     "rewrites": [
       {
         "source": "/manifest",
         "destination": "/manifest.json"
+      },
+      {
+        "source": "/appLogin",
+        "destination": "/app-login.html"
+      },
+      {
+        "source": "/auth",
+        "destination": "/auth.html"
       },
       {
         "source": "**",

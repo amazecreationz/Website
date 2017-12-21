@@ -1,6 +1,7 @@
 <div ng-Controller="EmployeeMeterController" class="content-container min-full-height" layout="column" layout-align="start center">
     <page-header theme="globals.theme" header="{{appInfo.name}}" tabs="EmployeeMeter.tabs" current-tab="EmployeeMeter.currentTab" on-tab-select="EmployeeMeter.onTabSelect"></page-header>
-    <div ng-show="EmployeeMeter.currentTab=='overview'" class="full-width">
+    <line-message class="full-width" type="warning" message="BETA : Application is under development"></line-message>
+    <div ng-if="EmployeeMeter.currentTab=='overview'" class="full-width">
         <div class="card">
             <div class="card-header text-size-d">Description</div>
             <div class="card-body text-justify">
@@ -19,7 +20,7 @@
             <div class="card-header text-size-d">Contributors</div>
             <div class="card-body" layout="row" layout-wrap>
                 <loader flex="100" loader="!appInfo.contributorsList"></loader>
-                <contributor flex="33" flex-sm="50" flex-xs="100" ng-repeat="crewInfo in appInfo.contributorsList" crew-info="crewInfo" on-click="onCrewSelect"></contributor>
+                <team-member flex="33" flex-sm="50" flex-xs="100" ng-repeat="info in appInfo.contributorsList" theme="globals.theme" info="info"></team-member>
             </div>
         </div>
         <div ng-hide="appInfo.gitCommits | isEmpty" class="card">
@@ -32,8 +33,9 @@
     </div>
 
     <div ng-show="EmployeeMeter.currentTab=='dashboard'" class="full-width">
+        <line-message ng-hide="appData.user.p < globals.p.VISITOR" type="info" message="LOGIN REQUIRED : Please login to use the application"></line-message>
         <div class="card">
-            <div permission-check="appData.user.permission" min-permission="globals.permissions.USER" layout-gt-sm="row">
+            <div permission-check="appData.user.p" min-permission="globals.p.USER" layout-gt-sm="row">
                 <div class="employee-list" flex-gt-sm="35" flex-sm="100">
                     <div class="employee" layout="row" layout-align="center center" ng-class="hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="EmployeeMeter.employeeFunction('add')" hide show-gt-sm>
                         <div class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
@@ -42,7 +44,7 @@
                         <div class="name text-dark" flex>Add Employee</div>
                     </div>
                     <div class="divider" hide-xs hide-sm></div>
-                    <div class="employees-container" hide-xs hide-sm>
+                    <div class="employees-container" ng-style="EmployeeMeter.showEmployeeForm && {'height': '280px'}" hide-xs hide-sm>
                         <div class="employee" ng-repeat="(employeeId, employee) in EmployeeMeter.employeeList" layout="row" ng-class="(hover || employeeId == EmployeeMeter.employee.id) ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="EmployeeMeter.employeeFunction('select', employeeId)">
                             <div ng-hide="employee.image" class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
                                 <md-icon class="material-icons">person</md-icon>
@@ -130,8 +132,11 @@
                                     </md-input-container>
                                 </div>
                                 <div layout-gt-xs="row" layout-align="center center">
-                                    <div class="employee-days" layout="row" layout-xs="row" flex-gt-xs>
-                                        <div class="day pointer" ng-repeat="day in EmployeeMeter.days track by $index" ng-class="EmployeeMeter.employee.h.indexOf($index) > -1 ? 'bg-theme-red' : ''" ng-click="EmployeeMeter.shuffleHoliday($index)" flex>{{day}}</div>
+                                    <div flex-gt-xs>
+                                        <div class="employee-days" layout="row" layout-xs="row">
+                                            <div class="day pointer" ng-repeat="day in EmployeeMeter.days track by $index" ng-class="EmployeeMeter.employee.h.indexOf($index) > -1 ? 'bg-theme-red' : ''" ng-click="EmployeeMeter.shuffleHoliday($index)" flex>{{day}}</div>
+                                        </div>
+                                        <help message="'Selects weekly holidays'"></help>
                                     </div>
                                     <span class="padlr5" hide-xs></span>
                                     <div class="padtb10" hide-gt-xs></div>
@@ -142,7 +147,7 @@
                                 </div>
                                 <div class="text-center mrgtop30">
                                     <md-button class="md-raised" type="submit">Save</md-button>
-                                    <md-button ng-if="EmployeeMeter.employee.id" class="md-raised md-primary" ng-click="EmployeeMeter.employeeFunction('delete', EmployeeMeter.employee.id)">Delete</md-button>
+                                    <md-button class="md-raised md-primary" ng-click="EmployeeMeter.employeeFunction('select', EmployeeMeter.employee.id)">Cancel</md-button>
                                 </div>
                             </form>
                         </div>
@@ -198,11 +203,20 @@
                 </div>
             </div>
         </div>
-
+        <line-message ng-show="EmployeeMeter.employee.id" class="full-width" type="info" message="{{EmployeeMeter.oweMessage}}"></line-message>
         <div ng-show="!EmployeeMeter.loadEmployee && EmployeeMeter.employee.id" class="card">
             <div class="card-header text-size-d">Monthly Summary</div>
             <div class="card-body" layout-gt-sm="row">
-                <overview-calendar flex="60" class="full-width" min-date="EmployeeMeter.employee.jD" max-date="EmployeeMeter.today.getTime()" selected-date="EmployeeMeter.sD" on-date-select="EmployeeMeter.onDateSelect" bars-data="EmployeeMeter.barsData" theme="globals.theme"></overview-calendar>
+                <div flex="60" flex-sm="100" flex-xs="100" class="full-width">
+                    <overview-calendar class="full-width" min-date="EmployeeMeter.employee.jD" max-date="EmployeeMeter.today.getTime()" selected-date="EmployeeMeter.sD" on-date-select="EmployeeMeter.onDateSelect" bars-data="EmployeeMeter.barsData" theme="globals.theme"></overview-calendar>
+                    <div class="padtop20" layout="row" layout-wrap>
+                        <div layout="row" layout-align="start center" ng-repeat="(legend, theme) in EmployeeMeter.calLegends" flex="50">
+                            <div style="height: 5px; margin: 10px;" ng-class="theme" flex="10"></div>
+                            <div class="text-16">{{legend}}</div>
+                        </div>
+                    </div>
+                    <help message="'Select a day on calendar to view details'"></help>
+                </div>
                 <div class="employee-summary" layout="column" layout-sm="row" flex>
                     <div class="padbot20" flex-sm="50">
                         <div class="text-bold text-size-e">Overview</div>
@@ -220,7 +234,7 @@
                                         <td class="padlr10">:</td>
                                         <td>{{EmployeeMeter.s.tW || 0}} days</td>
                                     </tr>
-                                    <tr class="padtb10">
+                                    <tr class="padtb10 hide">
                                         <td>Balance this month</td>
                                         <td class="padlr10">:</td>
                                         <td>{{EmployeeMeter.mS.mB || 0}} {{EmployeeMeter.employee.cU}}</td>

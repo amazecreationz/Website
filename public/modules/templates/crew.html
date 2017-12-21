@@ -1,8 +1,0 @@
-<div ng-hide="crewInfo | isEmpty" class="crew-card pointer" ng-class="isSmall ? 'layout-align-start-center small' : 'layout-align-start-start'" layout="row" ng-click="onClick(crewInfo)">
-	<div class="crew-image" ng-class="{'small' : isSmall}" image-load image="crewInfo.image"></div>
-	<div class="crew-data" ng-class="{'small' : isSmall}" >
-		<div class="crew-name">{{crewInfo.name}}</div>
-		<div class="crew-designation">{{crewInfo.designation}}</div>
-		<div class="crew-email">{{crewInfo.email}}</div>
-	</div>
-</div>

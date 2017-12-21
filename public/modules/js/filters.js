@@ -21,7 +21,7 @@ application.filter('isDefined', function() {
 application.filter('permission', function() {
 	return function(input, permission) {
     	var output = _.filter(input, function(user, userId) {
-    		return user.permission == permission;
+    		return user.p == permission;
     	});
     	return output
   	}

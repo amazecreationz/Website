@@ -1,6 +1,6 @@
 <div ng-Controller="GPACalculatorController" class="content-container min-full-height" layout="column" layout-align="start center">
 	<page-header theme="globals.theme" header="{{appInfo.name}}" tabs="GPACalculator.tabs" current-tab="GPACalculator.currentTab" on-tab-select="GPACalculator.onTabSelect"></page-header>
-	<div ng-show="GPACalculator.currentTab=='overview'" class="full-width">
+	<div ng-if="GPACalculator.currentTab=='overview'" class="full-width">
 		<div class="card">
 			<div class="card-header text-size-d">Description</div>
 			<div class="card-body text-justify">
@@ -8,7 +8,7 @@
 					Useful for: <a href="//www.nitc.ac.in" target="_blank">National Institute of Technology Calicut</a> students.
 				</div>
 				<div class="padbot10">
-					It calculates the Grade Point Averages of students from the Gradecard PDF obtained from Institute's website (<a href="//dss.nitc.ac.in" target="_blank">DSS</a>).
+					GPA Calculator calculates the Grade Point Averages of students from the Gradecard PDF obtained from Institute's website (<a href="//dss.nitc.ac.in" target="_blank">DSS</a>).
 					The application has the capability to give semester wise as well as overall results. 
 					Credits accumulated in each semeter and total credits are calculated too.
 				</div>
@@ -17,7 +17,7 @@
 					More features coming soon.
 				</div>
 				<div class="padbot10">
-					Give us feedback at: <a href="mailto:{{globals.feedback.email}}">{{globals.feedback.email}}</a>.
+					Give us your feedback at : <a href="mailto:{{globals.feedback.email}}">{{globals.feedback.email}}</a>.
 				</div>
 			</div>
 			<div class="card-footer">
@@ -28,7 +28,7 @@
 			<div class="card-header text-size-d">Contributors</div>
 			<div class="card-body" layout="row" layout-wrap>
 				<loader flex="100" loader="!appInfo.contributorsList"></loader>
-				<contributor flex="33" flex-sm="50" flex-xs="100" ng-repeat="crewInfo in appInfo.contributorsList" crew-info="crewInfo" on-click="onCrewSelect"></contributor>
+				<team-member flex="33" flex-sm="50" flex-xs="100" ng-repeat="info in appInfo.contributorsList" theme="globals.theme" info="info"></team-member>
 			</div>
 		</div>
 
@@ -40,7 +40,7 @@
 			</div>
 		</div>
 	</div>
-	<div ng-show="GPACalculator.currentTab=='dashboard'" class="full-width">
+	<div ng-if="GPACalculator.currentTab=='dashboard'" class="full-width">
 		<div ng-hide="GPACalculator.studentData | isEmpty" class="card">
 			<div class="card-header text-size-d">Student Information</div>
 			<div class="card-body">
@@ -99,7 +99,7 @@
 		</div>
 		<div class="card">
 			<div class="card-header text-size-d">Calculate</div>
-			<div permission-check="appData.user.permission" min-permission="globals.permissions.USER" class="card-body">
+			<div permission-check="appData.user.p" min-permission="globals.p.USER" class="card-body">
 				<loader loader="showUploadLoader"></loader>
 				<div ng-hide="showUploadLoader" layout="column" layout-align-xs="start center">
 					<file-select label="'Select Gradecard'" on-file-select="GPACalculator.onGradeCardSelect" selected-file='GPACalculator.selectedFile' accept="application/pdf"></file-select>

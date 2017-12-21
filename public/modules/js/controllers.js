@@ -37,15 +37,15 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 			id: 'users',
 			name: 'Users',
 		},{
-			id: 'crew',
-			name: 'Crew'
+			id: 'team',
+			name: 'Team'
 		},{
 			id: 'query',
 			name: 'Query'
-		},{
+		}/*,{
 			id: 'firebase',
 			name: 'Firebase'
-		}]
+		}*/]
 	};
 
 	var tabState = 'console.tab';
@@ -68,34 +68,59 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 	}
 
 	$scope.grantAdminPrevilages = function() {
-		$scope.appData.user.permission = $scope.globals.permissions.ADMIN;
+		$scope.appData.user.p = $scope.globals.p.ADMIN;
 	}
 }]);
 
-application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state', '$mdDialog', 'AppService', 'FirebaseService', 'FirebaseAPIService', function($scope, $rootScope, $state, $mdDialog, AppService, FirebaseService, FirebaseAPIService){
+application.controller('ConsoleTabController', ['$scope', '$state', '$rootScope', '$mdDialog', 'AppService', 'FirebaseService', 'FirebaseAPIService', function($scope, $state, $rootScope, $mdDialog, AppService, FirebaseService, FirebaseAPIService){
 	var currentState = $state.current.name;
 	var tabId =  $state.params.tab;
 	var params = $state.params.id;
+	var action = $state.params.action;
 
 	$scope.console.currentTab = tabId;
-	$scope.$parent.viewHtml = $scope.globals.html.views + 'console-' + tabId +'.html';
+	$scope.$parent.viewHtml = $scope.globals.html.views + 'console-tabs.html';
+
+	var userModalDismissCallback = function(data) {
+		AppService.goToState(currentState, {id: null}, false, false);
+	}
+
+	var userModalCancelCallback = function(data) {
+		if(data == 'ADD_TEAM') {
+			AppService.goToState(currentState, {tab: 'team', action: data}, false, true);
+		} else {
+			AppService.goToState(currentState, {id: null}, false, false);
+		}
+	}
+
+	var teamModalDismissCallback = function(data) {
+		if(data.info != null) {
+			FirebaseService.saveTeamInfo(data.uid, data.info);
+		} else {
+			FirebaseService.deleteTeamMember(data.uid);
+		}
+		AppService.goToState(currentState, {id: null}, false, false);
+	}
+
+	var teamModalCancelCallback = function(data) {
+		AppService.goToState(currentState, {id: null}, false, false);
+	}
 
 	var setParams = function(param) {
 		AppService.goToState(currentState, {id: param}, false, false);
 	}
 
 	var openUserModal = function(userInfo) {
-		AppService.openUserModel(userInfo, $scope.appData.user.permission, currentState, {tab: tabId, id: null});
+		AppService.openUserModal(userInfo, $scope.appData.user.p, userModalDismissCallback, userModalCancelCallback);
 	}
 
-	var openCrewModal = function(title, crewInfo) {
-		AppService.openCrewModal(title, crewInfo, $scope.appData.user.permission, currentState, {tab: tabId, id: null});
+	var openTeamModal = function(title, info, param) {
+		AppService.openTeamModal(title, info, param, $scope.appData.user.p, teamModalDismissCallback, teamModalCancelCallback);
 	}
 
 	var openQueryModal = function(queryInfo) {
-		AppService.openQueryModal(queryInfo, $scope.appData.user.permission, currentState, {tab: tabId, id: null})
+		AppService.openQueryModal(queryInfo, $scope.appData.user.p, currentState, {tab: tabId, id: null})
 	}
-
 
 	var setUsersTabData = function() {
 		if(params) {
@@ -114,49 +139,55 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 
 		FirebaseService.getAllUsers(function(users) {
 			$scope.console.admins = _.filter(users, function(user, userId) {
-	    		return user.permission == $scope.globals.permissions.ADMIN;
+	    		return user.p == $scope.globals.p.ADMIN;
 	    	});
 
 	    	$scope.console.managers = _.filter(users, function(user, userId) {
-	    		return user.permission == $scope.globals.permissions.MANAGER;
+	    		return user.p == $scope.globals.p.MANAGER;
 	    	});
 
 	    	$scope.console.bloggers = _.filter(users, function(user, userId) {
-	    		return user.permission == $scope.globals.permissions.BLOGGER;
+	    		return user.p == $scope.globals.p.BLOGGER;
 	    	});
 
 	    	$scope.console.users = _.filter(users, function(user, userId) {
-	    		return user.permission == $scope.globals.permissions.USER;
+	    		return user.p == $scope.globals.p.VERIFIED_USER;
 	    	});
 	    	_.defer(function(){$scope.$apply();});
 		});
 	}
 
-	var setCrewTabData = function() {
+	var setTeamTabData = function() {
 		if(params) {
-			try{
-				FirebaseService.getCrewInfoFromURL(params, function(crewInfo){
-					if(crewInfo == null) {
+			if(action == 'ADD_TEAM') {
+				FirebaseService.getUserInfo(params, function(info) {
+					if(info == null) {
 						AppService.showNotFound();
+					} else {
+						openTeamModal(info.n, info, true);
 					}
-					openCrewModal(crewInfo.name, crewInfo);
-				})
-			} catch(e) {
-				AppService.goToState(currentState, {tab: tabId, id:  null});
+				});
+			} else {
+				try{
+					FirebaseService.getTeamInfoFromURL(params, function(info){
+						if(info == null) {
+							AppService.showNotFound();
+						} else {
+							openTeamModal(info.n, info, false);
+						}
+					});
+				} catch(e) {
+					AppService.goToState(currentState, {tab: tabId, id:  null});
+				}
 			}
 		}
-
-		$scope.console.buttonLabel = "Add Crew";
-		$scope.console.onButtonClick = function() {
-			openCrewModal("Add Crew")
-		};
 		
-		FirebaseService.getAllCrew(function(users) {
-			$scope.console.fullTime = _.filter(users, function(user, userId) {
-	    		return user.crewType == 'fullTime';
+		FirebaseService.getTeam(function(users) {
+			$scope.console.eT = _.filter(users, function(user, userId) {
+	    		return user.type == 'EMPLOYEE';
 	    	});
-	    	$scope.console.collaborators = _.filter(users, function(user, userId) {
-	    		return user.crewType == 'collaborator';
+	    	$scope.console.cT = _.filter(users, function(user, userId) {
+	    		return user.type == 'CONTRIBUTOR';
 	    	});
 			_.defer(function(){$scope.$apply();});
 		});
@@ -186,9 +217,7 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 		})
 
 		FirebaseService.getAttendedQueries(function(queries) {
-			$scope.console.attendedQuery = _.filter(queries, function(query) {
-				return true;
-			});
+			$scope.console.attendedQuery = queries;
 			_.defer(function(){$scope.$apply();});
 		})
 	}
@@ -204,9 +233,9 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 		setParams(userInfo.uid);
 	}
 
-	$scope.onCrewSelect = function(crewInfo) {
-		openCrewModal(crewInfo.name, crewInfo);
-		setParams(crewInfo.crewURL);
+	$scope.onTeamSelect = function(info) {
+		openTeamModal(info.n, info);
+		setParams(info.profileURL);
 	};
 
 	$scope.onQuerySelect = function(queryInfo) {
@@ -228,16 +257,15 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 	}
 
 	$rootScope.$on('$stateChangeStart', function() {
-		$mdDialog.cancel();
-	})
+    	$mdDialog.cancel();
+    });
 
 	$scope.$watch('appData.user', function(user) {
-		if(angular.isDefined(user.name)) {
-			$scope.console.buttonLabel = null;
+		if(angular.isDefined(user.uid)) {
 			switch(tabId) {
 				case 'users': setUsersTabData();
 					break;
-				case 'crew': setCrewTabData();
+				case 'team': setTeamTabData();
 					break;
 				case 'query': setQueryTabData();
 					break;
@@ -249,50 +277,99 @@ application.controller('ConsoleTabController', ['$scope', '$rootScope', '$state'
 	})
 }]);
 
-application.controller('ProfileController', ['$scope', function($scope){
+application.controller('ProfileController', ['$scope', '$state', 'AppService', 'FirebaseService', function($scope, $state, AppService, FirebaseService){
 	$scope.appData.current_tab = 'profile';
+	$scope.availableThemes = {"red":"#D32F2F","pink":"#C2185B","purple":"#7B1FA2","deep-purple":"#512DA8","indigo":"#303F9F","blue":"#1976D2","light-blue":"#0288D1","cyan":"#0097A7","teal":"#00796B","green":"#388E3C","light-green":"#689F38","lime":"#AFB42B","yellow":"#FBC02D","amber":"#FFA000","orange":"#F57C00","deep-orange":"#E64A19","brown":"#5D4037","grey":"#616161","blue-grey":"#455A64"};
+	var currentState = $state.current.name;
+	var action = $state.params.action;
+
+	var modalDismissCallback = function(data) {
+
+	}
+
+	var modalCancelCallback = function(pURL) {
+		AppService.goToState(currentState, {action: null}, false, false);
+		if (pURL != null) {
+			$scope.appData.user.pURL = pURL
+			_.defer(function(){$scope.$apply();});
+		}
+	}
+
+	var openEditProfileModal = function(userInfo, action) {
+		AppService.openEditProfileModal(userInfo, action, $scope.globals.theme, modalDismissCallback, modalCancelCallback);
+	}
+	
+	$scope.onThemeChange = function(theme) {
+		$scope.globals.theme = theme;
+		AppService.setMaterialTheme(theme);
+		if(angular.isDefined($scope.appData.user.uid)) {
+			FirebaseService.setTheme($scope.appData.user.uid, theme);
+		}
+	}
+
+	$scope.getPermissionLabel = function(permission) {
+		return AppService.getPermissionType(permission);
+	}
+
+	$scope.$watch('globals.theme', function(theme) {
+		$scope.selectedTheme = theme;
+	});
+
+	$scope.$watch('appData.user', function(user) {
+		if(angular.isDefined(user.uid)) {
+			if(action) {
+				openEditProfileModal(user, action);
+			}
+
+			$scope.changePicture = function() {
+				AppService.goToState(currentState, {action: 'CHANGE_PICTURE'}, false, false);
+				openEditProfileModal(user, 'CHANGE_PICTURE');
+			}
+			
+			$scope.editProfile = function() {
+				AppService.goToState(currentState, {action: 'EDIT_PROFILE'}, false, false);
+				openEditProfileModal(user, 'EDIT_PROFILE');
+			}
+		}
+	});
 }]);
 
 application.controller('AboutController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService){
 	$scope.appData.current_tab = 'about';
-	$scope.crewList = {};
+	$scope.infoList = {};
 
-	FirebaseService.getAllCrew(function(users) {
-		$scope.crewList.fullTime = _.filter(users, function(user, userId) {
-    		return user.crewType == 'fullTime';
+	FirebaseService.getTeam(function(users) {
+		$scope.infoList.e = _.filter(users, function(user, userId) {
+    		return user.type == 'EMPLOYEE';
     	});
-    	$scope.crewList.collaborators = _.filter(users, function(user, userId) {
-    		return user.crewType == 'collaborator';
+    	$scope.infoList.c = _.filter(users, function(user, userId) {
+    		return user.type == 'CONTRIBUTOR';
     	});
 		_.defer(function(){$scope.$apply();});
 	});
-
-	$scope.onCrewSelect = function(crewInfo) {
-		AppService.goToCrewPage(crewInfo.crewURL);
-	}
 }]);
 
 application.controller('ContactController', ['$scope', 'AppService', 'FirebaseService', function($scope, AppService, FirebaseService) {
 	$scope.appData.current_tab = 'contact';
 	$scope.contacts = angular.copy(application.globals.contact);
-	$scope.query = {};
 	$scope.showForm = false;
 	$scope.contacts.social = AppService.getSocialLinks();
 
 	$scope.$watch('appData.user', function(user) {
+		$scope.query = {};
 		if(angular.isDefined(user.uid)) {
-			$scope.query.name = user.name;
-			$scope.query.email = user.email;
+			$scope.query.n = user.n;
+			$scope.query.e = user.e;
 			$scope.query.uid = user.uid;
 		}
 		$scope.showForm = true;
 
 		$scope.submitQuery = function() {
-			$scope.query.date = new Date().getTime();
+			$scope.query.d = new Date().getTime();
 			FirebaseService.addQuery($scope.query, function(data) {
 				AppService.showToast(data.message);
 				if(data.status) {
-					delete $scope.query.content;
+					delete $scope.query.c;
 					AppService.reloadState();
 				}
 			});		
@@ -345,25 +422,21 @@ application.controller('IncludeController', ['$scope', '$state', '$stateParams',
 			}
 
 			if(angular.isDefined(appInfo.development.git)) {
-				GitHubService.getCommits(appInfo.development.git, 10, function(data) {
+				GitHubService.getCommits(appInfo.development.git, 6, function(data) {
 					$scope.appInfo.gitCommits = data;
 					_.defer(function(){$scope.$apply();});
 				})
 			}
 		}
-
-		$scope.onCrewSelect = function(crewInfo) {
-			AppService.goToCrewPage(crewInfo.crewURL);
-		}
 	}
 
-	var goToCrew = function(id) {
-		$scope.viewHtml = '/modules/views/crew-page.html';
-		FirebaseService.getCompleteCrewData(id, function(crewData) {
-			if(crewData == null) {
+	var showTeamMemberProfile = function(profileURL) {
+		$scope.viewHtml = $scope.globals.html.views + 'team-profile.html';
+		FirebaseService.getTeamProfile(profileURL, function(profile) {
+			if(profile == null) {
 				AppService.showNotFound();
 			}
-			$scope.crewInfo = crewData;
+			$scope.profile = profile;
 			_.defer(function(){$scope.$apply();});
 		})
 	}
@@ -373,9 +446,9 @@ application.controller('IncludeController', ['$scope', '$state', '$stateParams',
 			$scope.appData.current_tab = 'apps';
 			goToApplication(id);
 			break;
-		case 'crew': 
-			$scope.appData.current_tab = null;
-			goToCrew(id);
+		case 'profile': 
+			$scope.appData.current_tab = undefined;
+			showTeamMemberProfile(id);
 			break;
 		default: AppService.showNotFound();
 	}

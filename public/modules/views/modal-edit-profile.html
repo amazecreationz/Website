@@ -1,0 +1,49 @@
+<md-dialog class="profile modal-container" aria-label="User">
+    <form ng-cloak class="full-height">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-if="dialog.action=='EDIT_PROFILE'">Edit Profile</h2>
+                <h2 ng-if="dialog.action=='CHANGE_PICTURE'">Select profile photo</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="material-icons" aria-label="Close dialog">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content class="full-height md-dialog-content">
+            <loader class="full-width" loader="dialog.loader"></loader>
+            <div ng-show="dialog.action=='EDIT_PROFILE' && !dialog.loader" class="mrg0" layout="column" layout-align="center center">
+                <div class="user-image" image-load image="userInfo.pURL" online="true"></div>
+                <table class="mrgtop40">
+                    <tbody class="txt14">
+                        <tr class="padtb5">
+                            <td class="text-bold">Name</td>
+                            <td class="padlr5">:</td>
+                            <td>{{userInfo.n}}</td>
+                        </tr>
+                        <tr class="padtb5">
+                            <td class="text-bold">Email</td>
+                            <td class="padlr5">:</td>
+                            <td>{{userInfo.e}}</td>
+                        </tr>
+                        <tr class="padtb5">
+                            <td class="text-bold">UserID</td>
+                            <td class="padlr5">:</td>
+                            <td class="word-break">{{userInfo.uid}}</td>
+                        </tr>
+                        <tr class="padtb5">
+                            <td class="text-bold">Permission</td>
+                            <td class="padlr5">:</td>
+                            <td ng-if="dialog.permission == dialog.permissions.MANAGER">{{getPermissionLabel(userInfo.p)}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-show="dialog.action=='CHANGE_PICTURE' && !dialog.loader" class="full-height" layout="column" layout-align="center center">
+                <div class="image-upload mrgbot20" style="background-image: url('{{imageSrc}}')" ng-class="'bg-light-theme-'+'{{dialog.theme}}'"></div>
+                <file-select label="'Browse from your device'" on-file-select="onImageSelect" selected-file='dialog.selectedImage' accept="image/jpeg" hide-name="true"></file-select>
+                <md-button ng-show="imageSrc" class="md-raised md-primary" ng-click="upload()">Upload</md-button>
+            </div>
+        </md-dialog-content>
+    </form>
+</md-dialog>

@@ -1,11 +1,16 @@
-<div class="card app-card" layout="column" layout-align="start center">
-    <div class="app-card-circle" ng-class="(appInfo.showPage ? 'pointer' : '') + ' bg'+(hover ? '-' : '-light-') + 'theme-' + theme" layout="row" layout-align="center center" ng-click="appInfo.showPage && goToApplicationPage()" ng-init="hover=false;" ng-mouseenter="hover=appInfo.showPage" ng-mouseleave="hover=false">
-    	<md-icon>{{appInfo.icon}}</md-icon>
-    </div>
-    <span class="text-size-d app-card-name">{{appInfo.name}}</span>
-    <span class="border-bottom full-width"></span>
-    <div flex class="app-card-description" ng-bind-html="appInfo.description"></div>
-    <google-play ng-if="appInfo.links.playstore" class="pad10" link="{{appInfo.links.playstore}}" height="36px"></google-play>
-    <tags ng-show="appInfo.tags" class="pad15" tag-data="appInfo.tags"></tags>
-    <span class="border-bottom full-width"></span>
+
+<div class="app-pad">
+	<div class="card app-card" layout="row" layout-align="start center">
+		<div class="app-card-circle text-size-b" ng-class="(appInfo.showPage ? 'pointer' : '') + ' bg'+(hover ? '-' : '-light-') + 'theme-' + theme" layout="row" layout-align="center center" ng-click="appInfo.showPage && goToApplicationPage()" ng-init="hover=false;" ng-mouseenter="hover=appInfo.showPage" ng-mouseleave="hover=false">
+	    	<md-icon>{{appInfo.icon}}</md-icon>
+	    </div>
+		<div class="content" layout="column" flex>
+			<div class="name text-size-d" ng-class="{'pointer': appInfo.showPage}" ng-click="appInfo.showPage && goToApplicationPage()">{{appInfo.name}}<sup ng-if="appInfo.dev" class="beta">{{appInfo.dev}}</sup></div>
+			<div class="description" ng-bind-html="appInfo.description" flex></div>
+			<div class="footer">
+				<google-play ng-if="appInfo.links.playstore" class="play" link="{{appInfo.links.playstore}}" height="36px"></google-play>
+    			<tags ng-show="appInfo.tags" tag-data="appInfo.tags"></tags>
+			</div>
+		</div>
+	</div>
 </div>

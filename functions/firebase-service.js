@@ -26,6 +26,14 @@ exports.validateAuth = function(authToken, callback) {
 	}	
 }
 
+exports.getCustomToken = function(user, callback) {
+	admin.auth().createCustomToken(user.uid).then(function(customToken) {
+    	callback(customToken);
+  	}).catch(function(error) {
+	    callback(error);
+	});
+}
+
 exports.getMailCredentials = function(callback) {
 	admin.database().ref('credentials').once('value', function(data) {
 		callback(data.val());
