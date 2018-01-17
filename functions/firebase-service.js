@@ -1,10 +1,20 @@
 const admin = require('firebase-admin');
+const firebase = require('firebase');
 
 var serviceAccount = require("./service-account.json");
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 	databaseURL: "https://amazecreationz-web.firebaseio.com"
+});
+
+firebase.initializeApp({
+	apiKey: "AIzaSyBOutg7AYZilNdMaQr-p-15QGk-JaszRDA",
+	authDomain: "amazecreationz-web.firebaseapp.com",
+	databaseURL: "https://amazecreationz-web.firebaseio.com",
+	projectId: "amazecreationz-web",
+	storageBucket: "amazecreationz-web.appspot.com",
+	messagingSenderId: "407161045317"
 });
 
 var validateToken = function(token, callback) {
@@ -16,7 +26,6 @@ var validateToken = function(token, callback) {
 		callback(false, "Invalid Token");
 	});
 }
-exports.validateToken = validateToken;
 
 exports.validateAuth = function(authToken, callback) {
 	if(authToken) {
@@ -24,6 +33,14 @@ exports.validateAuth = function(authToken, callback) {
 	} else {
 		callback(false, 'No Authorization Header found!');
 	}	
+}
+
+exports.validateUserCredentials = function(email, pwd, callback) {
+	firebase.auth().signInWithEmailAndPassword(email, pwd).then(function(data) {
+		callback(true, data);
+	}).catch(function(error) {
+		callback(false, error);
+	})
 }
 
 exports.getCustomToken = function(user, callback) {
@@ -39,59 +56,4 @@ exports.getMailCredentials = function(callback) {
 		callback(data.val());
 	})
 }
-
-var createNewUser = function(user) {
-	var userInfo = {
-		name: user.name,
-		email: user.email,
-		image: user.picture,
-		uid: user.user_id,
-		permission: 3//LOGGED USER PERMISSION;
-	}
-	return userInfo;
-}
-exports.createNewUser = createNewUser;
-
-exports.getUserInfoFromAuthenticatedUser = function(user, callback) {
-	var userId = user.user_id;
-	admin.database().ref('users').child(userId).once('value', function(data) {
-		var userInfo = data.val();
-		if(userInfo == null) {
-			userInfo = createNewUser(user);
-		} else {
-			userInfo.image = user.picture;
-		}
-		admin.database().ref('users').child(userInfo.uid).set(userInfo);
-		callback(userInfo);
-	})
-}
-
-exports.sendNotification = function(callback) {
-	var registrationToken = 'dHBeM6hGlcY:APA91bGMWn5YpTBDBqNWLhaxus55r8DTUD3ubyn-oNJ27NRUl6I0Kjqm0HhF5b5XiUW9ub6a6kEK3TzjB9nhbHtlWTC77V1hxSkEzxoBuj8uNWEif607JsFCwbkqLRd-YA612E6DjAca';
-	const payload = {
-      notification: {
-        title: 'You have a new follower!',
-        body: 'jaja is now following you.',
-        icon: "https://amazecreationz.in/resources/images/logo/logo.jpg"
-      }
-    };
-	admin.messaging().sendToDevice(registrationToken, payload).then(function(response) {
-	    // See the MessagingDevicesResponse reference documentation for
-	    // the contents of response.
-	    console.log("Successfully sent message:", response);
-	    callback(response)
-	}).catch(function(error) {
-	    console.log("Error sending message:", error);
-	    callback(error)
-	});
-}
-
-exports.setGradeCardData = function(userId, data, callback) {
-	admin.database().ref('appData/GPACalculator').child(userId).child('studentData').set(data).then(function(){
-		console.log("data put at "+ new Date())
-		callback(null);
-	}, function(error) {
-		console.log("error data put at "+ new Date())
-		callback(error);
-	});
-}
+exports.validateToken = validateToken;

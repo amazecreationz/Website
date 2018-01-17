@@ -26,7 +26,7 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
 	$stateProvider.state('console.tab', {
 		url:'/:tab?id=',
-		templateUrl: application.globals.html.views + 'include.html',
+		templateUrl: application.globals.html.views + 'console-tabs.html',
 		controller: 'ConsoleTabController',
 		params: {
 			action: null
@@ -67,14 +67,30 @@ application.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 
 	$stateProvider.state('view', {
 		url:'/:type/:id?tab=&params=',
-		templateUrl: application.globals.html.views + 'include.html',
+		templateUrl: function($stateParams, AppService) {
+			var template = application.globals.html.views + 'include.html';
+			switch($stateParams.type) {
+				case 'application': 
+					var appsInfo = angular.copy(application.constants.apps);
+					var appInfo = _.find(appsInfo, function(appInfo) {
+						return appInfo.id == $stateParams.id;
+					})
+					if(appInfo && appInfo.showPage && appInfo.page) {
+						template = application.globals.html.views + appInfo.page;
+					}
+					break;
+				case 'profile': 
+					template = application.globals.html.views + 'team-profile.html';
+					break;
+			}
+			return template;
+		},
 		controller: 'IncludeController'
 	});
 
 	$urlRouterProvider.when('/token', '/');
 
-	$urlRouterProvider.otherwise(function($injector, $location){
-		console.log($location.url())
+	$urlRouterProvider.otherwise(function($injector, $location) {
 	    $injector.get('$state').go('error', {url: $location.path()});
 	    return $location.path();
 	});

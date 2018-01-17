@@ -10,32 +10,15 @@ var runThroughCORS = function (request, response, responseData) {
 }
 
 exports.createCustomToken = functions.https.onRequest(function(request, response) {
-	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
+	var email = request.query.email;
+	var pwd = request.query.password;
+	FirebaseService.validateUserCredentials(email, pwd, function(isAuthorised, data) {
 		if(isAuthorised) {
-			FirebaseService.getCustomToken(message, function(data) {
-				runThroughCORS(request, response, data)
+			FirebaseService.getCustomToken(data, function(tokenData) {
+				runThroughCORS(request, response, tokenData)
 			});
 		} else {
-			runThroughCORS(request, response, message)
+			runThroughCORS(request, response, data)
 		}
 	})
-});
-
-exports.userLogin = functions.https.onRequest(function(request, response) {
-	FirebaseService.validateAuth(request.query.authToken, function(isAuthorised, message) {
-		if(isAuthorised) {
-			FirebaseService.getUserInfoFromAuthenticatedUser(message, function(userInfo) {
-				runThroughCORS(request, response, userInfo)
-			});
-		} else {
-			runThroughCORS(request, response, message)
-		}
-	})
-});
-
-exports.sendNotification = functions.https.onRequest(function(request, response) {
-	FirebaseService.sendNotification(function(data) {
-		runThroughCORS(request, response, data)
-	})
-});
-
+})

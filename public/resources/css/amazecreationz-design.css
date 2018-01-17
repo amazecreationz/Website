@@ -91,7 +91,7 @@ a:focus, button:focus, md-icon:focus, :focus {
   height: 100%;
   max-width: 100%;
 }
-.app-container, .modal-container {
+.app-container, .modal-content-container {
   background: #FAFAFA;
 } 
 .app-container {
@@ -1157,14 +1157,22 @@ md-dialog.profile {
 .line-message {
   width: 100%;
   min-height: 0;
+  padding: 15px 20px;
 }
 .line-message md-icon{
   margin: 0;
 }
-.line-message .message {
+.line-message .right {
   font-size: 18px;
-  margin-left: 20px;
+  margin-left: 15px;
 }
+.line-message .right .action {
+  cursor: pointer;
+}
+.line-message .right .action:hover {
+  text-decoration: underline;
+}
+
 /*Special Classes for Mobile*/
 @media (max-width: 768px) {
   .blockquote {
@@ -1182,9 +1190,12 @@ md-dialog.profile {
   .notification .md-toast-content {
     width: 300px;
   }
-  .line-message .message {
-    font-size: 16px;
-    margin-left: 15px;
+  .line-message {
+    padding: 10px;
+  }
+  .line-message .right {
+    font-size: 14px;
+    margin-left: 10px;
   }
 }
 /*Special Classes*/

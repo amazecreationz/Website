@@ -1,7 +1,7 @@
 <div ng-Controller="EmployeeMeterController" class="content-container min-full-height" layout="column" layout-align="start center">
-    <page-header theme="globals.theme" header="{{appInfo.name}}" tabs="EmployeeMeter.tabs" current-tab="EmployeeMeter.currentTab" on-tab-select="EmployeeMeter.onTabSelect"></page-header>
+    <page-header theme="globals.theme" header="{{appInfo.name}}" tabs="eM.tabs" current-tab="eM.currentTab" on-tab-select="eM.onTabSelect"></page-header>
     <line-message class="full-width" type="warning" message="BETA : Application is under development"></line-message>
-    <div ng-if="EmployeeMeter.currentTab=='overview'" class="full-width">
+    <div ng-if="eM.currentTab=='overview'" class="full-width">
         <div class="card">
             <div class="card-header text-size-d">Description</div>
             <div class="card-body text-justify">
@@ -32,35 +32,39 @@
         </div>
     </div>
 
-    <div ng-show="EmployeeMeter.currentTab=='dashboard'" class="full-width">
+    <div ng-show="eM.currentTab=='dashboard'" class="full-width">
         <line-message ng-hide="appData.user.p < globals.p.VISITOR" type="info" message="LOGIN REQUIRED : Please login to use the application"></line-message>
         <div class="card">
             <div permission-check="appData.user.p" min-permission="globals.p.USER" layout-gt-sm="row">
                 <div class="employee-list" flex-gt-sm="35" flex-sm="100">
-                    <div class="employee" layout="row" layout-align="center center" ng-class="hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="EmployeeMeter.employeeFunction('add')" hide show-gt-sm>
-                        <div class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
-                            <md-icon class="material-icons">add</md-icon>
-                        </div>
-                        <div class="name text-dark" flex>Add Employee</div>
-                    </div>
-                    <div class="divider" hide-xs hide-sm></div>
-                    <div class="employees-container" ng-style="EmployeeMeter.showEmployeeForm && {'height': '280px'}" hide-xs hide-sm>
-                        <div class="employee" ng-repeat="(employeeId, employee) in EmployeeMeter.employeeList" layout="row" ng-class="(hover || employeeId == EmployeeMeter.employee.id) ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="EmployeeMeter.employeeFunction('select', employeeId)">
-                            <div ng-hide="employee.image" class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
-                                <md-icon class="material-icons">person</md-icon>
+                    <div class="full-width" hide-sm hide-xs>
+                        <div class="employee" layout="row" layout-align="center center" ng-class="hover ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="eM.eFunction('add')">
+                            <div class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
+                                <md-icon class="material-icons">add</md-icon>
                             </div>
-                            <div ng-show="employee.image" class="image" image-load image="employee.image"></div>
-                            <div layout="column" flex>
-                                <div class="name text-dark" md-truncate>{{employee.name}}</div>
-                                <div class="text-14 text-dark" md-truncate>{{employee.type}}</div>
+                            <div class="name text-dark" flex>Add Employee</div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="employees-container" ng-style="!eM.employee.id && {'height': '280px'}">
+                            <loader loader="eM.eList == undefined"></loader>
+                            <div class="employee" ng-repeat="(employeeId, employee) in eM.eList" layout="row" ng-class="(hover || employeeId == eM.employee.id) ? 'bg-light-theme-'+globals.theme : ''" ng-init="hover=false" ng-mouseenter="hover=true" ng-mouseleave="hover=false" ng-click="eM.eFunction('select', employeeId)">
+                                <div ng-hide="employee.image" class="icon" ng-class="'bg' + (hover ? '-' : '-light-') + 'theme-' + globals.theme">
+                                    <md-icon class="material-icons">person</md-icon>
+                                </div>
+                                <div ng-show="employee.image" class="image" image-load image="employee.image"></div>
+                                <div layout="column" flex>
+                                    <div class="name text-dark" md-truncate>{{employee.name}}</div>
+                                    <div class="text-14 text-dark" md-truncate>{{employee.type}}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <md-select ng-hide="EmployeeMeter.employeeList | isEmpty" ng-model="EmployeeMeter.employee.id" aria-label="employee-select" ng-change="EmployeeMeter.employeeFunction((EmployeeMeter.employee.id ? 'select': 'add'), EmployeeMeter.employee.id)" class="mrg0 mrgbot20" hide-gt-sm>
+
+                    <md-select ng-hide="eM.eList | isEmpty" ng-model="eM.employee.id" aria-label="employee-select" ng-change="eM.eFunction((eM.employee.id ? 'select': 'add'), eM.employee.id)" class="mrg0 mrgbot20" hide-gt-sm>
                         <md-option ng-value="undefined">
                             <div class="text-18 pad5 text-dark">Add Employee</div>
                         </md-option>
-                        <md-option ng-repeat="(employeeId, employee) in EmployeeMeter.employeeList" ng-value="employeeId">
+                        <md-option ng-repeat="(employeeId, employee) in eM.eList" ng-value="employeeId">
                             <div class="pad5">
                                 <div class="text-16 text-dark" md-truncate>{{employee.name}}</div>
                                 <div class="text-14 text-dark" md-truncate>{{employee.type}}</div>
@@ -68,18 +72,19 @@
                         </md-option>
                     </md-select>
                 </div>
+
                 <div class="employee-container" layout="column" flex>
-                    <loader loader="EmployeeMeter.loadEmployee"></loader>
-                    <div ng-hide="EmployeeMeter.loadEmployee" layout="column" flex>
-                        <div ng-show="EmployeeMeter.showEmployeeForm">
-                            <form name="addEmployeeForm" ng-submit="EmployeeMeter.employeeFunction('save', EmployeeMeter.employee.id)">
+                    <loader loader="eM.loadEmployee"></loader>
+                    <div ng-hide="eM.loadEmployee" layout="column" flex>
+                        <div ng-show="eM.showEmployeeForm">
+                            <form name="addEmployeeForm" ng-submit="eM.eFunction('save', eM.employee.id)">
                                 <div layout-gt-xs="row" layout-xs="column" layout-align-xs="center center">
-                                    <div class="image" image-load image="EmployeeMeter.employee.image" ng-class="'bg-light-theme-'+ globals.theme"></div>
+                                    <div class="image" image-load image="eM.employee.image" ng-class="'bg-light-theme-'+ globals.theme"></div>
                                     <div flex>
                                         <div class="mrgtop10" hide-gt-xs></div>
                                         <md-input-container class="full-width mrgbot0 mrgtop15" flex-gt-xs>
                                             <label>Name</label>
-                                            <input type="text" name="name" ng-model="EmployeeMeter.employee.name" autocomplete="off" required autofocus>
+                                            <input type="text" name="name" ng-model="eM.employee.name" autocomplete="off" required autofocus>
                                             <div ng-messages="addEmployeeForm.name.$error" role="alert">
                                                 <div ng-message="required">Name can't be empty.</div>
                                             </div>
@@ -87,7 +92,7 @@
                                         <div layout-gt-xs="row">
                                             <md-input-container class="full-width mrgbot0" flex>
                                                 <label>Type</label>
-                                                <input type="text" name="type" ng-model="EmployeeMeter.employee.type" autocomplete="off" required>
+                                                <input type="text" name="type" ng-model="eM.employee.type" autocomplete="off" required>
                                                 <div ng-messages="addEmployeeForm.type.$error" role="alert">
                                                     <div ng-message="required">Type can't be empty.</div>
                                                 </div>
@@ -96,7 +101,7 @@
                                             <div layout="row" flex>
                                                 <md-input-container class="full-width mrgbot0" flex="60">
                                                     <label>Daily Wage</label>
-                                                    <input type="number" name="wage" ng-model="EmployeeMeter.employee.wage" min="0" autocomplete="off" required>
+                                                    <input type="number" name="wage" ng-model="eM.employee.wage" min="0" autocomplete="off" required>
                                                     <div ng-messages="addEmployeeForm.wage.$error" role="alert">
                                                         <div ng-message="required">Wage can't be empty.</div>
                                                         <div ng-message="min">Enter a valid amount.</div>
@@ -104,7 +109,7 @@
                                                 </md-input-container>
                                                 <md-input-container class="full-width mrgbot0" flex="40">
                                                     <label>Currency</label>
-                                                    <input type="text" name="cUnit" ng-model="EmployeeMeter.employee.cU" autocomplete="off" required>
+                                                    <input type="text" name="cUnit" ng-model="eM.employee.cU" autocomplete="off" required>
                                                     <div ng-messages="addEmployeeForm.cUnit.$error" role="alert">
                                                         <div ng-message="required">Currency can't be empty.</div>
                                                     </div>
@@ -117,7 +122,7 @@
                                 <div layout-gt-xs="row">
                                     <md-input-container class="full-width mrgbot0" flex-gt-xs>
                                         <label>Email</label>
-                                        <input type="email" name="email" ng-model="EmployeeMeter.employee.email" autocomplete="off" ng-pattern="/^.+@.+\..+$/">
+                                        <input type="email" name="email" ng-model="eM.employee.email" autocomplete="off" ng-pattern="/^.+@.+\..+$/">
                                         <div ng-messages="addEmployeeForm.email.$error" role="alert">
                                             <div ng-message="pattern">Enter a valid email address.</div>
                                         </div>
@@ -125,7 +130,7 @@
                                     <span hide-xs class="padlr5"></span>
                                     <md-input-container class="full-width mrgbot0" flex-gt-xs="40">
                                         <label>Mobile</label>
-                                        <input type="tel" name="mobile" ng-model="EmployeeMeter.employee.mobile" autocomplete="off" maxlength="10" ng-pattern="/[0-9]{10}/">
+                                        <input type="tel" name="mobile" ng-model="eM.employee.mobile" autocomplete="off" maxlength="10" ng-pattern="/[0-9]{10}/">
                                         <div ng-messages="addEmployeeForm.mobile.$error" role="alert">
                                             <div ng-message="pattern">Enter a valid 10 digit mobile number.</div>
                                         </div>
@@ -134,7 +139,7 @@
                                 <div layout-gt-xs="row" layout-align="center center">
                                     <div flex-gt-xs>
                                         <div class="employee-days" layout="row" layout-xs="row">
-                                            <div class="day pointer" ng-repeat="day in EmployeeMeter.days track by $index" ng-class="EmployeeMeter.employee.h.indexOf($index) > -1 ? 'bg-theme-red' : ''" ng-click="EmployeeMeter.shuffleHoliday($index)" flex>{{day}}</div>
+                                            <div class="day pointer" ng-repeat="day in eM.days track by $index" ng-class="eM.employee.h.indexOf($index) > -1 ? 'bg-theme-red' : ''" ng-click="eM.shuffleHoliday($index)" flex>{{day}}</div>
                                         </div>
                                         <help message="'Selects weekly holidays'"></help>
                                     </div>
@@ -142,75 +147,78 @@
                                     <div class="padtb10" hide-gt-xs></div>
                                     <md-input-container class="full-width mrgbot0 " flex-gt-xs="40">
                                         <label>Joining Date</label>
-                                        <md-datepicker ng-model="EmployeeMeter.jD" md-max-date="EmployeeMeter.today" md-placeholder="Joining Date" required ng-disabled="EmployeeMeter.employee.id"></md-datepicker>
+                                        <md-datepicker ng-model="eM.employee.jD" md-max-date="eM.today" md-placeholder="Joining Date" required ng-disabled="eM.employee.id"></md-datepicker>
                                     </md-input-container>
                                 </div>
                                 <div class="text-center mrgtop30">
                                     <md-button class="md-raised" type="submit">Save</md-button>
-                                    <md-button class="md-raised md-primary" ng-click="EmployeeMeter.employeeFunction('select', EmployeeMeter.employee.id)">Cancel</md-button>
+                                    <md-button class="md-raised md-primary" ng-click="eM.eFunction('select', eM.employee.id)">Cancel</md-button>
                                 </div>
                             </form>
                         </div>
-                        <div ng-if="!EmployeeMeter.showEmployeeForm" layout="column" flex>
+
+                        <div ng-hide="eM.showEmployeeForm" layout="column" flex>
                             <div layout-gt-xs="row" layout-xs="column" layout-align-xs="center center" flex>
-                                <div class="image" image-load image="EmployeeMeter.employee.image" ng-class="'bg-light-theme-'+globals.theme"></div>
+                                <div class="image" image-load image="eM.employee.image" ng-class="'bg-light-theme-'+globals.theme"></div>
                                 <div flex>
                                     <table class="table">
                                         <tbody>
                                             <tr class="padtb10">
                                                 <td class="text-bold">Name</td>
                                                 <td class="padlr10">:</td>
-                                                <td>{{EmployeeMeter.employee.name}}</td>
+                                                <td>{{eM.employee.name}}</td>
                                             </tr>
                                             <tr class="padtb10">
                                                 <td class="text-bold">Type</td>
                                                 <td class="padlr10">:</td>
-                                                <td>{{EmployeeMeter.employee.type}}</td>
+                                                <td>{{eM.employee.type}}</td>
                                             </tr>
                                             <tr class="padtb10">
                                                 <td class="text-bold word-break">Daily Wage</td>
                                                 <td class="padlr10">:</td>
-                                                <td>{{EmployeeMeter.employee.wage}} {{EmployeeMeter.employee.cU}}</td>
+                                                <td>{{eM.employee.wage}} {{eM.employee.cU}}</td>
                                             </tr>
                                             <tr class="padtb10">
                                                 <td class="text-bold word-break">Joining Date</td>
                                                 <td class="padlr10">:</td>
-                                                <td>{{EmployeeMeter.employee.jD | date : 'dd MMMM, yyyy'}}</td>
+                                                <td>{{eM.employee.jD | date : 'dd MMMM, yyyy'}}</td>
                                             </tr>
-                                            <tr ng-if="EmployeeMeter.employee.email" class="padtb10">
+                                            <tr ng-if="eM.employee.email" class="padtb10">
                                                 <td class="text-bold">Email</td>
                                                 <td class="padlr10">:</td>
-                                                <td class="word-break">{{EmployeeMeter.employee.email}}</td>
+                                                <td class="word-break">{{eM.employee.email}}</td>
                                             </tr>
-                                            <tr ng-if="EmployeeMeter.employee.mobile" class="padtb10">
+                                            <tr ng-if="eM.employee.mobile" class="padtb10">
                                                 <td class="text-bold">Mobile</td>
                                                 <td class="padlr10">:</td>
-                                                <td class="word-break">{{EmployeeMeter.employee.mobile}}</td>
+                                                <td class="word-break">{{eM.employee.mobile}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <div class="employee-days mrgtop20" layout="row" layout-xs="row" flex-gt-xs>
-                                        <div class="day" ng-repeat="day in EmployeeMeter.days track by $index" ng-class="EmployeeMeter.employee.h.indexOf($index) > -1 ? 'bg-theme-red' : ''" flex>{{day}}</div>
+                                        <div class="day" ng-repeat="day in eM.days track by $index" ng-class="eM.employee.h.indexOf($index) > -1 ? 'bg-theme-red' : ''" flex>{{day}}</div>
                                     </div>
                                 </div>
                             </div>
                             <div class="text-right mrgtop50 text-28">
-                                <md-icon class="pointer" ng-click="EmployeeMeter.employeeFunction('edit', EmployeeMeter.employee.id)">edit</md-icon>
-                                <md-icon class="pointer" ng-click="EmployeeMeter.employeeFunction('delete', EmployeeMeter.employee.id)">delete</md-icon>
+                                <md-icon class="pointer" ng-click="eM.eFunction('edit', eM.employee.id)">edit</md-icon>
+                                <md-icon class="pointer" ng-click="eM.eFunction('delete', eM.employee.id)">delete</md-icon>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <line-message ng-show="EmployeeMeter.employee.id" class="full-width" type="info" message="{{EmployeeMeter.oweMessage}}"></line-message>
-        <div ng-show="!EmployeeMeter.loadEmployee && EmployeeMeter.employee.id" class="card">
+
+        <line-message ng-show="eM.employee.id" class="full-width" type="info" message="{{eM.oweMessage}}"></line-message>
+
+        <div ng-show="!eM.loadEmployee && eM.employee.id" class="card" hide>
             <div class="card-header text-size-d">Monthly Summary</div>
             <div class="card-body" layout-gt-sm="row">
                 <div flex="60" flex-sm="100" flex-xs="100" class="full-width">
-                    <overview-calendar class="full-width" min-date="EmployeeMeter.employee.jD" max-date="EmployeeMeter.today.getTime()" selected-date="EmployeeMeter.sD" on-date-select="EmployeeMeter.onDateSelect" bars-data="EmployeeMeter.barsData" theme="globals.theme"></overview-calendar>
+                    <overview-calendar class="full-width" min-date="eM.employee.jD" max-date="eM.today.getTime()" selected-date="eM.sD" on-date-select="eM.onDateSelect" bars-data="eM.barsData" theme="globals.theme"></overview-calendar>
                     <div class="padtop20" layout="row" layout-wrap>
-                        <div layout="row" layout-align="start center" ng-repeat="(legend, theme) in EmployeeMeter.calLegends" flex="50">
+                        <div layout="row" layout-align="start center" ng-repeat="(legend, theme) in eM.calLegends" flex="50">
                             <div style="height: 5px; margin: 10px;" ng-class="theme" flex="10"></div>
                             <div class="text-16">{{legend}}</div>
                         </div>
@@ -221,73 +229,73 @@
                     <div class="padbot20" flex-sm="50">
                         <div class="text-bold text-size-e">Overview</div>
                         <div class="padtop15">
-                            <loader class="full-width" loader="EmployeeMeter.mS | isDefined : true" ></loader>
-                            <table ng-show="EmployeeMeter.mS | isDefined" class="table">
+                            <loader class="full-width" loader="eM.mS | isDefined : true" ></loader>
+                            <table ng-show="eM.mS | isDefined" class="table">
                                 <tbody>
-                                    <tr ng-show="EmployeeMeter.s.nB | isDefined" class="padtb10">
+                                    <tr ng-show="eM.s.nB | isDefined" class="padtb10">
                                         <td>Net Balance</td>
                                         <td class="padlr10">:</td>
-                                        <td ng-class="{'text-theme-red' : EmployeeMeter.s.nB < 0}">{{EmployeeMeter.s.nB || 0}} {{EmployeeMeter.employee.cU}}</td>
+                                        <td ng-class="{'text-theme-red' : eM.s.nB < 0}">{{eM.s.nB || 0}} {{eM.employee.cU}}</td>
                                     </tr>
-                                    <tr ng-show="EmployeeMeter.s.tW | isDefined" class="padtb10 hide">
+                                    <tr ng-show="eM.s.tW | isDefined" class="padtb10 hide">
                                         <td>Total Working</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.s.tW || 0}} days</td>
+                                        <td>{{eM.s.tW || 0}} days</td>
                                     </tr>
                                     <tr class="padtb10 hide">
                                         <td>Balance this month</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.mS.mB || 0}} {{EmployeeMeter.employee.cU}}</td>
+                                        <td>{{eM.mS.mB || 0}} {{eM.employee.cU}}</td>
                                     </tr>
                                     <tr class="padtb10">
                                         <td>Payments this month</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.mS.mPay || 0}} {{EmployeeMeter.employee.cU}}</td>
+                                        <td>{{eM.mS.mPay || 0}} {{eM.employee.cU}}</td>
                                     </tr>
                                     <tr class="padtb10">
                                         <td>Total Working</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.mS.mTW || 0}} days</td>
+                                        <td>{{eM.mS.mTW || 0}} days</td>
                                     </tr>
                                     <tr class="padtb10">
                                         <td>Present</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.mS.mP || 0}} days</td>
+                                        <td>{{eM.mS.mP || 0}} days</td>
                                     </tr>
                                     <tr class="padtb10">
                                         <td>Absent</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.mS.mA || 0}} days</td>
+                                        <td>{{eM.mS.mA || 0}} days</td>
                                     </tr>
-                                    <tr ng-show="EmployeeMeter.mS.mH" class="padtb10">
+                                    <tr ng-show="eM.mS.mH" class="padtb10">
                                         <td>Other Holidays</td>
                                         <td class="padlr10">:</td>
-                                        <td>{{EmployeeMeter.mS.mH || 0}} days</td>
+                                        <td>{{eM.mS.mH || 0}} days</td>
                                     </tr>
                                 </tbody>
                             </table>
                             </div>
                     </div>
                     <div class="employee-daily" flex>
-                        <div class="text-bold text-size-e">{{EmployeeMeter.sD | date : 'dd MMMM, yyyy'}}</div>
-                        <loader loader="EmployeeMeter.day | isDefined : true"></loader>
-                        <div ng-show="EmployeeMeter.day | isDefined" class="padtop15" layout="column" ng-init="editPayment=false;">
-                            <md-checkbox ng-hide="EmployeeMeter.day.isH" ng-model="EmployeeMeter.day.mA" aria-label="checkbox-absent" ng-change="EmployeeMeter.markAbsent(EmployeeMeter.day.mA)" ng-disabled="EmployeeMeter.day.h">Absent</md-checkbox>
-                            <md-checkbox ng-show="EmployeeMeter.day.isH" ng-model="EmployeeMeter.day.isH" aria-label="checkbox-weekly-holiday" disabled>Holiday</md-checkbox>
-                            <md-checkbox ng-hide="EmployeeMeter.day.isH" ng-model="EmployeeMeter.day.h" aria-label="checkbox-holiday" ng-change="EmployeeMeter.markHoliday(EmployeeMeter.day.h)" ng-disabled="EmployeeMeter.day.mA">Holiday</md-checkbox>
-                            <div ng-show="!editPayment && EmployeeMeter.day.p" class="padbot20">Payment : {{EmployeeMeter.day.p}} {{EmployeeMeter.employee.cU}} <md-icon class="material-icons pointer" ng-click="EmployeeMeter.day.p = undefined; EmployeeMeter.markPayment()">delete</md-icon></div>
-                            <form name="paymentForm" ng-submit="editPayment=false; EmployeeMeter.markPayment(EmployeeMeter.day.p)">
+                        <div class="text-bold text-size-e">{{eM.sD | date : 'dd MMMM, yyyy'}}</div>
+                        <loader loader="eM.day | isDefined : true"></loader>
+                        <div ng-show="eM.day | isDefined" class="padtop15" layout="column" ng-init="editPayment=false;">
+                            <md-checkbox ng-hide="eM.day.isH" ng-model="eM.day.mA" aria-label="checkbox-absent" ng-change="eM.markAbsent(eM.day.mA)" ng-disabled="eM.day.h">Absent</md-checkbox>
+                            <md-checkbox ng-show="eM.day.isH" ng-model="eM.day.isH" aria-label="checkbox-weekly-holiday" disabled>Holiday</md-checkbox>
+                            <md-checkbox ng-hide="eM.day.isH" ng-model="eM.day.h" aria-label="checkbox-holiday" ng-change="eM.markHoliday(eM.day.h)" ng-disabled="eM.day.mA">Holiday</md-checkbox>
+                            <div ng-show="!editPayment && eM.day.p" class="padbot20">Payment : {{eM.day.p}} {{eM.employee.cU}} <md-icon class="material-icons pointer" ng-click="eM.day.p = undefined; eM.markPayment()">delete</md-icon></div>
+                            <form name="paymentForm" ng-submit="editPayment=false; eM.markPayment(eM.day.p)">
                                 <md-input-container ng-show="editPayment" class="full-width mrgbot0">
-                                    <label>Payment ({{EmployeeMeter.employee.cU}})</label>
-                                    <input type="number" name="payment" ng-model="EmployeeMeter.day.p" min="0" autocomplete="off" required>
+                                    <label>Payment ({{eM.employee.cU}})</label>
+                                    <input type="number" name="payment" ng-model="eM.day.p" min="0" autocomplete="off" required>
                                     <div ng-messages="paymentForm.payment.$error" role="alert">
                                         <div ng-message="required">Payment can't be empty.</div>
                                         <div ng-message="min">Enter a valid amount.</div>
                                     </div>
                                 </md-input-container>
                                 <md-button ng-show="editPayment" type="submit" class="md-raised md-primary full-width mrg0">Save</md-button>
-                                <md-button ng-hide="editPayment" class="md-raised md-primary full-width mrg0" ng-click="editPayment=true;">{{EmployeeMeter.day.p ? 'Edit' : 'Add'}} Payment</md-button>
-                                <md-button ng-show="editPayment" class="md-raised full-width mrg0 mrgtop10" ng-click="editPayment=false; EmployeeMeter.loadDay();">Cancel</md-button>
+                                <md-button ng-hide="editPayment" class="md-raised md-primary full-width mrg0" ng-click="editPayment=true;">{{eM.day.p ? 'Edit' : 'Add'}} Payment</md-button>
+                                <md-button ng-show="editPayment" class="md-raised full-width mrg0 mrgtop10" ng-click="editPayment=false; eM.loadDay();">Cancel</md-button>
                             </form>
                         </div>
                     </div>

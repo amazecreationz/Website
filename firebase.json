@@ -12,10 +12,6 @@
         "destination": "/manifest.json"
       },
       {
-        "source": "/appLogin",
-        "destination": "/app-login.html"
-      },
-      {
         "source": "/auth",
         "destination": "/auth.html"
       },

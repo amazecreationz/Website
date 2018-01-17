@@ -1,4 +1,4 @@
-application.controller('ToastController', ['$scope', '$mdToast', 'toastParams', function($scope, $mdToast, toastParams){
+application.controller('ToastController', ['$scope', '$mdToast', 'toastParams', function($scope, $mdToast, toastParams) {
 	$scope.toast = toastParams;
 
 	$scope.closeToast = function() {
@@ -6,7 +6,7 @@ application.controller('ToastController', ['$scope', '$mdToast', 'toastParams', 
 	}
 }]);
 
-application.controller('NotificationController', ['$scope', '$mdToast', 'notificationParams', function($scope, $mdToast, notificationParams){
+application.controller('NotificationController', ['$scope', '$mdToast', 'notificationParams', function($scope, $mdToast, notificationParams) {
 	$scope.notification = notificationParams;
 
 	$scope.closeToast = function() {
@@ -14,7 +14,7 @@ application.controller('NotificationController', ['$scope', '$mdToast', 'notific
 	}
 }]);
 
-application.controller('HomeController', ['$scope', 'AppService', function($scope, AppService){
+application.controller('HomeController', ['$scope', 'AppService', function($scope, AppService) {
 	$scope.appData.current_tab = 'home';
 	$scope.appData.bgImage = 'laptop.jpg';
 	$scope.appsInfo = angular.copy(application.constants.apps);
@@ -24,12 +24,16 @@ application.controller('HomeController', ['$scope', 'AppService', function($scop
 	}
 }]);
 
-application.controller('ApplicationsController', ['$scope', function($scope){
+application.controller('ApplicationsController', ['$scope', 'AppService', function($scope,AppService) {
 	$scope.appData.current_tab = 'apps';
 	$scope.appsInfo = angular.copy(application.constants.apps);
+
+	$scope.goToApplicationPage = function(id) {
+		AppService.goToApplicationPage(id);
+	}
 }]);
 
-application.controller('ConsoleController', ['$scope', '$state', 'AppService', function($scope, $state, AppService){
+application.controller('ConsoleController', ['$scope', '$state', 'AppService', function($scope, $state, AppService) {
 	$scope.appData.current_tab = 'console';
 
 	$scope.console = {
@@ -79,7 +83,6 @@ application.controller('ConsoleTabController', ['$scope', '$state', '$rootScope'
 	var action = $state.params.action;
 
 	$scope.console.currentTab = tabId;
-	$scope.$parent.viewHtml = $scope.globals.html.views + 'console-tabs.html';
 
 	var userModalDismissCallback = function(data) {
 		AppService.goToState(currentState, {id: null}, false, false);
@@ -311,6 +314,12 @@ application.controller('ProfileController', ['$scope', '$state', 'AppService', '
 		return AppService.getPermissionType(permission);
 	}
 
+	$scope.resendMail = function() {
+		FirebaseService.sendEmailVerification(function(data) {
+			AppService.showToast(data.message);
+		})	
+	}
+
 	$scope.$watch('globals.theme', function(theme) {
 		$scope.selectedTheme = theme;
 	});
@@ -410,9 +419,7 @@ application.controller('IncludeController', ['$scope', '$state', '$stateParams',
 			return;
 		}
 
-		$scope.viewHtml = $scope.globals.html.views + appInfo.page;
 		$scope.appInfo = appInfo;
-
 		if(angular.isDefined(appInfo.development)) {
 			if(angular.isDefined(appInfo.development.contributors)) {
 				FirebaseService.getContributors(appInfo.development.contributors, function(data) {
@@ -431,7 +438,6 @@ application.controller('IncludeController', ['$scope', '$state', '$stateParams',
 	}
 
 	var showTeamMemberProfile = function(profileURL) {
-		$scope.viewHtml = $scope.globals.html.views + 'team-profile.html';
 		FirebaseService.getTeamProfile(profileURL, function(profile) {
 			if(profile == null) {
 				AppService.showNotFound();

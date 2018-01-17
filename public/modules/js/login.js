@@ -10,8 +10,9 @@ auth.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default').primaryPalette('red');
 });
 
-auth.controller('AuthController', ['$scope', '$location', function($scope, $location) {
+auth.controller('AuthController', ['$scope', '$http', '$location', function($scope, $http, $location) {
 	var mainLoader = angular.element(document.getElementsByClassName("loader-shadow"));
+	var logo = 'https://static.amazecreationz.in/images/logo/logo.jpg';
 	var redirect = $location.search().redirect || '/';
 	$scope.action = $location.search().action || 'AUTHENTICATE';
 	$scope.loader = true;
@@ -24,17 +25,31 @@ auth.controller('AuthController', ['$scope', '$location', function($scope, $loca
 		return dLink+token+'&apn=com.amazecreationz.'+app+'&st=Amaze+Creationz+%7C+Custom+Authentication&sd=Amaze+Creationz+%7C+Sleek+Solutions+Everywhere&si=https://amazecreationz.in/resources/images/logo/logo-circle-250.png';
 	}
 
-	var setApplicationAuth = function(app, user, dLink) {
-		$scope.action = 'AUTHENTICATE';
-		mainLoader.addClass('hide');
-		user.getIdToken().then(function(token) {
-			$scope.appIntentURL = getDynamicLink(app.toLowerCase(), token, dLink);
-			$scope.loader = false;
-			$scope.$apply();
-		});
+	var getCustomTokenAPI = function(email, pwd) {
+		return `https://us-central1-amazecreationz-web.cloudfunctions.net/createCustomToken?email=${email}&password=${pwd}`;
 	}
 
-	var setUser = function() {
+	var setApplicationAuth = function(app, user, dLink, pwd) {
+		$scope.action = 'AUTHENTICATE';
+		mainLoader.addClass('hide');
+		$scope.loader = false;
+		$scope.$apply();
+		if(pwd) {
+			$scope.aFD = {
+				pwd: pwd,
+				SIGNED_UP: true
+			}
+		}
+		$scope.authenticate = function(pwd) {
+			$scope.loader = true;
+			$http.get(getCustomTokenAPI(user.email, pwd)).then(function(data) {
+				var token = data.data;
+				window.location.href = getDynamicLink(app, token, dLink);
+			})
+		}
+	}
+
+	var setUser = function(callback) {
 		var user = firebase.auth().currentUser;
 		var userRef = firebase.firestore().collection('USERS').doc(user.uid);
 		userRef.get().then(function(doc) {
@@ -42,11 +57,34 @@ auth.controller('AuthController', ['$scope', '$location', function($scope, $loca
 				userRef.set({
 					n: user.displayName,
 					e: user.email,
-					pURL: user.photoUrl || '/resources/images/logo.jpg',
-					p: user.isEmailVerified ? 3 : 4
+					pURL: user.photoUrl || logo,
+					p: user.emailVerified ? 3 : 4
+				}).then(function(data) {
+					callback(true);
 				});
+			} else {
+				if (doc.data().p == 4 && user.emailVerified) {
+					userRef.update({p: 3}).then(function() {
+						callback(true);
+					})
+				} else {
+					callback(true);
+				}
 			}
 		});
+	}
+
+	var setAction = function(user, pwd) {
+		var dLink = null;
+		switch(redirect) {
+			case 'async': dLink = 'https://a5b83.app.goo.gl/?link=https://amazecreationz.in/token?value=';
+				setApplicationAuth(redirect, user, dLink, pwd);
+				break;
+			case 'EmployeeMeter': dLink = 'https://a5b83.app.goo.gl/?link=https://amazecreationz.in/auth/EmployeeMeter?token=';
+				setApplicationAuth(redirect, user, dLink, pwd);
+				break;
+			default: $scope.goToURL(redirect);
+		}
 	}
 
 	$scope.changeAction = function(action) {
@@ -54,7 +92,6 @@ auth.controller('AuthController', ['$scope', '$location', function($scope, $loca
 	}
 
 	$scope.goToURL = function(url) {
-		mainLoader.removeClass('hide');
 		window.location.href = url;
 	}
 
@@ -79,15 +116,18 @@ auth.controller('AuthController', ['$scope', '$location', function($scope, $loca
 		firebase.auth().createUserWithEmailAndPassword(email, pwd).then(function(user) {
 			user.updateProfile({
 				displayName: name,
-				photoURL: '/resources/images/logo.jpg'
+				photoURL: logo
 			}).then(function() {
-				setUser();
-				$scope.user.name = name;
-				$scope.user.nickName = name.split(' ')[0];
-				$scope.loader = false;
-				$scope.$apply();
+				user.sendEmailVerification();
+				setUser(function(data) {
+					if(data) {
+						$scope.user.name = name;
+						$scope.user.nickName = name.split(' ')[0];
+						$scope.$apply();
+						setAction($scope.user, pwd);
+					}
+				});
 			});
-			user.sendEmailVerification();
 		}).catch(function(error) {
 			if(error.code == 'auth/email-already-in-use') {
 				$scope.signupErrorMsg =  'Email already in use!';
@@ -125,30 +165,22 @@ auth.controller('AuthController', ['$scope', '$location', function($scope, $loca
 
 	firebase.auth().onAuthStateChanged(function(user) {
 		if(user){
-			if(user.displayName) {
-				setUser();
+			if($scope.action != 'SIGN_UP') {
+				setUser(function() {
+					setAction(user);
+				})
 			}
 			$scope.user = {
 				name: user.displayName,
 				nickName: user.displayName ? user.displayName.split(' ')[0] : user.displayName,
 				email: user.email,
-				pURL: user.photoUrl || '/resources/images/logo/logo-circle-250.png'
-			}
-			var dLink = null;
-			switch(redirect) {
-				case 'async': dLink = 'https://a5b83.app.goo.gl/?link=https://amazecreationz.in/token?value=';
-					setApplicationAuth(redirect, user, dLink);
-					break;
-				case 'EmployeeMeter': dLink = 'https://a5b83.app.goo.gl/?link=https://amazecreationz.in/auth/EmployeeMeter?token=';
-					setApplicationAuth(redirect, user, dLink);
-					break;
-				default: $scope.goToURL(redirect);
+				pURL: user.photoURL || logo
 			}	
 		} else {
 			$scope.action = 'SIGN_IN';
-			$scope.loader = false;
 			mainLoader.addClass('hide');
+			$scope.loader = false;
+			$scope.$apply();
 		}
-		$scope.$apply();
 	});
 }]);

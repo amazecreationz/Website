@@ -63,6 +63,11 @@
 				margin-top: 30px;
 				width: 100%;
 			}
+			.content .img-circle {
+				border-radius: 50%;
+				width: 100px;
+				height: 100px;
+			}
 			.footer {
 				font-size: 14px;
 				padding-top: 10px;
@@ -132,17 +137,23 @@
 						<div ng-if="action == 'RESET_PWD'"><md-icon class="pointer" style="padding-right: 10px" ng-click="changeAction('SIGN_IN')">arrow_back</md-icon> Reset Password</div>
 					</div>
 					<div ng-hide="loader" class="content" layout="row" flex>
-						<div ng-if="action == 'AUTHENTICATE' && user" layout="column" layout-align="center center" flex>
-							<img class="img-circle"  width="100px" height="auto" ng-src="{{user.pURL}}">
-							<div class="text-name" style="margin-top: 22px; font-size: 18px;">{{user.name}}</div>
-							<div class="text-email" style="font-size: 14px; color: #424242; margin-top: -2px">{{user.email}}</div>
-							<div ng-show="user.name" style="font-size: 12px;">
-								Not {{user.nickName}}? <a ng-click="signOut()" style="cursor: pointer;">Sign out</a>
-							</div>
-							<a ng-href="{{appIntentURL}}" style="max-width: 250px; width: 80%; margin: 45px 10% 20px;">
-								<md-button class="md-raised md-warn" style="margin: 0; padding: 0px 20px; width: 100%;">Authenticate</md-button>
-							</a>
-						</div>
+							<form  ng-if="action == 'AUTHENTICATE' && user" name="aF" ng-submit="authenticate(aFD.pwd)" layout="column" layout-align="center center" flex>
+								<img class="img-circle"  width="100px" height="auto" ng-src="{{user.pURL}}">
+								<div class="text-name" style="margin-top: 22px; font-size: 18px;">{{user.name}}</div>
+								<div class="text-email" style="font-size: 14px; color: #424242; margin-top: -2px">{{user.email}}</div>
+								<div ng-show="user.name" style="font-size: 12px;">
+									Not {{user.nickName}}? <a ng-click="signOut()" style="cursor: pointer;">Sign out</a>
+								</div>
+								<md-input-container ng-hide="aFD.SIGNED_UP" class="full-width mrgbot0" style="max-width: 250px; margin-top: 25px;" flex-gt-xs>
+				                    <label>Password</label>
+				                    <input type="password" name="acPwd" ng-model="aFD.pwd" autocomplete="off" required>
+				                    <div ng-messages="aF.acPwd.$error" role="alert">
+							        	<div ng-message="required">This field can't be empty.</div>
+							        </div>
+				                </md-input-container>
+				                <div ng-if="aFD.SIGNED_UP" style="margin-top: 30px;"></div>
+								<md-button class="md-raised md-warn" type="submit" style="margin: 10px 0; padding: 0px 20px; width: 100%; max-width: 250px;">Authenticate</md-button>
+							</form>
 						<div ng-if="action == 'SIGN_IN'">
 							<form name="lF" ng-submit="signIn(lFD.email, lFD.pwd)">
 								<md-input-container class="full-width mrgbot0" flex-gt-xs>

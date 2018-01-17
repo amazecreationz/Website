@@ -171,7 +171,7 @@ application.service('AppService', function($state, $rootScope, $stateParams, $ht
 	}
 
 	this.viewProfile = function(id) {
-		$state.go('view', {type: 'profile', id: id, tab: null});
+		$state.go('view', {type: 'profile', id: id, tab: null, params: null});
 	}
 
 	this.showNotFound = function() {
@@ -271,19 +271,42 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 	var usersStorageRef = storageRef.child('USERS');
 	var teamRef = firestore.collection('TEAM');
 	var queryRef = firestore.collection('QUERY');
+	var appDataRef = firestore.collection('APP_DATA');
+	var serverQueueRef = db.child('SERVER_QUEUE')
 	var notificationsRef = db.child('amazecreationz').child('notifications');
 	var FirebaseService = this;
 
+	this.getCurrentUserID = function() {
+		return firebase.auth().currentUser.uid;
+	}
+
+	this.getCurrentUser = function() {
+		return firebase.auth().currentUser;
+	}
+
+	this.getAppDataRef = function(userId, app) {
+		return appDataRef.doc(userId).collection(app);
+	}
+
 	this.changeUserPicture = function(uid, image, callback) {
 		usersStorageRef.child(uid).child('dp.jpg').put(image).then(function(snapshot) {
-			usersRef.doc(uid).update({
+			var promises = [];
+			promises.push(usersRef.doc(uid).update({
 				pURL: snapshot.downloadURL
-			}).then(function(data) {
-				callback(snapshot.downloadURL)
-			});
+			}));
+			promises.push(FirebaseService.getCurrentUser().updateProfile({
+				photoURL: snapshot.downloadURL
+			}));
+			Promise.all(promises).then(function(data) {
+				callback(snapshot.downloadURL);
+			})
 		}).catch(function(error) {
 			callback(null);
 		})
+	}
+
+	this.addToServerQueue = function(uid, app, content) {
+		serverQueueRef.child(uid).child(app).set(content);
 	}
 
 	this.getNotificationAccess = function(userId) {
@@ -312,12 +335,16 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 		});
 	}
 
-	this.getCurrentUserID = function() {
-		return firebase.auth().currentUser.uid;
-	}
-
-	this.getCurrentUser = function() {
-		return firebase.auth().currentUser;
+	this.sendEmailVerification = function(callback) {
+		FirebaseService.getCurrentUser().sendEmailVerification().then(function() {
+			callback({
+				message: 'Verification mail sent.'
+			})
+		}).catch(function(error) {
+			callback({
+				message: 'Resend failed. Try again later.'
+			})
+		});
 	}
 
 	this.setUserInfo = function(user) {
@@ -340,6 +367,10 @@ application.service('FirebaseService', function($filter, FirebaseAPIService, Mai
 				}
 			} else {
 				userInfo = doc.data();
+				if(userInfo.p == application.permissions.USER && user.emailVerified) {
+					userInfo.p = application.permissions.VERIFIED_USER;
+					usersRef.doc(user.uid).update({p: application.permissions.VERIFIED_USER});
+				}
 			}
 			userInfo.uid = user.uid;
 			callback(userInfo);

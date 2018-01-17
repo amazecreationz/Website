@@ -41,7 +41,18 @@
 		</div>
 	</div>
 	<div ng-if="GPACalculator.currentTab=='dashboard'" class="full-width">
-		<div ng-hide="GPACalculator.studentData | isEmpty" class="card">
+		<div class="card">
+			<div class="card-header text-size-d">Calculate</div>
+			<div permission-check="appData.user.p" min-permission="globals.p.USER" class="card-body">
+				<loader loader="showUploadLoader"></loader>
+				<div ng-hide="showUploadLoader" layout="column" layout-align-xs="start center">
+					<file-select label="'Select Gradecard'" on-file-select="GPACalculator.onGradeCardSelect" selected-file='GPACalculator.selectedFile' accept="application/pdf"></file-select>
+					<div class="mrgtop5"><md-button class="md-raised md-primary" ng-click="GPACalculator.uploadGradeCard()">Calculate</md-button></div>
+				</div>
+				
+			</div>
+		</div>
+		<div ng-hide="(GPACalculator.studentData | isEmpty) || showUploadLoader" class="card">
 			<div class="card-header text-size-d">Student Information</div>
 			<div class="card-body">
 				<loader loader="showUploadLoader"></loader>
@@ -54,7 +65,7 @@
 					<tr>
 						<td>Roll No</td>
 						<td class="padlr10">:</td>
-						<td>{{GPACalculator.studentData.ROLL_NO}}</td>
+						<td>{{GPACalculator.studentData.ROLLNO}}</td>
 					</tr>
 					<tr>
 						<td>Branch</td>
@@ -62,25 +73,25 @@
 						<td hide-xs>{{GPACalculator.studentData.BRANCH}}</td>
 						<td hide-gt-xs>{{GPACalculator.studentData.BRANCH_CODE}}</td>
 					</tr>
-					<tr ng-show="GPACalculator.studentData.PASSED_CREDITS">
+					<tr ng-show="GPACalculator.studentData.PASS_CREDITS">
 						<td>Passed Credits</td>
 						<td class="padlr10">:</td>
-						<td> {{GPACalculator.studentData.PASSED_CREDITS}}</td>
+						<td> {{GPACalculator.studentData.PASS_CREDITS}}</td>
 					</tr>
 					<tr ng-show="GPACalculator.studentData.FAILED_CREDITS">
 						<td>Failed Credits</td>
 						<td class="padlr10">:</td>
 						<td>{{GPACalculator.studentData.FAILED_CREDITS}}</td>
 					</tr>
-					<tr ng-show="GPACalculator.studentData.OTHER_CREDITS">
+					<tr ng-show="GPACalculator.studentData.OT_CREDITS">
 						<td>Other Credits</td>
 						<td class="padlr10">:</td>
-						<td>{{GPACalculator.studentData.OTHER_CREDITS}}</td>
+						<td>{{GPACalculator.studentData.OT_CREDITS}}</td>
 					</tr>
 					<tr>
 						<td>Total Credits</td>
 						<td class="padlr10">:</td>
-						<td>{{GPACalculator.studentData.TOTAL_CREDITS}}</td>
+						<td>{{GPACalculator.studentData.PASS_CREDITS + GPACalculator.studentData.OT_CREDITS}}</td>
 					</tr>
 					<tr>
 						<td>Cumulative GPA</td>
@@ -90,22 +101,11 @@
 				</table>
 			</div>
 		</div>
-		<div ng-hide="(GPACalculator.semesterChartData | isEmpty) || !chartLoaded" class="card">
+		<div ng-hide="(GPACalculator.semesterChartData | isEmpty) || !chartLoaded || showUploadLoader" class="card">
 			<div class="card-header text-size-d">Semester-wise Chart</div>
 			<div class="card-body">
 				<loader loader="showUploadLoader"></loader>
 				<chart ng-hide="showUploadLoader" chart-data="GPACalculator.semesterChartData" chart-loaded="chartLoaded"></chart>
-			</div>
-		</div>
-		<div class="card">
-			<div class="card-header text-size-d">Calculate</div>
-			<div permission-check="appData.user.p" min-permission="globals.p.USER" class="card-body">
-				<loader loader="showUploadLoader"></loader>
-				<div ng-hide="showUploadLoader" layout="column" layout-align-xs="start center">
-					<file-select label="'Select Gradecard'" on-file-select="GPACalculator.onGradeCardSelect" selected-file='GPACalculator.selectedFile' accept="application/pdf"></file-select>
-					<div class="mrgtop5"><md-button class="md-raised md-primary" ng-click="GPACalculator.uploadGradeCard()">Calculate</md-button></div>
-				</div>
-				
 			</div>
 		</div>
 	</div>

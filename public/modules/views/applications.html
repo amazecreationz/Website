@@ -2,6 +2,20 @@
 	<page-header theme="globals.theme" header="Applications"></page-header>
 	<line-message class="full-width" type="info" message="Have an Idea? Write to us at <a href='mailto:ideas@amazecreationz.in'>ideas@amazecreationz.in</a>. We will make it happen. :)"></line-message>
 	<div class="app-cards">
-		<app-card ng-show="appInfo.priority" ng-repeat="appInfo in appsInfo | orderBy: 'priority'" theme="globals.theme" app-info="appInfo" index="$index"></app-card>
+		<div class="app-pad" ng-repeat="appInfo in appsInfo | orderBy: 'priority'">
+			<div class="card app-card" layout="row" layout-align="start center">
+				<div class="app-card-circle text-size-b" ng-class="(appInfo.showPage ? 'pointer' : '') + ' bg'+(hover ? '-' : '-light-') + 'theme-' + globals.theme" layout="row" layout-align="center center" ng-click="appInfo.showPage && goToApplicationPage(appInfo.id)" ng-init="hover=false;" ng-mouseenter="hover=appInfo.showPage" ng-mouseleave="hover=false">
+			    	<md-icon>{{appInfo.icon}}</md-icon>
+			    </div>
+				<div class="content" layout="column" flex>
+					<div class="name text-size-d" ng-class="{'pointer': appInfo.showPage}" ng-click="appInfo.showPage && goToApplicationPage(appInfo.id)">{{appInfo.name}}<sup ng-if="appInfo.dev" class="beta">{{appInfo.dev}}</sup></div>
+					<div class="description" ng-bind-html="appInfo.description" flex></div>
+					<div class="footer">
+						<google-play ng-if="appInfo.links.playstore" class="play" link="{{appInfo.links.playstore}}" height="36px"></google-play>
+		    			<tags ng-show="appInfo.tags" tag-data="appInfo.tags"></tags>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

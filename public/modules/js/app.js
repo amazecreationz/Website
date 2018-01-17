@@ -48,6 +48,7 @@ application.globals = {
 		icons: '/images/icons/'
 	},
 	logo: 'https://static.amazecreationz.in/images/logo/logo-circle-250.png',
+	logo_square: 'https://static.amazecreationz.in/images/logo/logo.jpg',
 	developments: {
 		github: 'amazecreationz'
 	},

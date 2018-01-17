@@ -146,7 +146,8 @@ application.directive("pageHeader", [function() {
             menuItems: '=',
             menuFunction: '='
         },
-        templateUrl: application.globals.html.templates + 'page-header.html',
+        //templateUrl: application.globals.html.templates + 'page-header.html',
+        template: '<div class="page-header" ng-class="\'bg-theme-\'+theme"><div class="title" layout="row" layout-align="start center"><md-icon ng-if="backButton" class="material-icons text-size-d back" md-ink-ripple ng-click="goBack()">arrow_back</md-icon><div class="text-size-d" flex>{{header}}</div><div class="menu-container"></div></div><div ng-if="tabs |isEmpty : true" class="tabs"><div class="tab-item text-no-select" ng-repeat="tab in tabs" ng-class="{\'active\': currentTab==tab.id}" ng-click="changeTab(tab)">{{tab.name}}</div></div></div>',
         link: function(scope, elements, attributes) {
             if(scope.tabs && !scope.currentTab) {
                 scope.currentTab = scope.tabs[0].id;
@@ -361,33 +362,6 @@ application.directive("overviewCalendar", [function() {
     }
 }])
 
-application.directive("appCard", ['AppService', function(AppService) {
-    return {
-        restrict: "E",
-        replace: true,
-        scope: {
-            theme: '=',
-            appInfo: '=',
-            index: '='
-        },
-        templateUrl: application.globals.html.templates + 'app-card.html',
-        link: function(scope, elements, attributes) {
-            scope.index += 1;
-            var element = elements[0];
-            if(scope.index % 3 == 0) {
-                $(element).addClass('third');
-            }
-            else if(scope.index % 3 == 1) {
-                $(element).addClass('first');
-            }
-
-            scope.goToApplicationPage = function() {
-                AppService.goToApplicationPage(scope.appInfo.id);
-            }
-        }
-    }
-}]);
-
 application.directive("user", ['FirebaseService', function(FirebaseService) {
     return {
         restrict: "E",
@@ -531,9 +505,11 @@ application.directive('lineMessage', [function() {
         restrict:'E',
         scope: {
             type: '@',
-            message: '@'
+            message: '@',
+            actionFunction: '=',
+            actionMessage: '@'
         },
-        template: '<div ng-show="message" class="card line-message text-no-select" ng-class="\'bg-light-theme-\'+types[type].theme" layout="row" layout-align="start center"><md-icon class="material-icons text-size-c">{{types[type].icon}}</md-icon><div class="message" ng-bind-html="message" flex></div></div',
+        template: '<div ng-show="message" class="card line-message text-no-select" ng-class="\'bg-light-theme-\'+types[type].theme" layout="row" layout-align="start center"><md-icon class="material-icons text-size-d">{{types[type].icon}}</md-icon><div class="right" layout-xs="column" layout-gt-xs="row" flex><div class="message" ng-bind-html="message" flex></div><div class="action" ng-if="actionFunction" ng-click="actionFunction()">{{actionMessage}}</div></div></div',
         link: function (scope, elements, attributes) {
             scope.types = {"error":{"icon":"error","theme":"red"},"warning":{"icon":"warning","theme":"orange"},"info":{"icon":"info","theme":"teal"},"help":{"icon":"help","theme":"blue"}};
         }
