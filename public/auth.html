@@ -55,6 +55,7 @@
 				color: rgba(0,0,0,0.8);
 				overflow: hidden;
 				margin-top: 25px;
+				min-height: 420px;
 			}
 			.card, .footer {
 				width: 350px;
@@ -127,120 +128,115 @@
 					<img class="img-circle"  width="45px" height="auto" src='https://static.amazecreationz.in/images/logo/logo-circle-250.png'>
 					<span style="padding: 5px 15px; font-size: 24px;">amaze creationz</span>
 				</div>
-				<div layout-xs="column" layout-align-xs="center start" flex-xs>
+				<div layout="column" layout-align-xs="center start" flex-xs flex>
 					<div ng-if="loader" layout="row" layout-align="center center" style="width: 100%; min-height: 300px" flex>
 						<md-progress-circular class="md-primary" md-diameter="40"></md-progress-circular>
 					</div>
 					<div ng-if="action != 'AUTHENTICATE' && !loader" style="font-size: 20px; margin-top: 25px;">
+						<div ng-if="action == 'AUTHENTICATE'" style="font-size: 18px;">Authenticate <span style="font-size: 16px; color: #777;">{{appName}}</span></div>
 						<div ng-if="action == 'SIGN_IN'">Sign in</div>
 						<div ng-if="action == 'SIGN_UP'"><md-icon class="pointer" style="padding-right: 10px" ng-click="changeAction('SIGN_IN')">arrow_back</md-icon> Sign up</div>
 						<div ng-if="action == 'RESET_PWD'"><md-icon class="pointer" style="padding-right: 10px" ng-click="changeAction('SIGN_IN')">arrow_back</md-icon> Reset Password</div>
 					</div>
-					<div ng-hide="loader" class="content" layout="row" flex>
-							<form  ng-if="action == 'AUTHENTICATE' && user" name="aF" ng-submit="authenticate(aFD.pwd)" layout="column" layout-align="center center" flex>
-								<img class="img-circle"  width="100px" height="auto" ng-src="{{user.pURL}}">
-								<div class="text-name" style="margin-top: 22px; font-size: 18px;">{{user.name}}</div>
-								<div class="text-email" style="font-size: 14px; color: #424242; margin-top: -2px">{{user.email}}</div>
-								<div ng-show="user.name" style="font-size: 12px;">
-									Not {{user.nickName}}? <a ng-click="signOut()" style="cursor: pointer;">Sign out</a>
-								</div>
-								<md-input-container ng-hide="aFD.SIGNED_UP" class="full-width mrgbot0" style="max-width: 250px; margin-top: 25px;" flex-gt-xs>
-				                    <label>Password</label>
-				                    <input type="password" name="acPwd" ng-model="aFD.pwd" autocomplete="off" required>
-				                    <div ng-messages="aF.acPwd.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        </div>
-				                </md-input-container>
-				                <div ng-if="aFD.SIGNED_UP" style="margin-top: 30px;"></div>
-								<md-button class="md-raised md-warn" type="submit" style="margin: 10px 0; padding: 0px 20px; width: 100%; max-width: 250px;">Authenticate</md-button>
-							</form>
-						<div ng-if="action == 'SIGN_IN'">
-							<form name="lF" ng-submit="signIn(lFD.email, lFD.pwd)">
-								<md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Email</label>
-				                    <input type="email" name="acEmail" ng-model="lFD.email" ng-pattern="/^.+@.+\..+$/" required>
-				                    <div ng-messages="lF.acEmail.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        	<div ng-message="pattern">Enter a valid email.</div>
-							        </div>
-				                </md-input-container>
-				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Password</label>
-				                    <input type="password" name="acPwd" ng-model="lFD.pwd" autocomplete="off" required>
-				                    <div ng-messages="lF.acPwd.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        </div>
-				                </md-input-container>
-				                <div ng-if="signinErrorMsg" style="font-size: 12px; color: #D84315;">{{signinErrorMsg}}</div>
-				                <div layout="column" layout-align="start start" style="margin-top: 15px;">
-				                	<div style="font-size: 14px;" flex><a class="pointer" ng-click="changeAction('RESET_PWD')">Reset Password</a> | New user? <a class="pointer" ng-click="changeAction('SIGN_UP')">Sign Up</a></div>
-				                	<div class="mrgtop10" hide-gt-xs></div>
-				                	<md-button type="submit" class="md-raised md-primary" style="margin: 15px 0 0;">Login</md-button>
-				                </div>
-							</form>
-						</div>
-						<div ng-if="action == 'SIGN_UP'">
-							<form name="supF" ng-submit="signUp(sfD.name, sfD.email, sfD.pwd)">
-								<md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Name</label>
-				                    <input type="text" name="acName" ng-model="sfD.name" autocomplete="off" required>
-				                    <div ng-messages="supF.acName.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        </div>
-				                </md-input-container>
-								<md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Email</label>
-				                    <input type="email" name="acEmail" ng-model="sfD.email" ng-pattern="/^.+@.+\..+$/" autocomplete="off" required>
-				                    <div ng-messages="supF.acEmail.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        	<div ng-message="pattern">Enter a valid email address.</div>
-							        </div>
-				                </md-input-container>
-				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Password</label>
-				                    <input type="password" name="acPwd" ng-model="sfD.pwd" autocomplete="off" required>
-				                    <div ng-messages="supF.acPwd.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        </div>
-				                </md-input-container>
-				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Confirm Password</label>
-				                    <input type="password" name="acCPwd" ng-model="sfD.cpwd" autocomplete="off" ng-pattern="{{sfD.pwd}}" autocomplete="off"  required>
-				                    <div ng-messages="supF.acCPwd.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        	<div ng-message="pattern">Passwords doesn't match.</div>
-							        </div>
-				                </md-input-container>
-				                <div ng-if="signupErrorMsg" style="font-size: 12px; color: #D84315;">{{signupErrorMsg}}</div>
-				                <div style="margin-top: 10px;">
-				                	<md-button type="submit" class="md-raised md-primary" style="margin: 0;">Sign Up</md-button>
-				                </div>
-							</form>
-						</div>
-						<div ng-if="action == 'RESET_PWD'">
-							<form name="rpF" ng-submit="sendRM(rPD.email, rPD.cemail)">
-								<md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Email</label>
-				                    <input type="email" name="email" ng-model="rPD.email" ng-pattern="/^.+@.+\..+$/" autocomplete="off" required>
-				                    <div ng-messages="rpF.email.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        	<div ng-message="pattern">Enter a valid email address.</div>
-							        </div>
-				                </md-input-container>
-				                <md-input-container class="full-width mrgbot0" flex-gt-xs>
-				                    <label>Confirm Email</label>
-				                    <input type="email" name="cemail" ng-model="rPD.cemail" ng-pattern="{{rPD.email}}" autocomplete="off" required>
-				                    <div ng-messages="rpF.cemail.$error" role="alert">
-							        	<div ng-message="required">This field can't be empty.</div>
-							        	<div ng-message="pattern">Emails doesn't match.</div>
-							        </div>
-				                </md-input-container>
-				                <div ng-if="resendMsg" style="font-size: 12px; color: #D84315;">{{resendMsg}}</div>
-				                <div class="text-center mrgtop10">
-				                	<md-button type="submit" class="md-raised md-primary mrg0">Send Reset Mail</md-button>
-				                </div>
-							</form>
-						</div>
+					<div ng-hide="loader" class="content" layout="column" flex>
+						<form  ng-if="action == 'AUTHENTICATE' && user" name="aF" ng-submit="authenticate(aFD.pwd)" layout="column" layout-align="center center" flex>
+							<img class="img-circle"  width="100px" height="auto" ng-src="{{user.pURL}}">
+							<div class="text-name" style="margin-top: 22px; font-size: 18px;">{{user.name}}</div>
+							<div class="text-email" style="font-size: 14px; color: #424242; margin-top: -2px">{{user.email}}</div>
+							<div ng-show="user.name" style="font-size: 12px;">
+								Not {{user.nickName}}? <a ng-click="signOut()" style="cursor: pointer;">Sign out</a>
+							</div>
+							<md-input-container ng-hide="aFD.PWD_CHECK" class="full-width mrgbot0" style="max-width: 250px; margin-top: 25px;" flex-gt-xs>
+			                    <label>Password</label>
+			                    <input type="password" name="acPwd" ng-model="aFD.pwd" autocomplete="off" required>
+			                    <div ng-messages="aF.acPwd.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        </div>
+			                </md-input-container>
+			                <div ng-if="aFD.PWD_CHECK" style="margin-top: 30px;"></div>
+							<md-button class="md-raised md-warn" type="submit" style="margin: 10px 0; padding: 0px 20px; width: 100%; max-width: 250px;">Authenticate</md-button>
+						</form>
+						<form ng-if="action == 'SIGN_IN'" layout="column" layout-fill name="lF" ng-submit="signIn(lFD.email, lFD.pwd)" flex>
+							<md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Email</label>
+			                    <input type="email" name="acEmail" ng-model="lFD.email" ng-pattern="/^.+@.+\..+$/" required>
+			                    <div ng-messages="lF.acEmail.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        	<div ng-message="pattern">Enter a valid email.</div>
+						        </div>
+			                </md-input-container>
+			                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Password</label>
+			                    <input type="password" name="acPwd" ng-model="lFD.pwd" autocomplete="off" required>
+			                    <div ng-messages="lF.acPwd.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        </div>
+			                </md-input-container>
+			                <div ng-if="signinErrorMsg" style="font-size: 12px; color: #D84315;">{{signinErrorMsg}}</div>
+			                <div layout="column" layout-align="start start" style="margin-top: 15px;">
+			                	<div style="font-size: 14px;" flex><a class="pointer" ng-click="changeAction('RESET_PWD')">Reset Password</a> | New user? <a class="pointer" ng-click="changeAction('SIGN_UP')">Sign Up</a></div>
+			                	<div class="mrgtop10" hide-gt-xs></div>
+			                	<md-button type="submit" class="md-raised md-primary" style="margin: 15px 0 0;">Login</md-button>
+			                </div>
+						</form>
+						<form ng-if="action == 'SIGN_UP'" name="supF" ng-submit="signUp(sfD.name, sfD.email, sfD.pwd)" flex>
+							<md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Name</label>
+			                    <input type="text" name="acName" ng-model="sfD.name" autocomplete="off" required>
+			                    <div ng-messages="supF.acName.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        </div>
+			                </md-input-container>
+							<md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Email</label>
+			                    <input type="email" name="acEmail" ng-model="sfD.email" ng-pattern="/^.+@.+\..+$/" autocomplete="off" required>
+			                    <div ng-messages="supF.acEmail.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        	<div ng-message="pattern">Enter a valid email address.</div>
+						        </div>
+			                </md-input-container>
+			                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Password</label>
+			                    <input type="password" name="acPwd" ng-model="sfD.pwd" autocomplete="off" required>
+			                    <div ng-messages="supF.acPwd.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        </div>
+			                </md-input-container>
+			                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Confirm Password</label>
+			                    <input type="password" name="acCPwd" ng-model="sfD.cpwd" autocomplete="off" ng-pattern="{{sfD.pwd}}" autocomplete="off"  required>
+			                    <div ng-messages="supF.acCPwd.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        	<div ng-message="pattern">Passwords doesn't match.</div>
+						        </div>
+			                </md-input-container>
+			                <div ng-if="signupErrorMsg" style="font-size: 12px; color: #D84315;">{{signupErrorMsg}}</div>
+			                <div style="margin-top: 10px;">
+			                	<md-button type="submit" class="md-raised md-primary" style="margin: 0;">Sign Up</md-button>
+			                </div>
+						</form>
+						<form ng-if="action == 'RESET_PWD'" name="rpF" ng-submit="sendRM(rPD.email, rPD.cemail)" flex>
+							<md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Email</label>
+			                    <input type="email" name="email" ng-model="rPD.email" ng-pattern="/^.+@.+\..+$/" autocomplete="off" required>
+			                    <div ng-messages="rpF.email.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        	<div ng-message="pattern">Enter a valid email address.</div>
+						        </div>
+			                </md-input-container>
+			                <md-input-container class="full-width mrgbot0" flex-gt-xs>
+			                    <label>Confirm Email</label>
+			                    <input type="email" name="cemail" ng-model="rPD.cemail" ng-pattern="{{rPD.email}}" autocomplete="off" required>
+			                    <div ng-messages="rpF.cemail.$error" role="alert">
+						        	<div ng-message="required">This field can't be empty.</div>
+						        	<div ng-message="pattern">Emails doesn't match.</div>
+						        </div>
+			                </md-input-container>
+			                <div ng-if="resendMsg" style="font-size: 12px; color: #D84315;">{{resendMsg}}</div>
+			                <div class="text-center mrgtop10">
+			                	<md-button type="submit" class="md-raised md-primary mrg0">Send Reset Mail</md-button>
+			                </div>
+						</form>
 					</div>
 				</div>
 			</div>

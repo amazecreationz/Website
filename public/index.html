@@ -115,6 +115,12 @@
 		            </div>
 		            <md-progress-linear ng-show="appData.viewLoader" md-mode="query"></md-progress-linear>
 		        </nav>
+		        <div class="top-message-container text-no-select" ng-if="appData.user.p == globals.p.USER">
+			        <div ng-show="appData.user.p == globals.p.USER" class="verify-user card min-zero-height" ng-class="'bg-light-theme-'+globals.theme" layout="row" layout-align="start center">
+			        	<div class="text-size-g" flex>Please verify your email address.</div>
+			        	<md-button class="mrg0" ng-click="resendMail()">Resend</md-button>
+			        </div>
+		        </div>
 		        <div class="notifications-container" ng-class="{'closed': !showNotifications}" layout="column" ng-click="$event.stopPropagation()">
 		        	<div class="notifications-header" ng-class="'bg-theme-'+globals.theme" layout="row">
 		        		<div flex>Notifications</div>
@@ -139,7 +145,7 @@
 		        		</div>
 		        	</div>
 		        </div>
-		        <div ng-hide="appData.viewLoader" class="main-container" ui-view></div>
+		        <div ng-hide="appData.viewLoader" class="main-container" ng-class="{'top-message' : appData.user.p == globals.p.USER}" ui-view></div>
 				<footer class="hide"></footer>
 	        </div>
         </div>

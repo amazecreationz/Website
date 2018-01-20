@@ -23,7 +23,7 @@ application.globals = {
 	contact: {
 		email: 'hey@amazecreationz.in',
 		phone: '+91 80 75 688784',
-		location: 'CNRA 51, Chempakasseri Nagar,<br>Kesavadasapuram, Trivandrum,<br>Kerala, India.<br>PIN: 695004',
+		location: 'CNRA 51, Chempakasseri Nagar,<br>Kesavadasapuram, Trivandrum,<br>Kerala, India. PIN: 695004',
 		maps: 'https://www.google.co.in/maps/search/Amaze+Creationz'
 	},
 	social: {

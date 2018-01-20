@@ -33,11 +33,10 @@ auth.controller('AuthController', ['$scope', '$http', '$location', function($sco
 		$scope.action = 'AUTHENTICATE';
 		mainLoader.addClass('hide');
 		$scope.loader = false;
-		$scope.$apply();
 		if(pwd) {
 			$scope.aFD = {
 				pwd: pwd,
-				SIGNED_UP: true
+				PWD_CHECK: true
 			}
 		}
 		$scope.authenticate = function(pwd) {
@@ -47,6 +46,7 @@ auth.controller('AuthController', ['$scope', '$http', '$location', function($sco
 				window.location.href = getDynamicLink(app, token, dLink);
 			})
 		}
+		$scope.$apply();
 	}
 
 	var setUser = function(callback) {
@@ -78,9 +78,11 @@ auth.controller('AuthController', ['$scope', '$http', '$location', function($sco
 		var dLink = null;
 		switch(redirect) {
 			case 'async': dLink = 'https://a5b83.app.goo.gl/?link=https://amazecreationz.in/token?value=';
+				$scope.appName = 'Async';
 				setApplicationAuth(redirect, user, dLink, pwd);
 				break;
 			case 'EmployeeMeter': dLink = 'https://a5b83.app.goo.gl/?link=https://amazecreationz.in/auth/EmployeeMeter?token=';
+				$scope.appName = 'Employee Meter';
 				setApplicationAuth(redirect, user, dLink, pwd);
 				break;
 			default: $scope.goToURL(redirect);
@@ -98,7 +100,13 @@ auth.controller('AuthController', ['$scope', '$http', '$location', function($sco
 	$scope.signIn = function(email, pwd) {
 		$scope.signinErrorMsg = undefined;
 		$scope.loader = true;
-		firebase.auth().signInWithEmailAndPassword(email, pwd).catch(function(error) {
+		firebase.auth().signInWithEmailAndPassword(email, pwd).then(function(user) {
+			setUser(function(data) {
+				if(data) {
+					setAction(user, pwd);
+				}
+			});
+		}).catch(function(error) {
 			$scope.loader = false;
 			if(error.code == 'auth/user-not-found') {
 				$scope.signinErrorMsg = 'Incorrect email! Check your email again.'
@@ -165,7 +173,7 @@ auth.controller('AuthController', ['$scope', '$http', '$location', function($sco
 
 	firebase.auth().onAuthStateChanged(function(user) {
 		if(user){
-			if($scope.action != 'SIGN_UP') {
+			if($scope.action == 'AUTHENTICATE') {
 				setUser(function() {
 					setAction(user);
 				})

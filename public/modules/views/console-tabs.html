@@ -27,6 +27,13 @@
 			<user info="user" on-click="onUserSelect" theme="globals.theme" ng-repeat="user in console.users | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
 		</div>
 	</div>
+	<div ng-hide="console.unv_users | isEmpty" class="card">
+		<div class="card-header text-size-d">Unverified Users</div>
+		<div class="card-body" permission-check="appData.user.p" min-permission="globals.p.MANAGER" layout="row" layout-wrap>
+			<list-loader list="console.unv_users" list-param="Unverified Users"></list-loader>
+			<user info="user" on-click="onUserSelect" theme="globals.theme" ng-repeat="user in console.unv_users | orderBy : 'name'" flex-lg="33" flex-md="50" flex-sm="50" flex-xs="100"></user>
+		</div>
+	</div>
 	<div ng-show="console.admins | isEmpty" class="mrgtop30 text-center">
 		<md-button ng-if="globals.p.USER == appData.user.p" class="md-raised md-primary padlr20" ng-click="grantAdminPrevilages()">Grant Admin Previlages for Client</md-button>
 	</div>

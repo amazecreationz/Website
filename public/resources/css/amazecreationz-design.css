@@ -7,6 +7,32 @@ md-icon {
 }
 /*Angular Material Workaround Classes*/
 
+/*Key Frames*/
+@-webkit-keyframes load {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) scale(0, 1);
+            transform: translateX(-50%) scale(0, 1);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateX(40%) scale(0.3, 1);
+            transform: translateX(40%) scale(0.3, 1);
+  }
+}
+@keyframes load {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) scale(0, 1);
+            transform: translateX(-50%) scale(0, 1);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateX(40%) scale(0.3, 1);
+            transform: translateX(40%) scale(0.3, 1);
+  }
+}
+/*Key Frames*/
 
 html, body {
 	width: 100%;
@@ -71,14 +97,15 @@ a:focus, button:focus, md-icon:focus, :focus {
   transform: translate(0,0) scale(1,1);
   border-radius: 5px;
 }
+
 .linear-loader .md-container .md-bar {
   background: #212121;
   -webkit-transition: all .2s linear;
   transition: all .2s linear;
-  -webkit-animation: query .8s infinite cubic-bezier(.39,.575,.565,1);
-  animation: query .8s infinite cubic-bezier(.39,.575,.565,1);
+  -webkit-animation: load .7s infinite cubic-bezier(.39,.575,.565,1);
+  animation: load .7s infinite cubic-bezier(.39,.575,.565,1);
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
   bottom: 0;
   width: 100%;
@@ -117,15 +144,30 @@ a:focus, button:focus, md-icon:focus, :focus {
   height: 300px!important;
   width: 100%!important;
 }
+.main-container.top-message .content-container {
+  padding-top: 0;
+}
+.top-message-container {
+  margin: 20px;
+}
 @media(max-width: 1200px ) {
   .content-container {
-    margin: 0 5%;
+    margin: 0 10px;
+  }
+  .top-message-container {
+    margin: 20px;
   }
 }
 @media(max-width: 768px ) {
   .content-container {
     margin: 0;
     padding-top: 10px;
+  }
+  .main-container.top-message .content-container {
+    padding-top: 0;
+  }
+  .top-message-container {
+    margin: 10px;
   }
 }
 .app-container {
@@ -316,7 +358,9 @@ md-sidenav {
   background: #cb2027;
 }
 .fa-github {
-  background: #333;
+  background: #fff;
+  color: #333!important;
+  padding: 0;
 }
 /*FA Icon Classes*/
 
@@ -533,17 +577,17 @@ md-dialog.profile {
   height: 100%;
 }
 @media(max-width: 959px) {
-  .profile .image {
-    background-size: 150px 150px;
-    width: 150px;
-    height: 150px;
-  }
   md-dialog.profile {
     min-width: 100%;
     min-height: 100%;
   }
 }
 @media(max-width: 599px) {
+  .profile .image {
+    background-size: 150px 150px;
+    width: 150px;
+    height: 150px;
+  }
   .profile .image .edit {
     font-size: 14px;
     padding: 5px;
@@ -728,9 +772,9 @@ md-dialog.profile {
   padding: 5px 0;  
 }
 .contact-phone md-icon, .contact-email md-icon {
-  font-size: 48px;
+  font-size: 42px;
 }
-.contact-phone a, .contact-email a{
+.contact-phone a, .contact-email a {
   padding-left: 20px;   
 }
 .social-card {
@@ -742,6 +786,11 @@ md-dialog.profile {
   border-radius: 50%;
   color: white;
   margin: 0;
+  margin-top: 2px; 
+}
+.social-card .fa-github {
+  font-size: 56px;
+  margin-top: 0px;
 }
 .social-card a:hover {
   font-weight: normal!important;
@@ -759,6 +808,11 @@ md-dialog.profile {
     width: 18px;
     font-size: 18px;
     padding: 8px;
+  }
+  .social-card .fa-github {
+    font-size: 40px;
+    width: 40px;
+    padding: 0;
   }
 }
 /*Contact Classes*/
@@ -1359,6 +1413,9 @@ md-dialog.profile {
 .mrgtop-10 {
   margin-top: -10px!important;
 }
+.mrgtop0 {
+  margin-top: 0!important;
+}
 .mrgtop5 {
   margin-top: 5px!important;
 }
@@ -1651,6 +1708,9 @@ md-dialog.profile {
 .text-size-e {
   font-size: 24px!important;
 }
+.text-size-g {
+  font-size: 18px!important;
+}
 .width-3 {
   width: 33%;
 }
@@ -1666,6 +1726,9 @@ md-dialog.profile {
   }
   .text-size-d, .text-size-e {
     font-size: 20px!important;
+  }
+  .text-size-g {
+    font-size: 16px!important;
   }
 }
 @media (max-width: 599px) {
@@ -1683,6 +1746,9 @@ md-dialog.profile {
   }
   .text-size-e {
     font-size: 20px!important;
+  }
+  .text-size-g {
+    font-size: 14px!important;
   }
 }
 .word-wrap {
@@ -1703,6 +1769,27 @@ md-dialog.profile {
   background-color: transparent!important;
 }
 /*General Classes*/
+
+/*Other Classes*/
+.verify-user {
+  box-sizing: border-box;
+}
+.verify-user.card {
+  margin: 0;
+  padding: 10px 20px;
+  width: auto;
+}
+@media (max-width: 959px) {
+  .verify-user.card {
+    padding: 7px 15px;
+  }
+}
+@media (max-width: 599px) {
+  .verify-user.card {
+    padding: 5px 10px;
+  }
+}
+/*Other Classes*/
 
 /*Appearance Classes*/
 input:-webkit-autofill {

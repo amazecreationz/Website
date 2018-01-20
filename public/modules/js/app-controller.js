@@ -98,6 +98,12 @@ application.controller('AppController', ['$scope', '$rootScope', '$state', '$sta
 		    	});
 				_.defer(function(){$scope.$apply();});
 			});
+
+			$scope.resendMail = function() {
+				FirebaseService.sendEmailVerification(function(data) {
+					AppService.showToast(data.message);
+				})	
+			}
 		} else {
 			AppService.backgroundLoader(false);
 			$scope.appData.user = {

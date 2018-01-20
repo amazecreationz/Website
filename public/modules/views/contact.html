@@ -36,7 +36,7 @@
 				<div layout-gt-xs="row">
 					<md-input-container class="full-width mrgbot0" flex-gt-xs>
 	                    <label>Name</label>
-	                    <input type="text" name="name" ng-model="query.n" ng-disabled="appData.user.p != globals.p.VISITOR" autocomplete="off" required>
+	                    <input type="text" name="name" ng-model="query.n" ng-disabled="appData.user.n && appData.user.p != globals.p.VISITOR" autocomplete="off" required>
 	                    <div ng-messages="queryForm.name.$error" role="alert">
 				        	<div ng-message="required">Name can't be empty.</div>
 				        </div>

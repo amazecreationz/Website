@@ -76,7 +76,7 @@ application.controller('ConsoleController', ['$scope', '$state', 'AppService', f
 	}
 }]);
 
-application.controller('ConsoleTabController', ['$scope', '$state', '$rootScope', '$mdDialog', 'AppService', 'FirebaseService', 'FirebaseAPIService', function($scope, $state, $rootScope, $mdDialog, AppService, FirebaseService, FirebaseAPIService){
+application.controller('ConsoleTabController', ['$scope', '$state', '$rootScope', '$mdDialog', 'AppService', 'FirebaseService', 'FirebaseAPIService', function($scope, $state, $rootScope, $mdDialog, AppService, FirebaseService, FirebaseAPIService) {
 	var currentState = $state.current.name;
 	var tabId =  $state.params.tab;
 	var params = $state.params.id;
@@ -155,6 +155,10 @@ application.controller('ConsoleTabController', ['$scope', '$state', '$rootScope'
 
 	    	$scope.console.users = _.filter(users, function(user, userId) {
 	    		return user.p == $scope.globals.p.VERIFIED_USER;
+	    	});
+
+	    	$scope.console.unv_users = _.filter(users, function(user, userId) {
+	    		return user.p == $scope.globals.p.USER;
 	    	});
 	    	_.defer(function(){$scope.$apply();});
 		});

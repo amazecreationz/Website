@@ -34,6 +34,7 @@ application.controller('UserModalController', ['$scope', '$state', '$stateParams
 	$scope.dialog = {
 		currentUser: dialogParams.userInfo.uid == FirebaseService.getCurrentUserID(),
 		permission: dialogParams.permission,
+		all_permissions: angular.copy(application.permissions),
 		permissions: angular.copy(application.permissions)
 	};
 

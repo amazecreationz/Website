@@ -3,3 +3,6 @@
 function
 .project
 firebase-debug.log
+functions/node_modules/**
+functions/service-account.json
+.DS_Store

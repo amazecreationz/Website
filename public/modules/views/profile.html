@@ -1,7 +1,6 @@
 <div class="content-container profile">
 	<page-header theme="globals.theme" header="Profile"></page-header>
-	<line-message ng-show="appData.user.p == globals.p.USER" type="warning" message="Verify your email address for full account functionality." action-function="resendMail" action-message="Resend Verification Mail"></line-message>
-	<div class="card min-zero-height">
+	<div ng-show="appData.user.uid" class="card min-zero-height">
 		<div class="card-body">
 			<div layout-gt-xs="row" layout-xs="column" layout-align-xs="start center">
 				<div class="image" ng-class="'{{'bg-light-theme-'+globals.theme}}'" image-load image="appData.user.pURL" layout="column" layout-align="end center">
@@ -23,12 +22,8 @@
 							<tr>
 								<td class="text-bold">User ID</td>
 								<td class="padlr10">:</td>
-								<td class="word-break">{{appData.user.uid}}</td>
-							</tr>
-							<tr>
-								<td class="text-bold">Permission</td>
-								<td class="padlr10">:</td>
-								<td class="word-break">{{getPermissionLabel(appData.user.p)}}</td>
+								<td class="word-break" hide-xs>{{appData.user.uid}}</td>
+								<td class="word-break text-14" show-xs hide>{{appData.user.uid}}</td>
 							</tr>
 						</tbody>
 					</table>
